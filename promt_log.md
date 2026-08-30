@@ -103,6 +103,79 @@ chỉ ghi FR-18 thôi
 
 ---
 
+### [30-08-2026 21:37:55] | Gemini
+```text
+check lại lệnh chạy Newman bị lỗi
+```
+
+---
+
+### [30-08-2026 21:39:03] | Gemini
+```text
+tôi dùng newman-reporter-html
+```
+
+---
+
+### [30-08-2026 21:49:37] | Gemini
+```text
+chỉnh lại dùng extra đi
+```
+
+---
+
+### [30-08-2026 21:51:28] | Gemini
+```text
+PS D:\NAM_3\HK3\KTPM\HW06\SoftwareTesting_HW06> npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+newman: could not find "cli htmlextra" reporter
+  ensure that the reporter is installed in the same directory as newman
+  please install reporter using npm
+```
+
+---
+
+### [30-08-2026 21:54:34] | Gemini
+```text
+TypeError                        Cannot read properties of undefined (reading 'Url')
+      iteration: 1                     at prerequest-script
+                                       inside "Data-Driven Request: GET /api/products"
+
+sao cái nào cũng bị lỗi này
+```
+
+---
+
+### [30-08-2026 21:56:46] | Gemini
+```text
+runtime:extensions~request: request url is empty
+       iteration: 1                      at request
+                                         inside ""
+```
+
+---
+
+### [30-08-2026 22:01:11] | Gemini
+```text
+đọc kết quả chạy xem lỗi đúng chưa
+```
+
+---
+
+### [30-08-2026 22:06:15] | Gemini
+```text
+tạo gitignore
+```
+
+---
+
+
+
+
+
+
+
+
+
 
 
 

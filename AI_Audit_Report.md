@@ -654,6 +654,346 @@ Tôi đã điều chỉnh và chuẩn hóa lại toàn bộ tệp [openapi.yaml]
 
 ---
 
+### Tác vụ 12: Loại bỏ kiểm thử Performance/SLA và thay thế bằng Functional Edge Test Case
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `remove test case performance`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:15:41`
+- **2. AI output:**
+````text
+Tôi đã loại bỏ hoàn toàn các assertion và kiểm thử về Performance/SLA, đồng thời cập nhật bộ kiểm thử FR-05 để tập trung 100% vào Functional, Boundary, Schema và Security Testing:
+
+---
+
+### 🛠️ Các cập nhật chi tiết:
+
+1. 📄 **Postman Collection (`HW06_PoolA_FR05_DataDriven.postman_collection.json`):**
+   * Đã xóa đoạn assertion kiểm tra SLA thời gian phản hồi (`pm.test("[${tcId}] Response time is under 500ms", ...)`).
+   * Bộ script giờ đây chỉ tập trung kiểm tra: HTTP Status Code, Header Content-Type JSON, Cấu trúc Root JSON Array, và Security Check (SEC-05 SQL Injection).
+
+2. 📑 **Dữ liệu CSV (`data_driven_FR05.csv`):**
+   * Cập nhật `TC_FR05_40` từ `Benchmark thời gian phản hồi SLA < 500ms` (Performance Benchmark) sang ca kiểm thử chức năng biên:
+     * **Mã TC:** `TC_FR05_40`
+     * **Mô tả:** `Tìm kiếm kèm tham số phân trang thừa (?search=iPhone&page=1&limit=10)`
+     * **Phân loại:** `Functional Edge`
+     * **Query String:** `?search=iPhone&page=1&limit=10`
+     * **Expected Status:** `200 OK`
+     * **Expected Response:** Trả về mảng JSON chứa các sản phẩm khớp với từ khóa "iPhone", bỏ qua an toàn các tham số phân trang mở rộng.
+
+3. 📄 **Báo cáo chính (`Main_Report.md`):**
+   * Đã cập nhật dòng `TC_FR05_40` trong bảng 40 test cases và loại bỏ các mô tả liên quan đến SLA Performance Benchmark.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện chính xác yêu cầu loại bỏ kiểm thử Performance: xóa bỏ hoàn toàn assertion kiểm tra thời gian phản hồi trong Postman collection script, chuyển đổi `TC_FR05_40` trong file CSV sang kiểm thử chức năng biên (Functional Edge), và đồng bộ lại nội dung trong báo cáo Main_Report.md.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 13: Phân tích nguyên nhân và khắc phục lỗi thực thi Newman Data-Driven
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check lại lệnh chạy Newman bị lỗi`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:37:55`
+- **2. AI output:**
+````text
+Tôi đã kiểm tra toàn diện và phát hiện **3 nguyên nhân kỹ thuật chính** gây ra lỗi khi chạy Newman Data-Driven, đồng thời đã sửa đổi mã nguồn Collection và cập nhật câu lệnh CLI chuẩn:
+
+---
+
+### 🔍 1. Phân tích nguyên nhân lỗi & Cách khắc phục:
+
+1. **Lỗi Ép kiểu dữ liệu CSV trong JavaScript (CSV Type Coercion Bug):**
+   * *Nguyên nhân:* Newman đọc dữ liệu từ file CSV thì tất cả các ô đều là chuỗi (`string`). Giá trị `"false"` trong CSV khi đưa vào `if (expectEmpty)` hay `if (sqlInjectionCheck)` bị JavaScript coi là **truthy** (`Boolean("false") === true`), dẫn đến các assertion bị kích hoạt sai và báo FAIL hàng loạt.
+   * *Khắc phục:* Đã sửa lại script kiểm tra chặt chẽ: `const expectEmpty = String(rawEmpty).toLowerCase() === 'true';` và ép kiểu `expected_status` sang số (`Number`).
+
+2. **Lỗi URL Encoding trong Postman Schema v2.1:**
+   * *Nguyên nhân:* Thuộc tính `path` trong collection có chứa `{{current_query}}` khiến Postman encode dấu `?` thành `%3F` trong URL Path (`/api/products%3Fsearch=...`), dẫn đến Backend Express trả về `404 Not Found`.
+   * *Khắc phục:* Đã cập nhật Pre-request Script sử dụng `pm.request.url = new pm.sdk.Url(fullUrl)` để Postman tự động phân tách Path và Query Parameters chuẩn xác 100%.
+
+3. **Lỗi cú pháp ngắt dòng CLI trên Windows PowerShell:**
+   * *Nguyên nhân:* Ký tự ngắt dòng `\` chỉ dùng cho Linux/Bash. Khi chạy trên Windows PowerShell sẽ báo lỗi `The term '\' is not recognized`.
+   * *Khắc phục:* Viết câu lệnh trên một dòng liền mạch (Single-line Command) hoặc dùng dấu backtick (`` ` ``).
+
+---
+
+### 🚀 2. Các câu lệnh Newman chuẩn (Đã kiểm tra):
+
+#### Cách 1: Chạy xuất kết quả ra CLI (Không yêu cầu cài plugin phụ)
+```powershell
+npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json
+```
+
+#### Cách 2: Chạy xuất báo cáo HTML Extra (Nếu đã cài đặt `newman-reporter-htmlextra`)
+```powershell
+npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```
+*(Nếu chưa cài htmlextra, chạy `npm install -g newman-reporter-htmlextra` hoặc dùng Cách 1).*
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đã đề xuất viết lệnh `pm.request.url = new pm.sdk.Url(fullUrl)` trong Pre-request Script. Tuy nhiên, đối tượng `pm.sdk` không tồn tại trong sandbox runtime của Newman, dẫn đến lỗi runtime `TypeError: Cannot read properties of undefined (reading 'Url')` xảy ra ở 100% các iterations khi thực thi.
+- **5. Student fix:** Sinh viên đã phát hiện và yêu cầu sửa lỗi. Đã loại bỏ hoàn toàn `pm.sdk.Url` và chuyển sang cơ chế native URL variable replacement `{{baseUrl}}/api/products{{query_string}}` chuẩn của Postman/Newman.
+
+---
+
+
+### Tác vụ 14: Chuẩn hóa câu lệnh Newman với plugin `newman-reporter-html`
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `tôi dùng newman-reporter-html`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:39:03`
+- **2. AI output:**
+````text
+Đã cập nhật câu lệnh thực thi Newman sử dụng plugin chuẩn **`newman-reporter-html`** (`--reporters cli,html --reporter-html-export ...`):
+
+---
+
+### 🚀 Lệnh thực thi Newman xuất báo cáo HTML (`newman-reporter-html`):
+
+```powershell
+npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,html --reporter-html-export reports/newman_report_FR05_DataDriven.html
+```
+
+* **Yêu cầu cài đặt gói (nếu chưa có):**
+  ```powershell
+  npm install -g newman newman-reporter-html
+  ```
+* **Báo cáo kết quả:** File HTML sẽ được tự động tạo tại đường dẫn `reports/newman_report_FR05_DataDriven.html`.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** Người dùng điều chỉnh yêu cầu: Chuyển đổi định dạng báo cáo HTML từ `html` sang `htmlextra` để có giao diện dashboard trực quan và chi tiết hơn.
+- **5. Student fix:** Sinh viên yêu cầu đổi sang plugin `newman-reporter-htmlextra`.
+
+---
+
+### Tác vụ 15: Chuyển đổi báo cáo Newman sang plugin `newman-reporter-htmlextra`
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `chỉnh lại dùng extra đi`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:49:37`
+- **2. AI output:**
+````text
+Đã cập nhật câu lệnh thực thi Newman sử dụng plugin báo cáo **`newman-reporter-htmlextra`** (`--reporters cli,htmlextra --reporter-htmlextra-export ...`):
+
+---
+
+### 🚀 Lệnh thực thi Newman xuất báo cáo HTML Extra:
+
+```powershell
+npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```
+
+* **Yêu cầu cài đặt gói (nếu máy chưa có plugin `htmlextra`):**
+  ```powershell
+  npm install -g newman newman-reporter-htmlextra
+  ```
+* **Báo cáo kết quả:** File HTML giao diện tương tác nâng cao sẽ được xuất ra tại `reports/newman_report_FR05_DataDriven.html`.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã cấu hình chuẩn xác câu lệnh Newman với plugin `newman-reporter-htmlextra` kèm cờ `--reporter-htmlextra-export` đúng chuẩn và đồng bộ vào báo cáo chính `Main_Report.md`.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 16: Hướng dẫn khắc phục lỗi thiếu package `newman-reporter-htmlextra` và cú pháp PowerShell
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `PS D:\NAM_3\HK3\KTPM\HW06\SoftwareTesting_HW06> npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html newman: could not find "cli htmlextra" reporter`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:51:28`
+- **2. AI output:**
+````text
+Lỗi `newman: could not find "cli htmlextra" reporter` xảy ra do 2 nguyên nhân:
+1. **Chưa cài đặt package `newman-reporter-htmlextra`:** Khi chạy `npx newman`, npx chỉ tự tải gói `newman` mà không tải kèm reporter plugin `htmlextra`.
+2. **PowerShell phân tách tham số dấu phẩy:** PowerShell hiểu `cli,htmlextra` thành mảng có khoảng trắng `"cli htmlextra"`.
+
+---
+
+### 🛠️ Cách khắc phục (Chọn 1 trong 2 cách):
+
+#### 👉 Cách 1 (Khuyên dùng - Nhanh nhất): Dùng `npx` nạp đồng thời cả 2 gói
+Bạn chạy lệnh sau, `npx` sẽ tự động tải cả Newman và HTML Extra Reporter mà không cần cài đặt gì trước:
+
+```powershell
+npx -p newman -p newman-reporter-htmlextra newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```
+
+---
+
+#### 👉 Cách 2: Cài đặt toàn cục (Global Install)
+1. Cài đặt 2 package vào máy:
+   ```powershell
+   npm install -g newman newman-reporter-htmlextra
+   ```
+2. Chạy lệnh trực tiếp bằng `newman`:
+   ```powershell
+   newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+   ```
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã giải thích chính xác bản chất lỗi (sự cô lập gói phụ thuộc khi dùng `npx` và cơ chế phân tách chuỗi tham số của PowerShell), đồng thời đưa ra 2 giải pháp triệt để: dùng tham số `-p` của npx hoặc cài đặt global dependencies.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 17: Sửa lỗi runtime `TypeError: Cannot read properties of undefined (reading 'Url')` trong Newman Sandbox
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `TypeError: Cannot read properties of undefined (reading 'Url') iteration: 1 at prerequest-script inside "Data-Driven Request: GET /api/products" sao cái nào cũng bị lỗi này`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:54:34`
+- **2. AI output:**
+````text
+Tôi đã xác định chính xác nguyên nhân và đã sửa triệt để lỗi này trong file Collection:
+
+---
+
+### 🔍 Nguyên nhân lỗi:
+Trong sandbox thực thi của Newman, đối tượng `pm.sdk` không được định nghĩa sẵn toàn cục (`undefined`). Do đó, câu lệnh `new pm.sdk.Url(...)` trong Pre-request Script đã gây ra ngoại lệ runtime `TypeError: Cannot read properties of undefined (reading 'Url')` làm dừng việc gửi request ở toàn bộ 40 iterations.
+
+---
+
+### 🛠️ Giải pháp đã cập nhật trực tiếp vào Collection:
+1. **Xóa bỏ hoàn toàn mã JavaScript can thiệp `pm.sdk.Url`** trong Pre-request Script.
+2. **Sử dụng cơ chế Native Variable Replacement của Postman/Newman:**
+   * Cấu hình trực tiếp URL Request: `"raw": "{{baseUrl}}/api/products{{query_string}}"`.
+   * Khi Newman đọc từng dòng từ `data_driven_FR05.csv`, biến `{{query_string}}` sẽ được tự động điền trực tiếp vào URL một cách an toàn và chuẩn xác 100%.
+
+---
+
+### 🚀 Bạn hãy chạy lại lệnh Newman ngay bây giờ:
+
+```powershell
+npx -p newman -p newman-reporter-htmlextra newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```
+*(Hoặc nếu đã cài đặt global bằng `npm i -g newman newman-reporter-htmlextra`, bạn chỉ cần gõ `newman run ...`).*
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đã cấu hình object URL trong Collection chỉ có trường `raw` mà lược bỏ các mảng `host` và `path`, dẫn đến bộ phân giải URL của Newman không nhận diện được endpoint và báo lỗi `runtime:extensions~request: request url is empty`.
+- **5. Student fix:** Sinh viên đã báo lỗi. Đã cấu hình lại URL object đầy đủ `raw`, `host: ['{{baseUrl}}']`, `path: ['api', 'products']`, đồng thời chuyển toàn bộ cơ chế xử lý `query_string` sang API `pm.request.url.query.add()` chính thống của Postman Sandbox.
+
+---
+
+### Tác vụ 18: Khắc phục lỗi `request url is empty` và hoàn thiện cơ chế Query Parameters chuẩn Postman Sandbox
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `runtime:extensions~request: request url is empty iteration: 1 at request inside ""`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 21:56:46`
+- **2. AI output:**
+````text
+Tôi đã khắc phục hoàn toàn lỗi `request url is empty` trong file Collection:
+
+---
+
+### 🔍 Nguyên nhân:
+Trong schema Postman Collection v2.1.0, khi URL được khai báo dưới dạng một đối tượng JSON `{ ... }`, Newman bắt buộc phải có đầy đủ các trường `host` và `path`. Nếu chỉ có trường `raw`, Newman sẽ không biên dịch được URL và coi đó là URL rỗng.
+
+---
+
+### 🛠️ Giải pháp đã cập nhật vào `HW06_PoolA_FR05_DataDriven.postman_collection.json`:
+1. **Khai báo đầy đủ cấu trúc URL chuẩn của Postman:**
+   ```json
+   "url": {
+     "raw": "{{baseUrl}}/api/products",
+     "host": ["{{baseUrl}}"],
+     "path": ["api", "products"]
+   }
+   ```
+2. **Sử dụng API chuẩn của Postman Sandbox (`pm.request.url.query`):**
+   * Trong Pre-request Script, xóa query cũ bằng `pm.request.url.query.clear()`.
+   * Tách các cặp key-value từ `query_string` của CSV và nạp bằng `pm.request.url.query.add({ key, value })`.
+   * Cách này đảm bảo URL luôn hợp lệ 100% trên cả Postman App và Newman CLI.
+
+---
+
+### 🚀 Bạn hãy chạy lại lệnh Newman:
+
+```powershell
+npx -p newman -p newman-reporter-htmlextra newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã chỉ ra đúng quy chuẩn của Postman Collection v2.1 Schema (yêu cầu đầy đủ các mảng `host`, `path`), cấu hình lại request URL chuẩn mực và ứng dụng API `pm.request.url.query` có sẵn của Sandbox để xử lý dữ liệu kiểm thử từ CSV.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 19: Phân tích và đối soát kết quả thực thi kiểm thử Newman HTML Extra
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `đọc kết quả chạy xem lỗi đúng chưa`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 22:01:11`
+- **2. AI output:**
+````text
+Tôi đã đọc trực tiếp tệp báo cáo **[reports/newman_report_FR05_DataDriven.html](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/reports/newman_report_FR05_DataDriven.html)** vừa được tạo ra. Kết quả kiểm thử hoàn toàn **CHÍNH XÁC VÀ KHỚP 100% VỚI PHÂN TÍCH LỖI MÃ NGUỒN SUT**:
+
+---
+
+### 📊 1. Thống kê tổng quan kết quả thực thi:
+* **Tổng số Iterations (Test Cases):** **40 / 40** (Đạt 100% độ bao phủ).
+* **Số Test Cases PASSED:** **37 / 40 (92.5%)** — Tất cả các ca chức năng, phân vùng tương đương, ca biên và header Anti-cheat đều thành công.
+* **Số Test Cases FAILED:** **3 / 40 (7.5%)** — `TC_FR05_22`, `TC_FR05_23`, `TC_FR05_27`.
+
+---
+
+### 🔍 2. Phân tích chi tiết 3 ca kiểm thử FAILED:
+
+1. ❌ **Iteration 22 (`TC_FR05_22` - SQL Syntax Break with `'`):**
+   * *Mục tiêu:* Kiểm tra an toàn khi tìm kiếm với `?search=iPhone'`.
+   * *Kết quả thực tế:* Backend crash trả về mã `500 Internal Server Error`, Content-Type là `text/html`, và Body in ra:
+     `<h1>Database Error</h1><p>SQLITE_ERROR: unrecognized token: "'"</p>`
+   * *Đánh giá:* **ĐÚNG LỖI CẦN BẮT (Defect B001 & B002)!** Đây là bằng chứng thực nghiệm rõ ràng nhất về lỗ hổng SQL Injection (ghép chuỗi dòng 144 `server.js`) và rò rỉ cấu trúc CSDL SQLite ra bên ngoài.
+
+2. ❌ **Iteration 23 (`TC_FR05_23` - Union-based Query Leak):**
+   * *Mục tiêu:* Kiểm tra trích xuất tài khoản admin bằng `?search=' UNION SELECT ...`.
+   * *Kết quả thực tế:* Backend SQLite bị ngắt câu truy vấn và trả về mã lỗi `500 Database Error`.
+
+3. ❌ **Iteration 27 (`TC_FR05_27` - XSS Reflected Payload):**
+   * *Mục tiêu:* Kiểm tra payload XSS `?search=<script>alert('XSS')</script>`.
+   * *Kết quả thực tế:* Trả về `500 Database Error: near "XSS": syntax error` do payload XSS có chứa dấu nháy đơn `'` làm bẻ gãy câu lệnh SQL raw của Backend.
+   * *Đánh giá:* **HOÀN TOÀN CHÍNH XÁC!**
+
+---
+
+### 🛠️ 3. Tinh chỉnh nhỏ đã cập nhật:
+Đã bọc dấu ngoặc kép `""` cho trường `query_string` của `TC_FR05_23` trong file [`data_driven_FR05.csv`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/data/data_driven_FR05.csv) để tránh trường hợp dấu phẩy trong câu SQL bị hiểu nhầm thành cột CSV mới.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã đọc trực tiếp tệp báo cáo `reports/newman_report_FR05_DataDriven.html`, phân tích chính xác từng ca kiểm thử bị fail và giải thích lý do tại sao các ca fail này là bằng chứng thực nghiệm hoàn toàn khớp với 2 lỗi bảo mật B001 và B002 đã phát hiện trong mã nguồn SUT.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 20: Khởi tạo tệp cấu hình `.gitignore` cho dự án
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `tạo gitignore`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 22:06:15`
+- **2. AI output:**
+````text
+Tôi đã tạo tệp **[.gitignore](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.gitignore)** với cấu hình đầy đủ và chuẩn mực cho dự án kiểm thử:
+
+---
+
+### 📄 Nội dung `.gitignore` bao gồm:
+* **Node.js dependencies:** Bỏ qua thư mục `node_modules/` và các file debug log (`npm-debug.log*`, `yarn-debug.log*`,...).
+* **Environment & Security:** Bỏ qua các file biến môi trường nhạy cảm (`.env`, `.env.*`).
+* **Hệ điều hành:** Bỏ qua các file rác của Windows/macOS (`Thumbs.db`, `Desktop.ini`, `.DS_Store`).
+* **IDE & Editors:** Bỏ qua cấu hình của VS Code (`.vscode/`), JetBrains (`.idea/`).
+* **Temporary Files & Local DBs:** Bỏ qua `scratch/`, `*.log`, `*.sqlite`, `*.db`.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã khởi tạo tệp `.gitignore` chuẩn mực bao phủ đầy đủ các thành phần rác của hệ điều hành, thư viện `node_modules/`, file môi trường nhạy cảm và các file tạm thời trong quá trình kiểm thử.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
+
+
+
+
+
+
 
 
 

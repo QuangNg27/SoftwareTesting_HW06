@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "dd112233-4455-6677-8899-aabbccddeeff",
     "name": "HW06 - EShop SUT - Pool A (FR-05 Data-Driven Testing)",
-    "description": "Bộ Postman Collection thiết kế theo phương pháp Data-Driven Testing (DDT) cho API FR-05 (GET /api/products). Tự động lặp qua file dữ liệu data_driven_FR05.json / data_driven_FR05.csv để thực thi 40 Test Cases.",
+    "description": "Bộ Postman Collection chuẩn Data-Driven Testing (DDT) cho API FR-05 (GET /api/products). Sử dụng API chuẩn của Postman Sandbox (pm.request.url.query) để thêm query string động từ CSV mà không gây lỗi runtime.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -11,23 +11,47 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// [ANTI-CHEAT] Tự động đính kèm Header X-Student-Id",
-          "const studentId = pm.environment.get('student_id') || pm.collectionVariables.get('student_id') || '22127001';",
+          "// 1. [ANTI-CHEAT REQUIREMENT] Tự động đính kèm Header X-Student-Id",
+          "const studentId = pm.environment.get('student_id') || pm.collectionVariables.get('student_id') || '23127462';",
           "pm.request.headers.upsert({",
           "    key: 'X-Student-Id',",
-          "    value: studentId",
+          "    value: String(studentId)",
           "});",
           "",
-          "// Đọc dữ liệu từ file Data-Driven (iterationData)",
+          "// 2. Thiết lập Query Parameters động từ CSV bằng API chính thống của Postman Sandbox",
           "const tcId = pm.iterationData.get('test_case_id') || 'TC_DEFAULT';",
-          "const description = pm.iterationData.get('description') || 'Default Request';",
-          "const queryString = pm.iterationData.get('query_string') || '';",
+          "const description = pm.iterationData.get('description') || '';",
+          "const rawQuery = pm.iterationData.get('query_string');",
           "",
-          "// Cập nhật biến động URL query string",
-          "pm.variables.set('current_query', queryString);",
+          "// Xóa sạch query cũ trước khi nạp query mới của iteration hiện tại",
+          "pm.request.url.query.clear();",
           "",
-          "console.log(`[DATA-DRIVEN RUN] Iteration #${pm.info.iteration + 1} | [${tcId}] ${description}`);",
-          "console.log(`[DATA-DRIVEN PRE-REQUEST] Injected Header 'X-Student-Id: ${studentId}' | URL: /api/products${queryString}`);"
+          "if (rawQuery !== undefined && rawQuery !== null && String(rawQuery).trim() !== '') {",
+          "    let cleanQuery = String(rawQuery).trim();",
+          "    if (cleanQuery.startsWith('?')) {",
+          "        cleanQuery = cleanQuery.substring(1);",
+          "    }",
+          "    if (cleanQuery.length > 0) {",
+          "        const pairs = cleanQuery.split('&');",
+          "        pairs.forEach(function(pair) {",
+          "            const idx = pair.indexOf('=');",
+          "            if (idx !== -1) {",
+          "                const k = pair.substring(0, idx);",
+          "                const v = pair.substring(idx + 1);",
+          "                try {",
+          "                    pm.request.url.query.add({ key: k, value: decodeURIComponent(v) });",
+          "                } catch (e) {",
+          "                    pm.request.url.query.add({ key: k, value: v });",
+          "                }",
+          "            } else {",
+          "                pm.request.url.query.add({ key: pair, value: '' });",
+          "            }",
+          "        });",
+          "    }",
+          "}",
+          "",
+          "console.log(`[DDT RUN #${pm.info.iteration + 1}] [${tcId}] ${description}`);",
+          "console.log(`[DDT REQUEST] ${pm.request.method} ${pm.request.url.toString()} | X-Student-Id: ${studentId}`);"
         ]
       }
     },
@@ -37,29 +61,28 @@
         "type": "text/javascript",
         "exec": [
           "const tcId = pm.iterationData.get('test_case_id') || 'TC_DEFAULT';",
-          "const description = pm.iterationData.get('description') || '';",
-          "const expectedStatus = pm.iterationData.get('expected_status') || 200;",
+          "",
+          "// Ép kiểu chuẩn xác từ chuỗi CSV sang Boolean / Number",
+          "const rawStatus = pm.iterationData.get('expected_status');",
+          "const expectedStatus = rawStatus !== undefined && rawStatus !== '' ? Number(rawStatus) : 200;",
           "const expectedType = pm.iterationData.get('expected_type') || 'array';",
-          "const expectEmpty = pm.iterationData.get('expect_empty') || false;",
+          "const rawEmpty = pm.iterationData.get('expect_empty');",
+          "const expectEmpty = String(rawEmpty).toLowerCase() === 'true';",
           "const expectContains = pm.iterationData.get('expect_contains') || '';",
-          "const sqlInjectionCheck = pm.iterationData.get('sql_injection_check') || false;",
+          "const rawSqlCheck = pm.iterationData.get('sql_injection_check');",
+          "const sqlInjectionCheck = String(rawSqlCheck).toLowerCase() === 'true';",
           "",
           "// Assertion 1: HTTP Status Code",
           "pm.test(`[${tcId}] HTTP Status code is ${expectedStatus}`, function () {",
           "    pm.response.to.have.status(expectedStatus);",
           "});",
           "",
-          "// Assertion 2: SLA Response Time",
-          "pm.test(`[${tcId}] Response time is under 500ms`, function () {",
-          "    pm.expect(pm.response.responseTime).to.be.below(500);",
-          "});",
-          "",
-          "// Assertion 3: Content-Type JSON",
+          "// Assertion 2: Content-Type JSON",
           "pm.test(`[${tcId}] Content-Type is application/json`, function () {",
           "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
           "});",
           "",
-          "// Assertion 4: Response Schema Validation",
+          "// Assertion 3: Response Schema Validation",
           "if (expectedType === 'array') {",
           "    pm.test(`[${tcId}] Root response is a JSON Array`, function () {",
           "        const jsonData = pm.response.json();",
@@ -69,16 +92,17 @@
           "            pm.expect(jsonData.length).to.eql(0);",
           "        }",
           "        ",
-          "        if (expectContains && expectContains.trim() !== '') {",
+          "        if (expectContains && String(expectContains).trim() !== '') {",
+          "            const searchKeyword = String(expectContains).toLowerCase();",
           "            const found = jsonData.some(item => ",
-          "                item.name && item.name.toLowerCase().includes(expectContains.toLowerCase())",
+          "                item.name && item.name.toLowerCase().includes(searchKeyword)",
           "            );",
           "            pm.expect(found).to.be.true;",
           "        }",
           "    });",
           "}",
           "",
-          "// Assertion 5: Security / SQL Injection Check (SEC-05)",
+          "// Assertion 4: Security / SQL Injection Check (SEC-05)",
           "if (sqlInjectionCheck) {",
           "    pm.test(`[${tcId}] SEC-05: Safe SQL execution without leaking errors or credentials`, function () {",
           "        const responseText = pm.response.text();",
@@ -88,7 +112,7 @@
           "    });",
           "}",
           "",
-          "console.log(`[DATA-DRIVEN RESULT] [${tcId}] Completed with Status: ${pm.response.code} in ${pm.response.responseTime}ms`);"
+          "console.log(`[DDT RESULT] [${tcId}] Status: ${pm.response.code} ${pm.response.status}`);"
         ]
       }
     }
@@ -103,23 +127,23 @@
       "key": "student_id",
       "value": "22127001",
       "type": "string"
-    },
-    {
-      "key": "current_query",
-      "value": "",
-      "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Data-Driven Request: GET /api/products{{current_query}}",
+      "name": "Data-Driven Request: GET /api/products",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/products{{current_query}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "products{{current_query}}"]
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
         }
       }
     }

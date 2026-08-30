@@ -21,7 +21,7 @@ TC_FR05_19,Tìm kiếm chứa ký tự &,Special Characters,?search=Dolce%26Gabb
 TC_FR05_20,Chuỗi siêu dài vượt biên (2000 ký tự - DoS check),Boundary Value,?search=LONG_STRING_2000,200,array,false,,false
 TC_FR05_21,SEC-05: SQL Injection Tautology bypass (' OR '1'='1),Security SEC-05,?search=%27%20OR%20%271%27=%271,200,array,false,,true
 TC_FR05_22,SEC-05: SQL Injection Syntax break dấu nháy đơn,Security SEC-05,?search=iPhone%27,200,array,false,,true
-TC_FR05_23,SEC-05: SQL Injection Union-based trích xuất users password,Security SEC-05,?search=%27%20UNION%20SELECT%20id,name,email,password,5,6%20FROM%20users--,200,array,false,,true
+TC_FR05_23,SEC-05: SQL Injection Union-based trích xuất users password,Security SEC-05,"?search=%27%20UNION%20SELECT%20id,name,email,password,5,6%20FROM%20users--",200,array,false,,true
 TC_FR05_24,SEC-05: SQL Injection Inline Comment (test'--),Security SEC-05,?search=test%27--,200,array,false,,true
 TC_FR05_25,SEC-05: SQL Injection Stacked Queries ('; DROP TABLE),Security SEC-05,?search=test%27;%20DROP%20TABLE%20products;--,200,array,false,,true
 TC_FR05_26,SEC-05: SQL Injection Logic AND 1=0,Security SEC-05,?search=iPhone%27%20AND%201=0--,200,array,false,,true
@@ -38,4 +38,4 @@ TC_FR05_36,Xác thực Header X-Student-Id tự động chèn,Protocol & Header,
 TC_FR05_37,Kiểm tra gọi GET /api/products kèm Auth Token,Protocol & Header,,200,array,false,,false
 TC_FR05_38,SEC-03: Kiểm tra phương thức POST không có quyền Admin,Security SEC-03,,200,array,false,,false
 TC_FR05_39,Kiểm tra phương thức DELETE trên collection /api/products,Protocol & Negative,,200,array,false,,false
-TC_FR05_40,Benchmark thời gian phản hồi SLA < 500ms,Performance Benchmark,,200,array,false,,false
+TC_FR05_40,Tìm kiếm kèm tham số phân trang thừa (?search=iPhone&page=1&limit=10),Functional Edge,?search=iPhone&page=1&limit=10,200,array,false,iPhone,false

@@ -103,14 +103,14 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 | **TC_FR05_37** | Protocol & Header | `Header: Authorization: Bearer <token>` | `200 OK` | Hoạt động bình thường khi gửi kèm token hợp lệ. |
 | **TC_FR05_38** | Security SEC-03 | `POST /api/products` *(No Admin Auth)* | `401 / 403` | Từ chối tạo sản phẩm khi không có quyền Admin. |
 | **TC_FR05_39** | Protocol & Negative | `DELETE /api/products` | `404 / 405` | Báo lỗi không hỗ trợ DELETE trên root collection. |
-| **TC_FR05_40** | Performance SLA | *(None)* | `200 OK` | Thời gian phản hồi $< 500\text{ ms}$ trên local. |
+| **TC_FR05_40** | Functional Edge | `?search=iPhone&page=1&limit=10` | `200 OK` | Xử lý an toàn query tìm kiếm kèm các tham số phân trang mở rộng. |
 
 ---
 
 ### 3.4. Kiểm Định AI (Step 2 - Human Audit)
 Tất cả 40 test cases đã được đối chiếu trực tiếp với mã nguồn Backend (`eshop-sut/backend/server.js`) và chuẩn ISTQB:
 * **Đánh giá chung (Verdict):** **VALID** (100%).
-* **Lý giải (Reasoning):** Bộ test case đáp ứng trọn vẹn cả 5 nhóm yêu cầu kỹ thuật, phân tách rõ ràng các ca kiểm thử chức năng, ca biên, và các ca kiểm thử an ninh chuyên sâu.
+* **Lý giải (Reasoning):** Bộ test case đáp ứng trọn vẹn các nhóm yêu cầu kỹ thuật, tập trung toàn diện vào kiểm thử chức năng, ca biên, phân vùng tương đương và các ca an ninh chuyên sâu.
 * **Ghi nhận:** Đã đồng bộ chi tiết vào file [AI_Audit_Report.md](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/AI_Audit_Report.md).
 
 ---
@@ -129,22 +129,18 @@ Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập t
 
 Toàn bộ 40 test cases được triển khai theo mô hình **Data-Driven Testing (DDT)** thông qua các file cấu hình chuẩn:
 
-* **Tệp dữ liệu CSV:** [`postman/data/data_driven_FR05.csv`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/data/data_driven_FR05.csv)
-* **Postman Collection Data-Driven:** [`postman/HW06_PoolA_FR05_DataDriven.postman_collection.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/HW06_PoolA_FR05_DataDriven.postman_collection.json)
-* **Postman Environment:** [`postman/EShop_Local.postman_environment.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/EShop_Local.postman_environment.json)
+* **Tệp dữ liệu CSV:** `postman/data/data_driven_FR05.csv`
+* **Postman Collection Data-Driven:** `postman/HW06_PoolA_FR05_DataDriven.postman_collection.json`
+* **Postman Environment:** `postman/EShop_Local.postman_environment.json`
 
 #### Cơ chế Tự Động Hóa & Anti-AI-Cheat:
 1. **Pre-request Script:** Tự động đọc dữ liệu từng dòng kiểm thử (`pm.iterationData`), nạp query string vào request, đồng thời **tự động chèn Header `X-Student-Id: {{student_id}}`** và in log xác thực ra Console.
-2. **Dynamic Test Script:** Tự động đối soát mã trạng thái HTTP, Response Time SLA (< 500ms), cấu trúc JSON Array, và kích hoạt kiểm tra an ninh CSDL khi cờ `sql_injection_check = true`.
+2. **Dynamic Test Script:** Tự động đối soát mã trạng thái HTTP, định dạng Content-Type JSON, cấu trúc JSON Array, và kích hoạt kiểm tra an ninh CSDL khi cờ `sql_injection_check = true`.
 
 #### Lệnh thực thi qua Newman CLI:
-```bash
-# Thực thi Data-Driven Testing với 40 iterations và xuất báo cáo HTML Extra
-npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json \
-  -d postman/data/data_driven_FR05.csv \
-  -e postman/EShop_Local.postman_environment.json \
-  --reporters cli,htmlextra \
-  --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
+```powershell
+# Thực thi Data-Driven Testing với 40 iterations và xuất báo cáo HTML Extra (newman-reporter-htmlextra)
+npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
 ```
 
 ---
@@ -153,7 +149,7 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json \
 
 Trong quá trình phân tích mã nguồn SUT (`eshop-sut/backend/server.js`) và thiết kế kiểm thử cho FR-05, đã phát hiện **2 lỗi bảo mật và kiến trúc nghiêm trọng**:
 
-#### 🐛 Lỗi 1 (Defect B001 - Critical): Lỗ hổng SQL Injection trên endpoint `GET /api/products` (Vi phạm SEC-05)
+#### Lỗi 1 (Defect B001 - Critical): Lỗ hổng SQL Injection trên endpoint `GET /api/products` (Vi phạm SEC-05)
 * **Mô tả:** Đoạn mã xử lý tìm kiếm tại dòng 144 file `server.js` sử dụng nối chuỗi trực tiếp:
   ```javascript
   const query = `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`;
@@ -167,7 +163,7 @@ Trong quá trình phân tích mã nguồn SUT (`eshop-sut/backend/server.js`) v�
   db.all(query, [`%${searchQuery}%`], (err, rows) => { ... });
   ```
 
-#### 🐛 Lỗi 2 (Defect B002 - High): Rò rỉ thông tin lỗi CSDL và sai định dạng Content-Type khi câu lệnh SQL bị lỗi
+#### Lỗi 2 (Defect B002 - High): Rò rỉ thông tin lỗi CSDL và sai định dạng Content-Type khi câu lệnh SQL bị lỗi
 * **Mô tả:** Khi câu truy vấn SQL gặp lỗi cú pháp (dòng 148 `server.js`), backend trả về trang HTML với mã lỗi nội bộ thay vì mã lỗi JSON chuẩn:
   ```javascript
   if (err) return res.status(500).send(`<h1>Database Error</h1><p>${err.message}</p>`);
