@@ -1,0 +1,13 @@
+{
+    "entries": [
+        {
+            "path": ".agents/skills"
+        },
+        {
+            "path": "bug_report"
+        },
+        {
+            "path": "ai_audit_prompt_log"
+        }
+    ]
+}
