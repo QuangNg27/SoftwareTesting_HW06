@@ -1,10 +1,9 @@
-# BÁO CÁO BÀI TẬP HW06
+# BÁO CÁO BÀI TẬP HW06 - API TESTING
 
 ## 1. THÔNG TIN CHUNG (GENERAL INFORMATION)
 
-* **Mã bài tập (Exercise ID):** `HW06-AI`
 * **Hệ thống kiểm thử (System Under Test - SUT):** **EShop**
-* **Kho lưu trữ SUT (Repository):** `https://github.com/ttbhanh/eshop-sut`
+* **Kho lưu trữ SUT (Repository):** https://github.com/ttbhanh/eshop-sut
 * **Công cụ kiểm thử chính:** Postman v10+, Newman CLI, Postman HTML Extra Reporter
 * **Họ tên:** Nguyễn Minh Quang
 * **MSSV:** 23127462
