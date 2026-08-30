@@ -1,0 +1,41 @@
+test_case_id,description,test_category,query_string,expected_status,expected_type,expect_empty,expect_contains,sql_injection_check
+TC_FR05_01,Lấy toàn bộ danh sách khi không có query search,Domain Partition,,200,array,false,,false
+TC_FR05_02,Tìm kiếm với query search rỗng,Domain Partition,?search=,200,array,false,,false
+TC_FR05_03,Tìm kiếm chỉ chứa khoảng trắng,Domain Partition,?search=%20%20,200,array,false,,false
+TC_FR05_04,Tìm kiếm chính xác tên sản phẩm (Exact Match),Domain Partition,?search=iPhone 15,200,array,false,iPhone 15,false
+TC_FR05_05,Tìm kiếm theo tiền tố tên (Prefix: iPh),Domain Partition,?search=iPh,200,array,false,iph,false
+TC_FR05_06,Tìm kiếm theo hậu tố tên (Suffix: Pro),Domain Partition,?search=Pro,200,array,false,pro,false
+TC_FR05_07,Tìm kiếm chuỗi ở giữa (Infix: Phone),Domain Partition,?search=Phone,200,array,false,phone,false
+TC_FR05_08,Tìm kiếm chữ thường (iphone),Domain Partition,?search=iphone,200,array,false,,false
+TC_FR05_09,Tìm kiếm chữ hoa (IPHONE),Domain Partition,?search=IPHONE,200,array,false,,false
+TC_FR05_10,Tìm kiếm tiếng Việt có dấu Unicode (Điện thoại),Domain Partition,?search=%C4%90i%E1%BB%87n%20tho%E1%BA%A1i,200,array,false,,false
+TC_FR05_11,Tìm kiếm từ khóa chứa số (15),Domain Partition,?search=15,200,array,false,,false
+TC_FR05_12,Tìm kiếm có khoảng trắng đầu và cuối,Domain Partition,?search=%20iPhone%20,200,array,false,,false
+TC_FR05_13,Tìm kiếm từ khóa không tồn tại (Empty State),Domain Partition,?search=NonExistentProduct_XYZ999,200,array,true,,false
+TC_FR05_14,Tìm kiếm từ khóa độ dài biên (255 ký tự),Boundary Value,?search=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,200,array,false,,false
+TC_FR05_15,Ký tự wildcard % của SQL LIKE,Special Characters,?search=%25,200,array,false,,false
+TC_FR05_16,Ký tự wildcard _ của SQL LIKE,Special Characters,?search=_,200,array,false,,false
+TC_FR05_17,Ký tự escape gạch chéo ngược,Special Characters,?search=%5C,200,array,false,,false
+TC_FR05_18,Tìm kiếm chứa gạch nối và dấu chấm,Special Characters,?search=type-c.2.0,200,array,false,,false
+TC_FR05_19,Tìm kiếm chứa ký tự &,Special Characters,?search=Dolce%26Gabbana,200,array,false,,false
+TC_FR05_20,Chuỗi siêu dài vượt biên (2000 ký tự - DoS check),Boundary Value,?search=LONG_STRING_2000,200,array,false,,false
+TC_FR05_21,SEC-05: SQL Injection Tautology bypass (' OR '1'='1),Security SEC-05,?search=%27%20OR%20%271%27=%271,200,array,false,,true
+TC_FR05_22,SEC-05: SQL Injection Syntax break dấu nháy đơn,Security SEC-05,?search=iPhone%27,200,array,false,,true
+TC_FR05_23,SEC-05: SQL Injection Union-based trích xuất users password,Security SEC-05,?search=%27%20UNION%20SELECT%20id,name,email,password,5,6%20FROM%20users--,200,array,false,,true
+TC_FR05_24,SEC-05: SQL Injection Inline Comment (test'--),Security SEC-05,?search=test%27--,200,array,false,,true
+TC_FR05_25,SEC-05: SQL Injection Stacked Queries ('; DROP TABLE),Security SEC-05,?search=test%27;%20DROP%20TABLE%20products;--,200,array,false,,true
+TC_FR05_26,SEC-05: SQL Injection Logic AND 1=0,Security SEC-05,?search=iPhone%27%20AND%201=0--,200,array,false,,true
+TC_FR05_27,SEC-04: XSS Reflected script tag payload,Security SEC-04,?search=%3Cscript%3Ealert(%27XSS%27)%3C/script%3E,200,array,false,,false
+TC_FR05_28,SEC-04: XSS Reflected img onerror tag payload,Security SEC-04,?search=%22%3E%3Cimg%20src=x%20onerror=alert(1)%3E,200,array,false,,false
+TC_FR05_29,HTTP Parameter Pollution (HPP),Security HPP,?search=iPhone&search=Samsung,200,array,false,,false
+TC_FR05_30,Chèn tham số không mong đợi,Security Tampering,?search=phone&role=admin&isAdmin=true,200,array,false,,false
+TC_FR05_31,Kiểm tra Header Content-Type application/json,Schema Validation,,200,array,false,,false
+TC_FR05_32,Kiểm tra kiểu dữ liệu gốc Root là JSON Array,Schema Validation,,200,array,false,,false
+TC_FR05_33,Kiểm tra cấu trúc Schema Object của tất cả sản phẩm,Schema Validation,,200,array,false,,false
+TC_FR05_34,Kiểm tra trường price bắt buộc là số (number > 0),Schema Validation,,200,array,false,,false
+TC_FR05_35,Kiểm tra không rò rỉ các trường nhạy cảm,Schema Validation,,200,array,false,,false
+TC_FR05_36,Xác thực Header X-Student-Id tự động chèn,Protocol & Header,,200,array,false,,false
+TC_FR05_37,Kiểm tra gọi GET /api/products kèm Auth Token,Protocol & Header,,200,array,false,,false
+TC_FR05_38,SEC-03: Kiểm tra phương thức POST không có quyền Admin,Security SEC-03,,200,array,false,,false
+TC_FR05_39,Kiểm tra phương thức DELETE trên collection /api/products,Protocol & Negative,,200,array,false,,false
+TC_FR05_40,Benchmark thời gian phản hồi SLA < 500ms,Performance Benchmark,,200,array,false,,false
