@@ -582,6 +582,80 @@ Tôi đã tạo và hoàn thiện tài liệu báo cáo chính [Main_Report.md](
 
 ---
 
+### Tác vụ 10: Chuyển đổi đặc tả API FR-05, FR-08, FR-18 sang chuẩn OpenAPI 3.0 YAML
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `lấy nội dung trong api spec của FR-05, FR-08, FR-18 làm thành dạng OpenAPI (.yaml)`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 15:48:27`
+- **2. AI output:**
+````text
+Tôi đã chuyển đổi thành công nội dung đặc tả của 3 tính năng **FR-05, FR-08, FR-18** thành tệp đặc tả chuẩn **OpenAPI 3.0.3 YAML**:
+
+📄 **[openapi.yaml](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/openapi.yaml)**
+
+---
+
+### 🌐 Tóm tắt nội dung đặc tả trong `openapi.yaml`:
+
+1. **Thông tin chung:**
+   * OpenAPI version: `3.0.3`
+   * Base Server: `http://localhost:3000`
+   * Authentication Scheme: `BearerAuth` (JWT Bearer Token qua Header `Authorization`)
+
+2. **Các Endpoint & Phương thức được đặc tả:**
+   * 🟢 **Pool A — FR-05 (`GET /api/products`):**
+     * Query Parameter: `search` (string, optional).
+     * Header: `X-Student-Id` (Anti-Cheat).
+     * Response: `200 OK` (Array of `Product` object: `id`, `name`, `price`, `description`, `imageUrl`, `category_id`).
+   * 🟡 **Pool B — FR-08 (`POST /api/checkout`):**
+     * Security: `BearerAuth` (Bắt buộc đăng nhập).
+     * Request Body: `total_amount` (number > 0), `shipping_address` (string).
+     * Responses: `200 OK` (Tạo đơn thành công trả về `orderId`), `400 Bad Request`, `401 Unauthorized`.
+   * 🔴 **Pool C — FR-18 & FR-10 (`GET /api/admin/orders` & `PUT /api/admin/orders/{id}/status`):**
+     * Security: `BearerAuth` (Yêu cầu quyền Admin - SEC-03).
+     * `GET /api/admin/orders`: Lấy toàn bộ đơn hàng hệ thống (Array of `AdminOrder`).
+     * `PUT /api/admin/orders/{id}/status`: Cập nhật trạng thái đơn hàng theo Order State Machine (`pending`, `confirmed`, `shipping`, `delivered`, `canceled`).
+     * Responses: `200 OK`, `400 Invalid Transition`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`.
+
+3. **Components & Data Models:**
+   * Định nghĩa chặt chẽ các Schemas: `Product`, `CheckoutRequest`, `CheckoutResponse`, `AdminOrder`, `OrderStatusUpdateRequest`, `OrderStatusUpdateResponse`, `ErrorResponse`.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đã tự ý gộp thêm mã chức năng FR-10 cùng với FR-18 trong các tiêu đề/tags của tệp OpenAPI và báo cáo, làm dư thừa thông tin so với yêu cầu chọn lọc chính xác 3 mã tính năng (FR-05, FR-08, FR-18) của sinh viên.
+- **5. Student fix:** Sinh viên đã yêu cầu loại bỏ hoàn toàn mã FR-10 và chuẩn hóa phân hệ Pool C chỉ định danh duy nhất mã chức năng **FR-18**.
+
+---
+
+### Tác vụ 11: Chuẩn hóa phạm vi tài liệu và OpenAPI chỉ định danh duy nhất FR-18
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `chỉ ghi FR-18 thôi`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `30-08-2026 15:49:56`
+- **2. AI output:**
+````text
+Tôi đã điều chỉnh và chuẩn hóa lại toàn bộ tệp [openapi.yaml](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/openapi.yaml) và [Main_Report.md](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/Main_Report.md):
+
+---
+
+### 🛠️ Các thay đổi đã thực hiện:
+1. **Tệp `openapi.yaml`:**
+   * Cập nhật Tag: Đổi thành `- name: Pool C - Admin Orders (FR-18)`.
+   * Cập nhật các Operation Tags và Descriptions: Loại bỏ toàn bộ tiền tố `& FR-10`, chỉ giữ lại định danh duy nhất **FR-18** cho các endpoint `GET /api/admin/orders` và `PUT /api/admin/orders/{id}/status`.
+   * Cập nhật Schema Title: Đổi tên thành `# Schema cho Cập nhật trạng thái đơn hàng (FR-18)`.
+2. **Tệp `Main_Report.md`:**
+   * Cập nhật bảng tổng hợp 3 Pool lựa chọn:
+     * **Pool A:** FR-05 (`GET /api/products`)
+     * **Pool B:** FR-08 (`POST /api/checkout`)
+     * **Pool C:** FR-18 (`PUT /api/admin/orders/:id/status` & `GET /api/admin/orders`)
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện chính xác chỉ đạo của sinh viên: loại bỏ mọi tham chiếu thừa đến mã FR-10, đảm bảo phân hệ Pool C chỉ mang duy nhất định danh mã chức năng FR-18 trên cả file OpenAPI YAML và báo cáo chính Main_Report.md.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
 
 
 

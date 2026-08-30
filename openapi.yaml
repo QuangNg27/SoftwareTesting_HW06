@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: EShop SUT — API Specification (FR-05, FR-08, FR-18)
+  description: >
+    Tài liệu đặc tả API chuẩn OpenAPI 3.0 cho 3 tính năng trọng tâm thuộc 3 Pool của hệ thống EShop SUT (HW06 - Software Testing):
+    - **Pool A:** FR-05 (Xem danh sách & Tìm kiếm sản phẩm)
+    - **Pool B:** FR-08 (Thanh toán & Đặt hàng)
+    - **Pool C:** FR-18 (Quản lý và chuyển đổi trạng thái đơn hàng phía Web Admin)
+  version: 1.0.0
+  contact:
+    name: Software Testing Team
+    email: student@fit.hcmus.edu.vn
+
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server (Node.js + Express)
+
+tags:
+  - name: Pool A - Products (FR-05)
+    description: Quản lý và tra cứu danh mục sản phẩm (Public)
+  - name: Pool B - Checkout (FR-08)
+    description: Quy trình đặt hàng và thanh toán giỏ hàng (Yêu cầu đăng nhập User)
+  - name: Pool C - Admin Orders (FR-18)
+    description: Phân hệ quản trị đơn hàng và máy trạng thái (Yêu cầu quyền Admin)
+
+paths:
+  # ==========================================
+  # POOL A: FR-05 - PRODUCT LISTING & SEARCH
+  # ==========================================
+  /api/products:
+    get:
+      tags:
+        - Pool A - Products (FR-05)
+      summary: Xem danh sách và tìm kiếm sản phẩm
+      description: >
+        **FR-05:** Trả về danh sách tất cả các sản phẩm đang hoạt động trong hệ thống.
+        Hỗ trợ tìm kiếm theo tên sản phẩm thông qua tham số truy vấn `search`.
+        **Yêu cầu bảo mật:** Tuân thủ SEC-04 (Chống XSS) và SEC-05 (Chống SQL Injection qua Parameterized Query).
+      operationId: getProducts
+      parameters:
+        - name: search
+          in: query
+          description: Từ khóa tìm kiếm theo tên sản phẩm (không phân biệt hoa thường, hỗ trợ tiếng Việt)
+          required: false
+          schema:
+            type: string
+            example: "iPhone"
+        - name: X-Student-Id
+          in: header
+          description: Mã số sinh viên thực hiện kiểm thử (Quy định Anti-Cheat)
+          required: false
+          schema:
+            type: string
+            example: "22127001"
+      responses:
+        '200':
+          description: Danh sách sản phẩm được truy xuất thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==========================================
+  # POOL B: FR-08 - CHECKOUT & ORDER CREATION
+  # ==========================================
+  /api/checkout:
+    post:
+      tags:
+        - Pool B - Checkout (FR-08)
+      summary: Đặt hàng / Thanh toán (Checkout)
+      description: >
+        **FR-08:** Tạo đơn hàng mới từ giỏ hàng hiện tại của người dùng đã đăng nhập.
+        Đơn hàng được khởi tạo với trạng thái ban đầu là `pending`.
+        **Yêu cầu bảo mật:** Tuân thủ SEC-02 (Bắt buộc JWT Bearer Token hợp lệ).
+      operationId: createCheckout
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: X-Student-Id
+          in: header
+          description: Mã số sinh viên thực hiện kiểm thử
+          required: false
+          schema:
+            type: string
+            example: "22127001"
+      requestBody:
+        description: Thông tin thanh toán và địa chỉ giao hàng
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+      responses:
+        '200':
+          description: Đặt hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ hoặc thiếu trường bắt buộc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Chưa đăng nhập hoặc JWT Token không hợp lệ / hết hạn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Lỗi máy chủ nội bộ khi lưu đơn hàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==========================================
+  # POOL C: FR-18 - ADMIN ORDER MANAGEMENT
+  # ==========================================
+  /api/admin/orders:
+    get:
+      tags:
+        - Pool C - Admin Orders (FR-18)
+      summary: Lấy toàn bộ danh sách đơn hàng hệ thống (Admin)
+      description: >
+        **FR-18:** Lấy danh sách toàn bộ đơn hàng của tất cả người dùng trong hệ thống kèm thông tin tên người đặt.
+        **Yêu cầu bảo mật:** Tuân thủ SEC-03 (Bắt buộc Token có `role = 'admin'`).
+      operationId: getAdminOrders
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: X-Student-Id
+          in: header
+          description: Mã số sinh viên thực hiện kiểm thử
+          required: false
+          schema:
+            type: string
+            example: "22127001"
+      responses:
+        '200':
+          description: Danh sách đơn hàng toàn hệ thống
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminOrder'
+        '401':
+          description: Không có quyền truy cập (Thiếu Token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Bị cấm truy cập (Token không có quyền admin - SEC-03)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/orders/{id}/status:
+    put:
+      tags:
+        - Pool C - Admin Orders (FR-18)
+      summary: Cập nhật trạng thái đơn hàng (Order State Machine)
+      description: >
+        **FR-18:** Chuyển đổi trạng thái đơn hàng theo đúng máy trạng thái (Order State Machine):
+        - `pending` -> `confirmed` | `canceled`
+        - `confirmed` -> `shipping` | `canceled`
+        - `shipping` -> `delivered`
+        - `delivered` / `canceled` là trạng thái kết thúc (Final States), không thể chuyển đổi tiếp.
+        **Yêu cầu bảo mật:** SEC-03 (Chỉ tài khoản Admin mới có quyền cập nhật).
+      operationId: updateOrderStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Mã định danh duy nhất của đơn hàng cần cập nhật
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: X-Student-Id
+          in: header
+          description: Mã số sinh viên thực hiện kiểm thử
+          required: false
+          schema:
+            type: string
+            example: "22127001"
+      requestBody:
+        description: Trạng thái mới của đơn hàng
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusUpdateRequest'
+      responses:
+        '200':
+          description: Cập nhật trạng thái đơn hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatusUpdateResponse'
+        '400':
+          description: Chuyển đổi trạng thái không hợp lệ (Vi phạm Order State Machine)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Chưa đăng nhập hoặc Token không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Không có quyền Admin (SEC-03)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Không tìm thấy đơn hàng với ID đã chỉ định
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# ==========================================
+# COMPONENTS SCHEMAS & SECURITY
+# ==========================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Nhập JWT Token lấy từ API `/api/login` (Header: `Authorization: Bearer <token>`)
+
+  schemas:
+    # Schema cho Sản phẩm (FR-05)
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - price
+        - category_id
+      properties:
+        id:
+          type: integer
+          description: Mã ID tự tăng của sản phẩm
+          example: 1
+        name:
+          type: string
+          description: Tên sản phẩm
+          maxLength: 255
+          example: "iPhone 15 Pro Max 256GB"
+        price:
+          type: number
+          minimum: 1
+          description: Giá bán của sản phẩm (VND, bắt buộc > 0)
+          example: 29990000
+        description:
+          type: string
+          nullable: true
+          description: Mô tả chi tiết về sản phẩm
+          example: "Sản phẩm chính hãng Apple Việt Nam"
+        imageUrl:
+          type: string
+          nullable: true
+          description: Đường dẫn ảnh sản phẩm
+          example: "http://localhost:3000/images/iphone15.jpg"
+        category_id:
+          type: integer
+          description: Mã danh mục sản phẩm
+          example: 1
+
+    # Schema cho Checkout (FR-08)
+    CheckoutRequest:
+      type: object
+      required:
+        - total_amount
+        - shipping_address
+      properties:
+        total_amount:
+          type: number
+          minimum: 1
+          description: Tổng tiền thanh toán của đơn hàng (VND)
+          example: 29990000
+        shipping_address:
+          type: string
+          description: Địa chỉ nhận hàng của người mua
+          example: "227 Nguyễn Văn Cừ, Phường 4, Quận 5, TP. Hồ Chí Minh"
+
+    CheckoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Checkout successful"
+        orderId:
+          type: integer
+          example: 101
+
+    # Schema cho Admin Order (FR-18)
+    AdminOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        user_id:
+          type: integer
+          example: 2
+        user_name:
+          type: string
+          example: "Nguyen Van A"
+        total_amount:
+          type: number
+          example: 29990000
+        status:
+          type: string
+          enum: [pending, confirmed, shipping, delivered, canceled]
+          example: "pending"
+        shipping_address:
+          type: string
+          example: "227 Nguyễn Văn Cừ, Phường 4, Quận 5, TP. Hồ Chí Minh"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-08-30T10:00:00.000Z"
+
+    # Schema cho Cập nhật trạng thái đơn hàng (FR-18 / FR-10)
+    OrderStatusUpdateRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: Trạng thái mới muốn chuyển đổi
+          enum:
+            - pending
+            - confirmed
+            - shipping
+            - delivered
+            - canceled
+          example: "confirmed"
+
+    OrderStatusUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Order status updated"
+
+    # Schema lỗi chung
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Thông báo lỗi chi tiết"

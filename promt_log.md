@@ -89,6 +89,22 @@ ghi vào Report mô tả
 
 ---
 
+### [30-08-2026 15:48:27] | Gemini
+```text
+lấy nội dung trong api spec của FR-05, FR-08, FR-18 làm thành dạng OpenAPI (.yaml)
+```
+
+---
+
+### [30-08-2026 15:49:56] | Gemini
+```text
+chỉ ghi FR-18 thôi
+```
+
+---
+
+
+
 
 
 

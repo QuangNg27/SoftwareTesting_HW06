@@ -18,8 +18,8 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 | STT | Phân hệ (Pool) | Mã chức năng (FR) | Endpoint & HTTP Method | Quyền hạn (Auth) | Mục tiêu kiểm thử chính |
 | :---: | :--- | :---: | :--- | :---: | :--- |
 | **1** | **Pool A** | **FR-05** | `GET /api/products` | Public | Danh sách & Tìm kiếm sản phẩm, Domain Partitions, Boundary, SQL Injection (SEC-05), XSS (SEC-04), Schema Validation. |
-| **2** | **Pool B** | **FR-09** | `POST /api/apply-coupon` | Bearer Token | Áp dụng mã giảm giá, kiểm thử Decision Table 5 điều kiện nghiệp vụ (C1–C5), tính toán số tiền giảm. |
-| **3** | **Pool C** | **FR-18 / FR-10** | `PUT /api/admin/orders/:id/status` | Bearer Admin Token | Phân quyền Admin (SEC-03), Máy trạng thái chuyển đổi đơn hàng (Order State Machine), Final state constraints. |
+| **2** | **Pool B** | **FR-08** | `POST /api/checkout` | Bearer Token | Đặt hàng & Thanh toán giỏ hàng, xác thực người dùng (SEC-02), kiểm tra giỏ hàng và địa chỉ giao hàng. |
+| **3** | **Pool C** | **FR-18** | `PUT /api/admin/orders/:id/status` & `GET /api/admin/orders` | Bearer Admin Token | Quản trị đơn hàng toàn hệ thống, phân quyền Admin (SEC-03), chuyển đổi trạng thái đơn hàng. |
 
 ---
 
