@@ -168,6 +168,46 @@ tạo gitignore
 
 ---
 
+### [31-08-2026 10:37:05] | Gemini
+```text
+check kết quả report của FR05 xem lỗi hợp lý khog6
+```
+
+---
+
+### [31-08-2026 10:41:04] | Gemini
+```text
+test case 23 nó trả về hết thông tin của users luôn mà
+```
+
+---
+
+### [31-08-2026 10:42:57] | Gemini
+```text
+cái lỗi script tôi mong muốn là nó thực thi alert thì có đúng không
+```
+
+---
+
+### [31-08-2026 10:44:25] | Gemini
+```text
+báo cáo bug ra bug report đừng ghi trong main report
+```
+
+---
+
+### [31-08-2026 10:49:27] | Gemini
+```text
+tôi thấy report lỗi ở 3 test case lận mà sao báo cáo bug có 2 cái vậy
+```
+
+---
+
+
+
+
+
+
 
 
 

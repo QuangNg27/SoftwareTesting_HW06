@@ -111,7 +111,7 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 Tất cả 40 test cases đã được đối chiếu trực tiếp với mã nguồn Backend (`eshop-sut/backend/server.js`) và chuẩn ISTQB:
 * **Đánh giá chung (Verdict):** **VALID** (100%).
 * **Lý giải (Reasoning):** Bộ test case đáp ứng trọn vẹn các nhóm yêu cầu kỹ thuật, tập trung toàn diện vào kiểm thử chức năng, ca biên, phân vùng tương đương và các ca an ninh chuyên sâu.
-* **Ghi nhận:** Đã đồng bộ chi tiết vào file [AI_Audit_Report.md](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/AI_Audit_Report.md).
+* **Ghi nhận:** Đã đồng bộ chi tiết vào file **AI_Audit_Report.md**.
 
 ---
 
@@ -142,38 +142,6 @@ Toàn bộ 40 test cases được triển khai theo mô hình **Data-Driven Test
 # Thực thi Data-Driven Testing với 40 iterations và xuất báo cáo HTML Extra (newman-reporter-htmlextra)
 npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
 ```
-
----
-
-### 3.7. Phát Hiện Lỗi & Báo Cáo Khiếm Khuyết (Step 5 - Bug Reports)
-
-Trong quá trình phân tích mã nguồn SUT (`eshop-sut/backend/server.js`) và thiết kế kiểm thử cho FR-05, đã phát hiện **2 lỗi bảo mật và kiến trúc nghiêm trọng**:
-
-#### Lỗi 1 (Defect B001 - Critical): Lỗ hổng SQL Injection trên endpoint `GET /api/products` (Vi phạm SEC-05)
-* **Mô tả:** Đoạn mã xử lý tìm kiếm tại dòng 144 file `server.js` sử dụng nối chuỗi trực tiếp:
-  ```javascript
-  const query = `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`;
-  db.all(query, [], (err, rows) => { ... });
-  ```
-* **Hậu quả:** Kẻ tấn công có thể chèn các payload SQLi như `' OR '1'='1` để bypass bộ lọc, hoặc bẻ câu lệnh SQL gây lỗi server.
-* **Mức độ nghiêm trọng:** **Critical** (Bảo mật).
-* **Khắc phục:** Sử dụng Parameterized Query chuẩn của SQLite:
-  ```javascript
-  const query = "SELECT * FROM products WHERE name LIKE ?";
-  db.all(query, [`%${searchQuery}%`], (err, rows) => { ... });
-  ```
-
-#### Lỗi 2 (Defect B002 - High): Rò rỉ thông tin lỗi CSDL và sai định dạng Content-Type khi câu lệnh SQL bị lỗi
-* **Mô tả:** Khi câu truy vấn SQL gặp lỗi cú pháp (dòng 148 `server.js`), backend trả về trang HTML với mã lỗi nội bộ thay vì mã lỗi JSON chuẩn:
-  ```javascript
-  if (err) return res.status(500).send(`<h1>Database Error</h1><p>${err.message}</p>`);
-  ```
-* **Hậu quả:** Làm lộ chi tiết cấu trúc bảng và thông điệp lỗi của CSDL SQLite cho người dùng cuối (Information Disclosure), đồng thời phá vỡ hợp đồng giao tiếp API (API Contract Mismatch: trả về `text/html` thay vì `application/json`).
-* **Mức độ nghiêm trọng:** **High**.
-* **Khắc phục:** Trả về JSON chuẩn và log lỗi tại server:
-  ```javascript
-  if (err) return res.status(500).json({ error: "Internal server error" });
-  ```
 
 ---
 

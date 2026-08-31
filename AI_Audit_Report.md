@@ -985,6 +985,189 @@ Tôi đã tạo tệp **[.gitignore](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTest
 
 ---
 
+### Tác vụ 21: Đánh giá và đối soát tính hợp lý của các lỗi phát hiện trên FR-05
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check kết quả report của FR05 xem lỗi hợp lý khog6`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 10:37:05`
+- **2. AI output:**
+````text
+Tôi đã đối soát toàn bộ kết quả kiểm thử trong báo cáo **`reports/newman_report_FR05_DataDriven.html`** với mã nguồn Backend (`server.js`) và đặc tả yêu cầu SUT. Kết quả cho thấy các lỗi được phát hiện **HOÀN TOÀN HỢP LÝ VÀ CHÍNH XÁC 100% (TRUE POSITIVES)**:
+
+---
+
+### 🔍 Chi tiết phân tích tính hợp lý của 3 ca FAILED:
+
+1. **`TC_FR05_22` (Query `?search=iPhone'`):**
+   * *Hành vi SUT:* Ghép chuỗi thô `SELECT * FROM products WHERE name LIKE '%iPhone'%'` (dòng 144 `server.js`).
+   * *Lỗi phát sinh:* SQLite vỡ cú pháp nháy đơn $\rightarrow$ Backend crash trả về `500 Internal Server Error`, Content-Type là `text/html`, và Body in lộ cấu trúc `<h1>Database Error</h1><p>SQLITE_ERROR: unrecognized token: "'"</p>`.
+   * *Tính hợp lý:* **CỰC KỲ HỢP LÝ.** Đây là lỗi nghiêm trọng (Critical) vi phạm SEC-05 (Chống SQL Injection) và chuẩn REST API (API JSON không được trả về HTML và không được leak thông tin lỗi CSDL).
+
+2. **`TC_FR05_23` (Query `?search=' UNION SELECT ...`):**
+   * *Hành vi SUT:* Câu lệnh UNION cố gắng trích xuất bảng `users` nhưng bị lỗi cú pháp SQLite do ghép chuỗi thô.
+   * *Tính hợp lý:* **HỢP LÝ.** Minh chứng hệ thống không dùng Parameterized Query (Prepared Statement).
+
+3. **`TC_FR05_27` (Query `?search=<script>alert('XSS')</script>`):**
+   * *Hành vi SUT:* Payload XSS có chứa dấu nháy đơn `'XSS'`, khi đưa vào query SQL bị lỗi `near "XSS": syntax error` và crash `500 Database Error`.
+   * *Tính hợp lý:* **HỢP LÝ.** Cho thấy hệ thống chưa có tầng validate/sanitize input ở cả tầng Web lẫn tầng Database Query.
+
+---
+
+### ✅ 37 ca còn lại (92.5%) PASSED hoàn toàn hợp lý:
+* Các ca tìm kiếm bình thường (`iPhone 15`, `Điện thoại`, tiền tố/hậu tố/chữ hoa/chữ thường, khoảng trắng,...) đều trả về đúng danh sách sản phẩm `200 OK` dạng JSON Array.
+* Các ca từ khóa không tồn tại trả về mảng rỗng `[]` với `200 OK`.
+* Header Anti-cheat `X-Student-Id` được đính kèm và kiểm thử thành công.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đã phân tích chưa chính xác hành vi thực tế của `TC_FR05_23` (cho rằng trả về mã 500 do lỗi cú pháp), trong khi thực tế câu lệnh Union-based SQL Injection đã khai thác thành công lỗ hổng ghép chuỗi thô của Backend và trả về toàn bộ dữ liệu người dùng (email, mật khẩu, tài khoản admin) trong bảng `users` $\rightarrow$ khiến cho Assertion kiểm tra an ninh `pm.expect(responseText).to.not.include('admin@eshop.com')` phát hiện rò rỉ dữ liệu và kích hoạt trạng thái FAIL.
+- **5. Student fix:** Sinh viên đã đối soát trực tiếp dữ liệu trả về thực tế của TC_FR05_23. AI đã cập nhật lại phân tích chi tiết lỗ hổng Union-based data leakage.
+
+---
+
+### Tác vụ 22: Phân tích chuyên sâu lỗ hổng Union-based SQL Injection làm rò rỉ toàn bộ CSDL Users (TC_FR05_23)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `test case 23 nó trả về hết thông tin của users luôn mà`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 10:41:04`
+- **2. AI output:**
+````text
+Chính xác 100%! Đây là **bằng chứng thực nghiệm đắt giá nhất** chứng minh lỗ hổng **SQL Injection Union-Based Data Leakage (Defect B001 - Critical)** của hệ thống EShop SUT:
+
+---
+
+### 💥 Cơ chế bẻ gãy hệ thống của `TC_FR05_23`:
+
+1. **Câu lệnh Payload được gửi:**
+   `GET /api/products?search=' UNION SELECT id, name, email, password, 5, 6 FROM users--`
+
+2. **Cách Backend xử lý thô trong `server.js` (Dòng 144):**
+   ```javascript
+   const query = `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`;
+   ```
+   Sau khi nối chuỗi, câu lệnh SQL thực thi trong SQLite trở thành:
+   ```sql
+   SELECT * FROM products WHERE name LIKE '%' UNION SELECT id, name, email, password, 5, 6 FROM users--%'
+   ```
+
+3. **Hậu quả thực tế:**
+   * Ký tự `--` đã comment toàn bộ phần còn lại `%'`.
+   * Câu lệnh `UNION SELECT` ghép trọn vẹn 6 cột của bảng `products` (`id, name, price, description, imageUrl, category_id`) với 6 giá trị của bảng `users` (`id, name, email, password, 5, 6`).
+   * Kết quả trả về danh sách sản phẩm nhưng có chứa **tất cả tài khoản người dùng, bao gồm email và mật khẩu (plaintext) của Admin**!
+
+4. **Tại sao Postman báo `TC_FR05_23` là FAILED?**
+   * Trong Test Script bảo mật có đoạn kiểm tra:
+     ```javascript
+     pm.expect(responseText).to.not.include('admin@eshop.com');
+     pm.expect(responseText).to.not.include('Admin123!');
+     ```
+   * Vì hệ thống bị dính lỗ hổng và **thực sự trả về `admin@eshop.com` cùng mật khẩu Admin**, assertion phát hiện ra sự rò rỉ dữ liệu và đánh dấu **FAILED** để cảnh báo đây là lỗi bảo mật nghiêm trọng!
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã giải thích chi tiết và chính xác 100% cơ chế tấn công Union-based SQL Injection của `TC_FR05_23`, chỉ ra nguyên nhân nối chuỗi dòng 144 `server.js`, cách câu lệnh `UNION SELECT` khớp số lượng cột để dump toàn bộ bảng `users`, và lý do Assertion bảo mật của Postman báo FAILED khi phát hiện thông tin nhạy cảm.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 23: Phân định phạm vi kiểm thử XSS ở tầng Backend API so với Frontend Browser
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `cái lỗi script tôi mong muốn là nó thực thi alert thì có đúng không`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 10:42:57`
+- **2. AI output:**
+````text
+Câu trả lời phụ thuộc vào việc bạn đang kiểm thử ở **tầng Backend API** hay **tầng Frontend UI**:
+
+---
+
+### 🌐 1. Ở tầng Kiểm thử API (Postman / Newman / Backend): -> KHÔNG ĐÚNG
+* **Bản chất của API:** Backend REST API chỉ đóng vai trò truyền nhận dữ liệu thô (JSON/Text) qua giao thức HTTP. Backend **không có môi trường thực thi DOM/JavaScript của trình duyệt**, nên lệnh `alert()` sẽ **không bao giờ tự bật lên** khi gọi API qua Postman hay curl.
+* **Kỳ vọng đúng chuẩn của API Tester khi gửi payload `<script>alert('XSS')</script>`:**
+  1. **Không bị crash:** Backend không được dính lỗi cú pháp SQL `500 Database Error` do dấu nháy đơn `'XSS'` (như lỗi hiện tại).
+  2. **Xử lý an toàn:** Backend phải xử lý chuỗi bằng Parameterized Query và trả về JSON hợp lệ `200 OK` với mảng rỗng `[]` (vì không có sản phẩm nào tên là `<script>...`).
+  3. **Sanitize (nếu có):** Nếu có cơ chế lọc XSS (SEC-04), API phải mã hóa HTML entities (`&lt;script&gt;`) hoặc lọc bỏ thẻ nguy hiểm.
+
+---
+
+### 🖥️ 2. Ở tầng Kiểm thử Giao diện (Frontend / Web Browser): -> ĐÚNG
+* Nếu người dùng nhập `<script>alert('XSS')</script>` trên ô tìm kiếm của website, và Frontend (React/Vue/HTML) render kết quả bằng `innerHTML` mà không escape:
+  * Trình duyệt sẽ parse thẻ `<script>` và **bật popup `alert('XSS')` lên màn hình**.
+  * Đây là kịch bản Proof of Concept (PoC) kinh điển của **Reflected XSS** trên Client.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã phân tích chính xác và rành mạch sự khác biệt về mặt kiến trúc giữa tầng Backend API (chỉ truyền tải dữ liệu JSON, không thực thi mã DOM) và tầng Frontend Web Browser (môi trường kích hoạt popup alert XSS), giúp sinh viên định hình rõ mục tiêu kiểm thử API theo chuẩn ISTQB.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 24: Tách riêng báo cáo lỗi sang `bug_reports.md` và tinh gọn tài liệu `Main_Report.md`
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `báo cáo bug ra bug report đừng ghi trong main report`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 10:44:25`
+- **2. AI output:**
+````text
+Tôi đã điều chỉnh và phân tách rạch ròi theo đúng yêu cầu:
+
+---
+
+### 🛠️ Các thay đổi đã thực hiện:
+
+1. 📄 **Báo cáo chính ([`Main_Report.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/Main_Report.md)):**
+   * Đã loại bỏ toàn bộ các khối mô tả chi tiết lỗi trùng lặp tại mục **3.7**.
+   * Chỉ giữ lại tóm tắt định danh 2 lỗi (`Defect B001 - Critical` và `Defect B002 - High`) kèm đường dẫn tham chiếu trực tiếp sang tệp báo cáo lỗi chuyên biệt.
+
+2. 🐛 **Bảng quản lý lỗi ([`bug_reports.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/bug_reports.md)):**
+   * Là nơi duy nhất lưu trữ toàn diện toàn bộ chi tiết kỹ thuật, các bước tái hiện (Steps to Reproduce), hành vi thực tế (Actual Result), kết quả mong đợi (Expected Result), mức độ nghiêm trọng (Severity) và biện pháp khắc phục theo đúng quy chuẩn 9 cột chuẩn quốc tế.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện chính xác chỉ đạo của sinh viên: loại bỏ phần mô tả chi tiết lỗi thừa trong báo cáo chính `Main_Report.md`, dẫn chiếu trực tiếp sang tệp quản lý lỗi tập trung `bug_reports.md` theo chuẩn kỹ năng `bug-report`.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 25: Phân tích nguyên lý ánh xạ giữa số lượng Test Cases thất bại và số lượng Khiếm khuyết (Defects) theo chuẩn ISTQB
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `tôi thấy report lỗi ở 3 test case lận mà sao báo cáo bug có 2 cái vậy`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 10:49:27`
+- **2. AI output:**
+````text
+Đây là một điểm mấu chốt rất quan trọng trong **Quản lý Khiếm khuyết theo chuẩn ISTQB (Defect Management & Root Cause Analysis)**:
+
+---
+
+### 🧩 1. Mối quan hệ giữa "Test Case Failures" và "Defects":
+* **Test Case Failure (Biểu hiện):** Là việc một ca kiểm thử cụ thể bị thất bại khi chạy.
+* **Defect / Bug (Nguyên nhân gốc - Root Cause):** Là khiếm khuyết trong mã nguồn phần mềm gây ra các thất bại đó.
+* **Quy tắc chuẩn ngành:** **Một lỗi lập trình duy nhất (1 Root Cause) có thể làm sập hoặc làm fail nhiều Test Cases khác nhau.**
+
+---
+
+### 🔍 2. Ánh xạ chi tiết 3 ca Fail vào 2 Defect ID trong mã nguồn:
+
+| Mã Test Case Bị Fail | Payload Đầu Vào | Biểu Hiện Khi Chạy | Nguyên Nhân Gốc Trong Mã Nguồn SUT | Mã Defect Đã Báo Cáo |
+| :--- | :--- | :--- | :--- | :---: |
+| **`TC_FR05_22`** | `?search=iPhone'` | Lỗi vỡ cú pháp SQL do dấu nháy đơn `'` | **Dòng 144 (`server.js`):** Nối chuỗi SQL trực tiếp `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'` mà không dùng Parameterized Query (`?`). | **B001 (Critical - SQL Injection)** |
+| **`TC_FR05_23`** | `?search=' UNION SELECT...` | Lộ toàn bộ mật khẩu và email tài khoản Admin | **Dòng 144 (`server.js`):** Cùng là lỗ hổng nối chuỗi thô của B001, bị khai thác theo kỹ thuật UNION SELECT. | **B001 (Critical - SQL Injection)** |
+| **`TC_FR05_27`** | `?search=<script>alert('XSS')</script>` | Trả về `500 Database Error` do chuỗi chứa `'XSS'` | **Dòng 144 (`server.js`):** Cùng do nối chuỗi thô B001; dấu nháy `'` trong payload XSS làm đứt chuỗi truy vấn SQL của Backend. | **B001 (Critical - SQL Injection)** |
+| *(Tất cả 3 ca trên)* | *(Khi SQL bị lỗi)* | Trả về chuỗi HTML `<h1>Database Error</h1>` và sai Header Content-Type `text/html` | **Dòng 148 (`server.js`):** Xử lý lỗi trả về trang HTML nội bộ thay vì trả về JSON chuẩn `{"error": "..."}`. | **B002 (High - Error Leakage & Format)** |
+
+---
+
+### 💡 Kết luận:
+Cả 3 ca kiểm thử `TC_FR05_22`, `TC_FR05_23` và `TC_FR05_27` đều là các **kịch bản tấn công khác nhau khai thác chung một lỗ hổng gốc B001 (Nối chuỗi SQL thô tại dòng 144)**. Khi lập trình viên sửa dòng 144 sang dùng Parameterized Query (`WHERE name LIKE ?`), cả 3 ca kiểm thử này sẽ đồng thời được giải quyết triệt để!
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã giải thích rõ ràng nguyên lý phân tích nguyên nhân gốc rễ (Root Cause Analysis) và quản lý lỗi theo chuẩn ISTQB, lập bảng đối soát chi tiết chứng minh 3 test cases bị fail đều xuất phát từ 1 dòng code lỗi B001 (dòng 144 `server.js`) và 1 lỗi format phản hồi B002 (dòng 148 `server.js`).
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
+
+
 
 
 
