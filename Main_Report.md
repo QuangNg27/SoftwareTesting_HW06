@@ -252,7 +252,6 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
    # Chạy 45 iterations kiểm thử tự động và xuất báo cáo HTML Extra
    npx newman run postman/HW06_PoolB_FR08_DataDriven.postman_collection.json -d postman/data/data_driven_FR08.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html
    ```
-* **Báo cáo HTML thực thi:** `reports/newman_report_FR08_DataDriven.html` (90 requests, 225 assertions: 211 Passed, 14 Failed).
 
 ---
 
@@ -269,10 +268,11 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
   * [x] Sinh 40 Test Cases (AI Generation)
   * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
   * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-  * [x] Phát hiện & Báo cáo 4 lỗi nghiêm trọng (Bug Reports & GitHub Issues #3, #4, #5)
+  * [x] Phát hiện & Báo cáo 4 lỗi nghiêm trọng (Bug Reports & GitHub Issues #3, #4, #5, #6)
 * [ ] **API 3 (Pool C - FR-18 Orders):** Sẵn sàng triển khai
 * [ ] **Agent Skill: AI-Driven API Test Generator (G9.5):** Sẵn sàng thiết kế sơ đồ & Pseudocode
 * [ ] **Tích hợp CI/CD GitHub Actions:** Sẵn sàng cấu hình pipeline
+
 
 
 

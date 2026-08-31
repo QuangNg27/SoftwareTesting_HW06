@@ -1697,6 +1697,32 @@ Tôi đã loại bỏ hoàn toàn các mục Human Audit khỏi Main_Report.md �
 
 ---
 
+### Tác vụ 41: Bổ sung GitHub Issue cho khiếm khuyết B006 trên Repository
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `trên github issues đang thiếu b006`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:58:05`
+- **2. AI output:**
+````text
+Tôi đã tạo thành công GitHub Issue #6 cho khiếm khuyết B006 trên repository QuangNg27/SoftwareTesting_HW06:
+
+---
+
+### 📌 Chi tiết GitHub Issue #6 vừa được tạo:
+* **Tiêu đề:** `[BUG] [FR-08] Server sập và trả về HTML khi nhận Content-Type không phải JSON`
+* **Mức độ (Severity):** Medium
+* **Endpoint:** `POST /api/checkout`
+* **Ca kiểm thử:** `TC_FR08_40`
+* **Labels:** `bug`, `medium`, `schema`, `FR-08`
+* **Liên kết:** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/6
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã tạo thành công Issue #6 trên GitHub qua API với đầy đủ các trường thông tin học thuật không icon, mô tả lỗi chi tiết và ca kiểm thử liên quan theo đúng yêu cầu người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 
