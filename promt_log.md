@@ -273,6 +273,22 @@ tiếp tục
 
 ---
 
+### [31-08-2026 11:40:42] | Gemini
+```text
+thêm api login vô để lấy token rồi nạp vào env luôn chứ đừng chạy script riêng (đừng ghi thông tin gì liên quan cái này vào report)
+```
+
+---
+
+### [31-08-2026 11:41:26] | Gemini
+```text
+chạy test thử lại đã
+```
+
+---
+
+
+
 
 
 

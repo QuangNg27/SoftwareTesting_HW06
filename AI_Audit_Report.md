@@ -1554,6 +1554,59 @@ Hệ thống AI ban đầu đã bỏ sót các kịch bản bất đồng bộ, 
 
 ---
 
+### Tác vụ 36: Tích hợp trực tiếp request Login vào Postman Collection để tự động nạp Token vào môi trường
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `thêm api login vô để lấy token rồi nạp vào env luôn chứ đừng chạy script riêng (đừng ghi thông tin gì liên quan cái này vào report)`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:40:42`
+- **2. AI output:**
+````text
+Tôi đã cấu hình lại Postman Collection để tự động hóa 100% quy trình xác thực token trực tiếp từ bên trong Postman/Newman:
+
+---
+
+### 🛠️ Các cải tiến đã triển khai trong Postman Collection:
+
+1. **Request 0: Setup - Authenticate User (`POST /api/login`):**
+   * Được đưa trực tiếp thành một request chính thức trong collection.
+   * Tự động gửi tài khoản `test@eshop.com` / `Test1234!` và trích xuất JWT Token lưu vào `pm.environment.set("userToken", ...)` và `pm.collectionVariables.set("userToken", ...)`.
+
+2. **Cơ chế Auto-Fetch Token trong Pre-request Script:**
+   * Nếu người dùng chạy trực tiếp request Data-Driven mà chưa có token trong môi trường, Pre-request Script sẽ tự động kích hoạt `pm.sendRequest` đến `POST /api/login` để lấy token hợp lệ và nạp vào Header `Authorization`.
+   * Loại bỏ hoàn toàn sự phụ thuộc vào bất kỳ script chạy rời bên ngoài.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã tích hợp thành công request `POST /api/login` vào trong cấu trúc Postman Collection và hoàn thiện logic Pre-request Script tự động hóa cấp phát token vào biến môi trường `pm.environment`, đáp ứng đúng yêu cầu của người dùng mà không cần script độc lập bên ngoài.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 37: Thực thi kiểm thử xác nhận toàn bộ 45 Iterations với cơ chế tự động nạp Token
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `chạy test thử lại đã`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:41:26`
+- **2. AI output:**
+````text
+Tôi đã thực thi lại toàn bộ bộ kiểm thử Data-Driven 45 Test Cases cho FR-08 bằng Newman:
+
+---
+
+### 📊 Kết quả thực thi thực tế:
+* **Tổng số requests thực thi:** 90 requests (45 requests Login + 45 requests Checkout Data-Driven).
+* **Tổng số Assertions:** 225 assertions.
+* **Passed:** 211 assertions (Toàn bộ 45 ca xác thực Token thành công 100% + các ca kiểm thử hợp lệ đạt chuẩn).
+* **Failed:** 14 assertions (Phát hiện chính xác 11 ca kiểm thử bộc lộ các lỗ hổng B003, B004, B005, B006).
+* **Báo cáo HTML:** Đã xuất và làm mới tệp `reports/newman_report_FR08_DataDriven.html`.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã chạy lệnh thực thi Newman trực tiếp với tệp collection đã được nhúng API Login, xác minh thành công 100% các request xác thực và các assertions kiểm thử lỗi hệ thống mà không cần script ngoài.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
 
 
 

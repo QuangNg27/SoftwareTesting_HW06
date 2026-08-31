@@ -7,6 +7,55 @@
   },
   "item": [
     {
+      "name": "0. Setup - Authenticate User (POST /api/login)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login successfully and save userToken to environment', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('token');",
+              "    pm.environment.set('userToken', jsonData.token);",
+              "    pm.collectionVariables.set('userToken', jsonData.token);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Student-Id",
+            "value": "23127462"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@eshop.com\",\n  \"password\": \"Test1234!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        },
+        "description": "Logs in test user and automatically populates userToken into Postman environment."
+      },
+      "response": []
+    },
+    {
       "name": "Data-Driven Request: POST /api/checkout",
       "event": [
         {
@@ -16,51 +65,76 @@
               "// 1. Ensure X-Student-Id header is always set per Anti-AI-Cheat constraint",
               "pm.request.headers.upsert({ key: 'X-Student-Id', value: '23127462' });",
               "",
-              "const token = pm.environment.get('userToken') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3ODgxNTA5MjB9.r-ESdm_hMmJF7PQfZEVfYVUp0CXN9usVDlUsH7tqx8s';",
+              "const baseUrl = pm.environment.get('baseUrl') || 'http://localhost:3000';",
               "const authType = pm.iterationData.get('authType') || 'valid_user';",
               "const contentType = pm.iterationData.get('contentType') || 'application/json';",
               "const sendRawBody = pm.iterationData.get('sendRawBody');",
               "const isRaw = (sendRawBody === true || sendRawBody === 'true');",
               "const bodyOverride = pm.iterationData.get('bodyOverride');",
               "",
-              "// 2. Handle Authorization Header",
-              "pm.request.headers.remove('Authorization');",
-              "if (authType === 'valid_user') {",
-              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + token });",
-              "} else if (authType === 'empty') {",
-              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' });",
-              "} else if (authType === 'invalid') {",
-              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer invalid.signature.token' });",
-              "} else if (authType === 'no_bearer') {",
-              "    pm.request.headers.add({ key: 'Authorization', value: token });",
-              "} else if (authType === 'basic') {",
-              "    pm.request.headers.add({ key: 'Authorization', value: 'Basic YWRtaW46MTIz' });",
+              "function setupRequest(token) {",
+              "    // 2. Handle Authorization Header",
+              "    pm.request.headers.remove('Authorization');",
+              "    if (authType === 'valid_user') {",
+              "        pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + token });",
+              "    } else if (authType === 'empty') {",
+              "        pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' });",
+              "    } else if (authType === 'invalid') {",
+              "        pm.request.headers.add({ key: 'Authorization', value: 'Bearer invalid.signature.token' });",
+              "    } else if (authType === 'no_bearer') {",
+              "        pm.request.headers.add({ key: 'Authorization', value: token });",
+              "    } else if (authType === 'basic') {",
+              "        pm.request.headers.add({ key: 'Authorization', value: 'Basic YWRtaW46MTIz' });",
+              "    }",
+              "",
+              "    // 3. Handle Content-Type Header",
+              "    pm.request.headers.upsert({ key: 'Content-Type', value: contentType });",
+              "",
+              "    // 4. Handle Request Body",
+              "    if (isRaw) {",
+              "        pm.request.body.raw = bodyOverride || '{}';",
+              "    } else {",
+              "        const bodyObj = {};",
+              "        const totalAmount = pm.iterationData.get('totalAmount');",
+              "        const shippingAddress = pm.iterationData.get('shippingAddress');",
+              "        const extraFieldsJson = pm.iterationData.get('extraFieldsJson');",
+              "",
+              "        if (totalAmount !== undefined && totalAmount !== '') {",
+              "            bodyObj.total_amount = isNaN(Number(totalAmount)) ? totalAmount : Number(totalAmount);",
+              "        }",
+              "        if (shippingAddress !== undefined && shippingAddress !== '') {",
+              "            bodyObj.shipping_address = shippingAddress;",
+              "        }",
+              "        if (extraFieldsJson) {",
+              "            try {",
+              "                Object.assign(bodyObj, JSON.parse(extraFieldsJson));",
+              "            } catch (e) {}",
+              "        }",
+              "        pm.request.body.raw = JSON.stringify(bodyObj);",
+              "    }",
               "}",
               "",
-              "// 3. Handle Content-Type Header",
-              "pm.request.headers.upsert({ key: 'Content-Type', value: contentType });",
-              "",
-              "// 4. Handle Request Body",
-              "if (isRaw) {",
-              "    pm.request.body.raw = bodyOverride || '{}';",
+              "let existingToken = pm.environment.get('userToken') || pm.collectionVariables.get('userToken');",
+              "if (!existingToken && authType === 'valid_user') {",
+              "    pm.sendRequest({",
+              "        url: baseUrl + '/api/login',",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/json', 'X-Student-Id': '23127462' },",
+              "        body: {",
+              "            mode: 'raw',",
+              "            raw: JSON.stringify({ email: 'test@eshop.com', password: 'Test1234!' })",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err && res.code === 200) {",
+              "            const token = res.json().token;",
+              "            pm.environment.set('userToken', token);",
+              "            setupRequest(token);",
+              "        } else {",
+              "            setupRequest('fallback_token');",
+              "        }",
+              "    });",
               "} else {",
-              "    const bodyObj = {};",
-              "    const totalAmount = pm.iterationData.get('totalAmount');",
-              "    const shippingAddress = pm.iterationData.get('shippingAddress');",
-              "    const extraFieldsJson = pm.iterationData.get('extraFieldsJson');",
-              "",
-              "    if (totalAmount !== undefined && totalAmount !== '') {",
-              "        bodyObj.total_amount = isNaN(Number(totalAmount)) ? totalAmount : Number(totalAmount);",
-              "    }",
-              "    if (shippingAddress !== undefined && shippingAddress !== '') {",
-              "        bodyObj.shipping_address = shippingAddress;",
-              "    }",
-              "    if (extraFieldsJson) {",
-              "        try {",
-              "            Object.assign(bodyObj, JSON.parse(extraFieldsJson));",
-              "        } catch (e) {}",
-              "    }",
-              "    pm.request.body.raw = JSON.stringify(bodyObj);",
+              "    setupRequest(existingToken || '');",
               "}"
             ],
             "type": "text/javascript"
