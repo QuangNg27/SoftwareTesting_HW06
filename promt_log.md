@@ -245,6 +245,38 @@ cập nhật lại style trong github issues đừng để icon
 
 ---
 
+### [31-08-2026 11:27:12] | Gemini
+```text
+thực hiện generate test case cho FR-08
+```
+
+---
+
+### [31-08-2026 11:30:32] | Gemini
+```text
+nó không cần thông tin cart à
+```
+
+---
+
+### [31-08-2026 11:32:18] | Gemini
+```text
+phải cover được 4 cái tiêu chí trong đề bài
+```
+
+---
+
+### [31-08-2026 11:33:27] | Gemini
+```text
+tiếp tục
+```
+
+---
+
+
+
+
+
 
 
 

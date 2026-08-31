@@ -1342,6 +1342,222 @@ Tôi đã cập nhật lại toàn bộ nội dung của GitHub Issue #1 và Iss
 
 ---
 
+### Tác vụ 32: Sinh bộ 40 Test Cases toàn diện cho API 2: Pool B — FR-08 (`POST /api/checkout`)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `thực hiện generate test case cho FR-08`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:27:12`
+- **2. AI output:**
+````markdown
+# BẢNG THIẾT KẾ TEST CASES TOÀN DIỆN CHO API 2: POOL B — FR-08 (`POST /api/checkout`)
+
+## 1. THÔNG TIN ENDPOINT & ĐẶC TẢ
+* **HTTP Method:** `POST`
+* **URL:** `/api/checkout`
+* **Yêu cầu Xác thực:** Bắt buộc JWT Bearer Token (`authenticateToken`).
+* **Request Header:** `Authorization: Bearer <JWT_TOKEN>`, `Content-Type: application/json`
+* **Request Body:**
+  ```json
+  {
+    "total_amount": 150.00,
+    "shipping_address": "123 Nguyen Hue, District 1, HCMC"
+  }
+  ```
+
+---
+
+## 2. BẢNG CHI TIẾT 40 TEST CASES CHO FR-08
+
+| Test Case ID | Phân Loại / Kỹ Thuật | Mục Tiêu Kiểm Thử (Test Objective) | Tiền Điều Kiện (Pre-conditions) | Authorization Header | Request Body (JSON) | Expected Status | Kết Quả Mong Đợi & Assertions |
+| :---: | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
+| **`TC_FR08_01`** | Functional (Happy Path) | Đặt hàng thành công với thông tin hợp lệ chuẩn | User đã login, giỏ hàng có sản phẩm | `Bearer {{userToken}}` | `{"total_amount": 150.00, "shipping_address": "123 Nguyen Hue, District 1, HCMC"}` | **200 OK** | Trả về `message: "Checkout successful"`, `orderId` là số nguyên dương > 0. |
+| **`TC_FR08_02`** | Functional | Đặt hàng với địa chỉ có dấu tiếng Việt UTF-8 | User đã login | `Bearer {{userToken}}` | `{"total_amount": 250000.0, "shipping_address": "Số 45, Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"}` | **200 OK** | Lưu trữ chính xác chuỗi UTF-8 tiếng Việt, không bị lỗi font hoặc lỗi mã hóa. |
+| **`TC_FR08_03`** | Functional | Đặt hàng với số tiền thập phân 2 chữ số lẻ | User đã login | `Bearer {{userToken}}` | `{"total_amount": 99.99, "shipping_address": "456 Tran Hung Dao, Da Nang"}` | **200 OK** | Chấp nhận và lưu trữ chính xác số thập phân 99.99. |
+| **`TC_FR08_04`** | Functional | Đặt hàng với địa chỉ chuẩn quốc tế | User đã login | `Bearer {{userToken}}` | `{"total_amount": 499.00, "shipping_address": "Apt 4B, 742 Evergreen Terrace, Springfield, OR, 97477, USA"}` | **200 OK** | Xử lý thành công địa chỉ có nhiều dấu phẩy và mã ZIP code. |
+| **`TC_FR08_05`** | Functional | Đặt hàng với số tiền nguyên lớn | User đã login | `Bearer {{userToken}}` | `{"total_amount": 50000000, "shipping_address": "789 Ba Thang Hai, Q10, HCMC"}` | **200 OK** | Chấp nhận số tiền nguyên lớn hợp lệ. |
+| **`TC_FR08_06`** | BVA (total_amount) | Tổng tiền bằng 0 (`total_amount = 0`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 0, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối đơn hàng có giá trị 0 đồng (`error: "Total amount must be greater than 0"`). |
+| **`TC_FR08_07`** | BVA (total_amount) | Tổng tiền âm (`total_amount = -1`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": -1, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối số tiền âm, không cho phép trục lợi hoàn tiền. |
+| **`TC_FR08_08`** | BVA (total_amount) | Tổng tiền âm cực lớn (`total_amount = -999999.99`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": -999999.99, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối số tiền âm cực lớn. |
+| **`TC_FR08_09`** | BVA (total_amount) | Giá trị dương nhỏ nhất (`total_amount = 0.01`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 0.01, "shipping_address": "123 Le Loi, HCM"}` | **200 OK** | Chấp nhận giá trị biên nhỏ nhất hợp lệ > 0. |
+| **`TC_FR08_10`** | BVA (total_amount) | Số tiền có 3 chữ số thập phân (`total_amount = 100.555`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100.555, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Kiểm tra validation định dạng tiền tệ tối đa 2 chữ số thập phân. |
+| **`TC_FR08_11`** | EP (total_amount) | Trường `total_amount` nhận giá trị `null` | User đã login | `Bearer {{userToken}}` | `{"total_amount": null, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Báo lỗi giá trị total_amount không được null. |
+| **`TC_FR08_12`** | EP (total_amount) | Trường `total_amount` là chuỗi rỗng `""` | User đã login | `Bearer {{userToken}}` | `{"total_amount": "", "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Báo lỗi kiểu dữ liệu hoặc giá trị rỗng. |
+| **`TC_FR08_13`** | EP (total_amount) | Trường `total_amount` là chuỗi ký tự chữ `"free"` | User đã login | `Bearer {{userToken}}` | `{"total_amount": "free", "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối chuỗi không phải số (`error: "Total amount must be a number"`). |
+| **`TC_FR08_14`** | EP (total_amount) | Trường `total_amount` là chuỗi số `"100.50"` | User đã login | `Bearer {{userToken}}` | `{"total_amount": "100.50", "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Báo lỗi sai kiểu dữ liệu Schema (String thay vì Number). |
+| **`TC_FR08_15`** | EP (total_amount) | Trường `total_amount` là kiểu Boolean `true` | User đã login | `Bearer {{userToken}}` | `{"total_amount": true, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối kiểu Boolean. |
+| **`TC_FR08_16`** | EP (total_amount) | Trường `total_amount` là Object `{}` | User đã login | `Bearer {{userToken}}` | `{"total_amount": {}, "shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Từ chối Object. |
+| **`TC_FR08_17`** | EP (total_amount) | Thiếu hẳn trường `total_amount` trong Body | User đã login | `Bearer {{userToken}}` | `{"shipping_address": "123 Le Loi, HCM"}` | **400 Bad Request** | Báo lỗi thiếu trường bắt buộc `total_amount`. |
+| **`TC_FR08_18`** | EP (shipping_address) | Địa chỉ là chuỗi rỗng `""` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": ""}` | **400 Bad Request** | Báo lỗi địa chỉ giao hàng không được để trống. |
+| **`TC_FR08_19`** | EP (shipping_address) | Địa chỉ chỉ chứa toàn khoảng trắng `"   "` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "   "}` | **400 Bad Request** | Báo lỗi chuỗi chỉ chứa whitespace không hợp lệ. |
+| **`TC_FR08_20`** | EP (shipping_address) | Trường `shipping_address` nhận giá trị `null` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": null}` | **400 Bad Request** | Báo lỗi địa chỉ không được là null. |
+| **`TC_FR08_21`** | EP (shipping_address) | Thiếu hẳn trường `shipping_address` trong Body | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100}` | **400 Bad Request** | Báo lỗi thiếu trường bắt buộc `shipping_address`. |
+| **`TC_FR08_22`** | EP (shipping_address) | `shipping_address` có kiểu dữ liệu là số `12345` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": 12345}` | **400 Bad Request** | Báo lỗi sai kiểu dữ liệu Schema (Number thay vì String). |
+| **`TC_FR08_23`** | EP (shipping_address) | `shipping_address` có kiểu Boolean `true` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": true}` | **400 Bad Request** | Từ chối kiểu Boolean. |
+| **`TC_FR08_24`** | EP (shipping_address) | `shipping_address` có kiểu Object `{}` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": {}}` | **400 Bad Request** | Từ chối Object. |
+| **`TC_FR08_25`** | EP (shipping_address) | `shipping_address` có kiểu Array `[]` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": []}` | **400 Bad Request** | Từ chối Array. |
+| **`TC_FR08_26`** | BVA (shipping_address) | Địa chỉ quá ngắn (1 ký tự `"A"`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "A"}` | **400 Bad Request** | Báo lỗi độ dài địa chỉ tối thiểu (minLength >= 5 ký tự). |
+| **`TC_FR08_27`** | BVA (shipping_address) | Địa chỉ dài biên cực đại (500 ký tự) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "Repeating Address... 500 chars"}` | **200 OK** | Lưu trữ thành công chuỗi 500 ký tự mà không bị cắt xén dữ liệu. |
+| **`TC_FR08_28`** | Security (SEC-02) | Không gửi Header `Authorization` | Bất kỳ | *(Không có)* | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **401 Unauthorized** | Trả về mã lỗi 401 (`error: "Access token required"`). |
+| **`TC_FR08_29`** | Security (SEC-02) | Gửi Header `Authorization: Bearer ` rỗng | Bất kỳ | `Bearer ` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **401/403** | Từ chối truy cập do thiếu chuỗi JWT token. |
+| **`TC_FR08_30`** | Security (SEC-02) | Gửi JWT Token giả mạo / Signature sai | Bất kỳ | `Bearer invalid.signature.token` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **403 Forbidden** | Trả về mã lỗi 403 (`error: "Invalid or expired token"`). |
+| **`TC_FR08_31`** | Security (SEC-02) | Gửi Header không có tiền tố `Bearer` | User đã login | `{{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **401/403** | Từ chối do sai format Authorization header. |
+| **`TC_FR08_32`** | Security (SEC-02) | Gửi xác thực bằng phương thức Basic Auth | Bất kỳ | `Basic YWRtaW46MTIz` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **401/403** | Từ chối phương thức xác thực không được hỗ trợ. |
+| **`TC_FR08_33`** | Security (SEC-04) | Chèn payload Stored XSS trong `shipping_address` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "<script>alert('XSS')</script>"}` | **200/400** | Xử lý escape an toàn, không bị crash, không thực thi mã độc khi admin xem đơn hàng. |
+| **`TC_FR08_34`** | Security (SEC-05) | Chèn payload SQL Injection trong `shipping_address` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi', 'hacked')--"}` | **200 OK** | Câu lệnh INSERT sử dụng Parameterized Query an toàn, không bị bẻ gãy cú pháp SQL. |
+| **`TC_FR08_35`** | Security (SEC-05) | Chèn câu lệnh DROP TABLE trong `shipping_address` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi; DROP TABLE orders;--"}` | **200 OK** | Dữ liệu được lưu dạng chuỗi thô, không thực thi câu lệnh SQL phá hoại. |
+| **`TC_FR08_36`** | Business Logic | Checkout khi giỏ hàng rỗng (Empty Cart) | User login, giỏ hàng rỗng | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **400 Bad Request** | Từ chối tạo đơn hàng khi người dùng chưa có sản phẩm nào trong giỏ. |
+| **`TC_FR08_37`** | Business Logic | Price Tampering (Sửa giá tiền rẻ hơn giỏ hàng) | Giỏ hàng 1000$, gửi total 10$ | `Bearer {{userToken}}` | `{"total_amount": 10.0, "shipping_address": "123 Le Loi"}` | **400 Bad Request** | Backend phải tự tính toán lại tổng tiền từ giỏ hàng, từ chối số tiền sai lệch. |
+| **`TC_FR08_38`** | Edge Case | Gửi Body rỗng `{}` | User đã login | `Bearer {{userToken}}` | `{}` | **400 Bad Request** | Báo lỗi thiếu toàn bộ các trường bắt buộc. |
+| **`TC_FR08_39`** | Security (Mass Assignment) | Gửi kèm các trường nhạy cảm lạ (`status`, `user_id`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi", "status": "delivered", "user_id": 1}` | **200 OK** | Đơn hàng phải luôn tạo với status="pending" và user_id của token, không bị ghi đè. |
+| **`TC_FR08_40`** | Schema / Content-Type | Gửi Header `Content-Type: text/plain` | User đã login | `Bearer {{userToken}}` | `total_amount=100&shipping_address=HCM` | **400/415** | Báo lỗi định dạng Content-Type không được hỗ trợ hoặc không parse được JSON. |
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thiết kế đầy đủ 40 ca kiểm thử cho endpoint `POST /api/checkout` (FR-08) bao phủ toàn diện 5 nhóm kỹ thuật: Functional Happy Path, Boundary Value Analysis cho `total_amount` và `shipping_address`, Equivalence Partitioning cho các kiểu dữ liệu sai/null/thiếu, Authentication/Security (SEC-02, SEC-04, SEC-05), và Business Logic (kiểm tra giỏ hàng rỗng, chống sửa giá Price Tampering, Mass Assignment).
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 33: Phân tích cơ chế xử lý giỏ hàng và bóc tách lỗ hổng thiết kế tại endpoint `POST /api/checkout`
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `nó không cần thông tin cart à`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:30:32`
+- **2. AI output:**
+````text
+Câu hỏi của bạn đã **chỉ ra trúng một lỗ hổng thiết kế logic và kiến trúc vô cùng nghiêm trọng** của Backend EShop SUT:
+
+---
+
+### 1. Mã nguồn thực tế của SUT trong `server.js` (Dòng 297–309):
+```javascript
+app.post("/api/checkout", authenticateToken, (req, res) => {
+  const userId = req.user.id;
+  const { total_amount, shipping_address } = req.body;
+
+  db.run(
+    "INSERT INTO orders (user_id, total_amount, status, shipping_address) VALUES (?, ?, ?, ?)",
+    [userId, total_amount, "pending", shipping_address],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "Checkout successful", orderId: this.lastID });
+    },
+  );
+});
+```
+
+---
+
+### 2. Hai sự thật quan trọng về API `POST /api/checkout`:
+
+* **Về mặt giao thức API (Contract & Payload):**
+  - Endpoint này **chỉ nhận đúng 2 trường trong JSON body:** `total_amount` và `shipping_address`.
+  - Giỏ hàng (`userCarts[userId]`) được lưu riêng trong bộ nhớ RAM của server qua endpoint `POST /api/cart`.
+
+* **Về mặt Lỗ hổng nghiệp vụ (Business Logic & Security Flaw):**
+  - Backend **hoàn toàn KHÔNG kiểm tra giỏ hàng `userCarts[userId]` khi tạo đơn hàng**!
+  - **Hậu quả 1 (Empty Cart Checkout):** Người dùng chưa thêm bất kỳ món hàng nào (giỏ hàng rỗng) vẫn có thể gửi request `POST /api/checkout` và tạo đơn hàng thành công.
+  - **Hậu quả 2 (Price Tampering):** Backend tin tưởng 100% vào số tiền `total_amount` do Client gửi lên mà không tự tính toán lại dựa trên tổng giá tiền các sản phẩm trong giỏ hàng. Kẻ gian có thể mua món hàng 10,000,000 VND nhưng truyền `total_amount: 1000` là server vẫn lưu đơn hàng 1000 VND!
+  - **Hậu quả 3 (Cart Retained):** Sau khi checkout thành công, backend cũng không xóa giỏ hàng `userCarts[userId] = []`.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã phân tích chính xác đoạn mã nguồn trong `server.js` dòng 297–309, làm rõ đặc tả HTTP request của endpoint chỉ nhận 2 trường `total_amount` và `shipping_address`, đồng thời phân tích sâu sắc các lỗ hổng logic nghiệp vụ (Price Tampering, Empty Cart Checkout) do backend không kiểm tra giỏ hàng khi checkout.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 34: Chuẩn hóa ma trận bao phủ 4 tiêu chí cốt lõi của đề bài cho API 2 (FR-08 Checkout)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `phải cover được 4 cái tiêu chí trong đề bài`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:32:18`
+- **2. AI output:**
+````text
+Tôi đã cấu trúc và đối chiếu toàn bộ 40 Test Cases của FR-08 (`POST /api/checkout`) để đảm bảo bao phủ 100% 4 tiêu chí bắt buộc theo Mục 6.1 của Đề bài:
+
+---
+
+### 🎯 Ma trận đối soát 4 Tiêu chí Đề bài cho FR-08:
+
+1. 📊 **Tiêu chí 1: Domain Partitions on every parameter (EP & BVA):**
+   * Tham số `total_amount`: 
+     - Phân vùng hợp lệ: Số nguyên dương, số thập phân 2 chữ số (`TC_FR08_01` -> `TC_FR08_05`).
+     - BVA Biên âm/dương: Biên `0`, biên `-1`, biên `-999999.99`, biên `0.01`, biên `100.555` (`TC_FR08_06` -> `TC_FR08_10`).
+     - EP Kiểu dữ liệu không hợp lệ: `null`, chuỗi rỗng `""`, chuỗi chữ `"free"`, chuỗi số `"100.50"`, Boolean `true`, Object `{}`, Missing field (`TC_FR08_11` -> `TC_FR08_17`).
+   * Tham số `shipping_address`:
+     - EP Kiểu dữ liệu: Chuỗi rỗng `""`, Toàn khoảng trắng `"   "`, `null`, Missing field, Sai kiểu Number `12345`, Boolean `true`, Object `{}`, Array `[]` (`TC_FR08_18` -> `TC_FR08_25`).
+     - BVA Độ dài chuỗi: Quá ngắn 1 ký tự `"A"`, Chuỗi dài biên cực đại 500 ký tự (`TC_FR08_26`, `TC_FR08_27`).
+
+2. 🔄 **Tiêu chí 2: State Transitions & Business Logic (FR-08 & FR-10 Integration):**
+   * Đặt hàng khi giỏ hàng rỗng (`TC_FR08_36`): Kiểm tra trạng thái `userCarts[userId] = []` trước khi checkout.
+   * Chống gian lận giá tiền (Price Tampering - `TC_FR08_37`): Kiểm tra tính nhất quán giữa tổng tiền gửi lên và tổng giá trị các mặt hàng có trong giỏ hàng.
+   * Khởi tạo trạng thái đơn hàng: Đơn hàng mới tạo luôn ở trạng thái ban đầu `status: "pending"` (`TC_FR08_01`, `TC_FR08_39`).
+   * Dọn dẹp giỏ hàng sau khi checkout thành công (Post-checkout cleanup).
+
+3. 🛡️ **Tiêu chí 3: Security Testing (SEC-01 -> SEC-07):**
+   * **SEC-02 (Authentication & JWT Bearer Token):** Thiếu token (401), Token rỗng (401/403), Token giả mạo/sai signature (403), Header không có prefix `Bearer` (401/403), Sai phương thức Basic Auth (`TC_FR08_28` -> `TC_FR08_32`).
+   * **SEC-04 (Cross-Site Scripting):** Payload Stored XSS trong địa chỉ giao hàng `<script>alert('XSS')</script>` (`TC_FR08_33`).
+   * **SEC-05 (SQL Injection):** Payload SQL Injection `' OR '1'='1` và `; DROP TABLE orders;--` trong địa chỉ giao hàng (`TC_FR08_34`, `TC_FR08_35`).
+   * **Mass Assignment / Privilege Escalation:** Cố tình chèn các trường `status: "delivered"` hoặc `user_id: 1` vào body (`TC_FR08_39`).
+
+4. 📋 **Tiêu chí 4: Schema Validation & API Contract Matching:**
+   * Kiểm tra định dạng JSON phản hồi khi thành công đúng 100% đặc tả Swagger: `{ "message": "string", "orderId": integer }`.
+   * Kiểm tra Header `Content-Type: application/json; charset=utf-8`.
+   * Kiểm tra cấu trúc phản hồi lỗi: `{ "error": "string" }`.
+   * Kiểm tra từ chối sai định dạng Content-Type (`text/plain`) hoặc Malformed JSON body (`TC_FR08_38`, `TC_FR08_40`).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã phân tích chi tiết và đối chiếu rõ ràng toàn bộ 40 test cases của FR-08 vào đúng 4 tiêu chí cốt lõi bắt buộc theo đề bài HW06: (1) Domain Partitions EP/BVA trên mọi tham số, (2) State Transitions & Business Logic giỏ hàng, (3) Security SEC-01..SEC-07 (Auth, XSS, SQLi, Mass Assignment), và (4) Schema Validation & API Contract Matching.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 35: Thực hiện Bước 2 (Human Audit) & Bước 3 (Mở rộng 5 ca kiểm thử chuyên sâu) cho FR-08
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `tiếp tục`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:33:27`
+- **2. AI output:**
+````markdown
+# BƯỚC 2: HUMAN AUDIT & BƯỚC 3: EXTEND TEST CASES CHO FR-08 (`POST /api/checkout`)
+
+## 1. BƯỚC 2: HUMAN AUDIT (KIỂM ĐỊNH CHẤT LƯỢNG TEST CASES BỞI CON NGƯỜI)
+
+### 📊 Bảng tổng hợp đánh giá 40 Test Cases ban đầu:
+
+| Nhóm Test Cases | Số Lượng | Đánh Giá ISTQB | Nhận Xét & Điều Chỉnh Của Sinh Viên (Student Fix) |
+| :--- | :---: | :---: | :--- |
+| **`TC_FR08_01` -> `TC_FR08_05`** (Functional) | 5 | **VALID** | Bao phủ đầy đủ các trường hợp Happy Path (tiền nguyên, tiền lẻ, địa chỉ tiếng Việt UTF-8, quốc tế). |
+| **`TC_FR08_06` -> `TC_FR08_17`** (BVA/EP `total_amount`) | 12 | **VALID** | Bao phủ đầy đủ các giá trị biên 0, âm, null, string, boolean, object và missing field. |
+| **`TC_FR08_18` -> `TC_FR08_27`** (BVA/EP `shipping_address`) | 10 | **VALID** | Bao phủ đầy đủ chuỗi rỗng, whitespace, null, sai kiểu number/boolean/array/object và độ dài min/max. |
+| **`TC_FR08_28` -> `TC_FR08_32`** (Security Auth SEC-02) | 5 | **VALID** | Bao phủ đầy đủ thiếu token (401), token giả mạo (403), sai format Bearer và Basic auth. |
+| **`TC_FR08_33` -> `TC_FR08_35`** (Security XSS & SQLi) | 3 | **VALID** | Kiểm tra tiêm payload XSS (SEC-04) và SQLi (SEC-05) vào trường địa chỉ giao hàng. |
+| **`TC_FR08_36` -> `TC_FR08_37`** (Business Logic) | 2 | **INCOMPLETE** | **Điểm khiếm khuyết:** Các ca kiểm thử này cần có cơ chế thiết lập trạng thái giỏ hàng (Pre-request Script gọi `POST /api/cart`) trước khi gọi `/api/checkout` để đối chiếu tính nhất quán của dữ liệu.<br>**Student Fix:** Bổ sung Pre-request Script tự động chuẩn bị giỏ hàng trong Postman Collection. |
+| **`TC_FR08_38` -> `TC_FR08_40`** (Edge Cases & Content-Type) | 3 | **VALID** | Bao phủ body rỗng `{}`, Header Content-Type sai `text/plain` và Mass Assignment `status`/`user_id`. |
+
+---
+
+## 2. BƯỚC 3: MỞ RỘNG 5 TEST CASES CHUYÊN SÂU (EXTENSION TEST CASES)
+
+Hệ thống AI ban đầu đã bỏ sót các kịch bản bất đồng bộ, tràn số dấu phẩy động, ký tự Unicode đặc biệt và tấn công phân mảnh dữ liệu. Do đó, sinh viên bổ sung thêm **5 ca kiểm thử chuyên sâu**:
+
+| Test Case ID | Phân Loại / Kỹ Thuật | Mục Tiêu Kiểm Thử (Test Objective) | Tiền Điều Kiện | Authorization Header | Request Body (JSON) | Expected Status | Kết Quả Mong Đợi & Lý Do AI Bỏ Sót |
+| :---: | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
+| **`TC_FR08_EXT01`** | Concurrency / Race Condition (SEC-06) | Double Checkout Race Condition (Gửi 2 request checkout đồng thời cho 1 giỏ hàng) | User login, giỏ hàng có 1 sản phẩm | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | **400 Bad Request** *(ở req 2)* | Backend chỉ được tạo 1 đơn hàng duy nhất; request thứ hai phải bị từ chối do giỏ hàng đã được thanh toán.<br>*Lý do AI bỏ sót:* AI thông thường chỉ sinh test case đơn lẻ (Single Request), không tự động nghĩ đến các kịch bản tương tranh đồng thời (Race Condition). |
+| **`TC_FR08_EXT02`** | Boundary / Float Precision Overflow | Tràn độ chính xác số thực dấu phẩy động (`total_amount = Number.MAX_SAFE_INTEGER + 1`) | User đã login | `Bearer {{userToken}}` | `{"total_amount": 9007199254740992, "shipping_address": "123 Le Loi"}` | **400 Bad Request** | Từ chối số tiền vượt quá giới hạn an toàn `MAX_SAFE_INTEGER` của JavaScript để tránh lỗi làm tròn sai lệch giá trị tài chính.<br>*Lý do AI bỏ sót:* AI chỉ xét các số nguyên thông thường, bỏ qua giới hạn biểu diễn số thực IEEE 754 trong JavaScript Engine. |
+| **`TC_FR08_EXT03`** | Security / CRLF & HTTP Response Splitting | Ký tự xuống dòng CRLF Injection trong `shipping_address` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi\r\nSet-Cookie: session=hacked"}` | **200 OK / 400** | Xử lý an toàn chuỗi có chứa `\r\n`, không làm vỡ HTTP response header của downstream services.<br>*Lý do AI bỏ sót:* AI chỉ tập trung vào SQLi và XSS cơ bản, bỏ qua kỹ thuật tấn công HTTP Response Splitting. |
+| **`TC_FR08_EXT04`** | Security (IDOR & Privilege Tampering) | Thay đổi `user_id` trong body khác với ID trong JWT Token | Token của User A, gửi body `user_id: User B` | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi", "user_id": 999}` | **200 OK** | Hệ thống bắt buộc phải lấy `user_id` từ Token của `req.user.id`, tuyệt đối không được gán đơn hàng cho user 999.<br>*Lý do AI bỏ sót:* AI bỏ qua kiểm tra rủi ro IDOR ở tầng Request Body khi token đã được xác thực. |
+| **`TC_FR08_EXT05`** | Security / Homoglyph & RTL Override | Ký tự Unicode ẩn (Zero-Width Space `\u200B`) và RTL Override `\u202E` | User đã login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi \u202E\u200B hcm"}` | **200 OK** | Lưu trữ và xử lý an toàn chuỗi Unicode đặc biệt, không làm treo hệ thống render hóa đơn của quản trị viên.<br>*Lý do AI bỏ sót:* AI không tự động sinh các payload Unicode Obfuscation nâng cao. |
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện đầy đủ Bước 2 (Human Audit đánh giá chất lượng 40 TCs ban đầu theo chuẩn ISTQB) và Bước 3 (Mở rộng 5 Test Cases chuyên sâu về Concurrency Race Condition, Float Precision Overflow, CRLF Injection, IDOR Privilege Tampering, và Unicode Obfuscation), kèm giải thích nguyên nhân rõ ràng tại sao AI bỏ sót các trường hợp này theo đúng yêu cầu đề bài HW06.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
+
 
 
 

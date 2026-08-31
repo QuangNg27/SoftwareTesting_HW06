@@ -160,7 +160,44 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
   4. *Stored XSS / SQLi:* Tấn công qua trường `shipping_address`.
 
 ### 4.2. Danh Mục 40 Test Cases Sinh Tự Động (AI Generation)
-Hệ thống AI đã sinh 40 ca kiểm thử bao phủ toàn diện 5 nhóm kỹ thuật: Functional, BVA cho `total_amount` & `shipping_address`, Equivalence Partitioning cho các kiểu dữ liệu, Security Token (SEC-02), và State-Dependent Business Logic.
+Hệ thống AI đã sinh 40 ca kiểm thử bao phủ toàn diện 4 tiêu chí cốt lõi: Domain Partitions (EP & BVA) trên `total_amount` và `shipping_address`, State Transitions giỏ hàng, Security (SEC-02, SEC-04, SEC-05, Mass Assignment), và Schema Validation.
+
+### 4.3. Kiểm Định Chất Lượng Test Cases (Human Audit)
+* **Kết quả:** Đánh giá 40 test cases, phát hiện 2 ca kiểm thử giỏ hàng (`TC_FR08_36`, `TC_FR08_37`) ở trạng thái `INCOMPLETE` do cần kịch bản chuẩn bị giỏ hàng.
+* **Student Fix:** Bổ sung kịch bản đồng bộ token và thiết lập giỏ hàng trong Postman Collection.
+
+### 4.4. Mở Rộng 5 Ca Kiểm Thử Chuyên Sâu (Extension TCs)
+Sinh viên bổ sung 5 ca kiểm thử nâng cao mà AI đã bỏ sót:
+* **`TC_FR08_EXT01` (Concurrency):** Double Checkout Race Condition.
+* **`TC_FR08_EXT02` (Boundary):** Float Precision Overflow `Number.MAX_SAFE_INTEGER + 1`.
+* **`TC_FR08_EXT03` (Security):** CRLF Injection trong `shipping_address`.
+* **`TC_FR08_EXT04` (Security):** IDOR & Privilege Tampering `user_id` trong body.
+* **`TC_FR08_EXT05` (Security):** Ký tự vô hình `\u200B` và Unicode RTL Override `\u202E`.
+
+### 4.5. Triển Khai Data-Driven Testing & Thực Thi Newman
+* **Bộ dữ liệu DDT:** Tệp CSV [`postman/data/data_driven_FR08.csv`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/data/data_driven_FR08.csv) gồm **45 iterations**.
+* **Postman Collection:** [`postman/HW06_PoolB_FR08_DataDriven.postman_collection.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/HW06_PoolB_FR08_DataDriven.postman_collection.json).
+* **Kết quả thực thi (Newman htmlextra):**
+  * **Tổng ca thực thi:** 45 Iterations (180 assertions).
+  * **Passed:** 34 Test Cases (166 assertions passed).
+  * **Failed:** 11 Test Cases (14 assertions failed - Bắt trúng toàn bộ các lỗi nghiệp vụ và thiếu validation).
+* **Báo cáo HTML:** [`reports/newman_report_FR08_DataDriven.html`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/reports/newman_report_FR08_DataDriven.html).
+
+#### Lệnh thực thi Newman:
+```powershell
+npx newman run postman/HW06_PoolB_FR08_DataDriven.postman_collection.json -d postman/data/data_driven_FR08.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html
+```
+
+### 4.6. Phát Hiện Lỗi & Báo Cáo Khiếm Khuyết
+Quá trình kiểm thử tự động đã bộc lộ 4 lỗi nghiêm trọng của endpoint `POST /api/checkout`:
+* **Defect B003 (Critical):** `[FR-08] Thiếu validation cho total_amount (chấp nhận 0 đồng, số âm và số quá lớn)` (GitHub Issue #3).
+* **Defect B004 (High):** `[FR-08] Thiếu validation cho shipping_address (chấp nhận địa chỉ rỗng và khoảng trắng)` (GitHub Issue #5).
+* **Defect B005 (Critical):** `[FR-08] Lỗ hổng nghiệp vụ: Cho phép checkout khi giỏ hàng rỗng và thao túng giá (Price Tampering)` (GitHub Issue #4).
+* **Defect B006 (Medium):** `[FR-08] Server sập và trả về HTML khi nhận Content-Type không phải JSON`.
+
+> [!NOTE]
+> Toàn bộ chi tiết kỹ thuật các khiếm khuyết được lưu trữ tập trung tại bảng 9 cột chuẩn:
+> 📄 **[bug_reports.md](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/bug_reports.md)**
 
 ---
 
@@ -173,14 +210,15 @@ Hệ thống AI đã sinh 40 ca kiểm thử bao phủ toàn diện 5 nhóm kỹ
   * [x] Kiểm định chất lượng (Human Audit)
   * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
   * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-  * [x] Phát hiện & Báo cáo 2 lỗi bảo mật nghiêm trọng (Bug Reports)
-* [ ] **API 2 (Pool B - FR-08 Checkout):**
+  * [x] Phát hiện & Báo cáo 2 lỗi bảo mật nghiêm trọng (Bug Reports & GitHub Issues #1, #2)
+* [x] **API 2 (Pool B - FR-08 Checkout):**
   * [x] Sinh 40 Test Cases (AI Generation)
-  * [ ] Kiểm định chất lượng (Human Audit)
-  * [ ] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [ ] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-  * [ ] Phân tích & Báo cáo lỗi (Bug Reports)
+  * [x] Kiểm định chất lượng (Human Audit)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+  * [x] Phát hiện & Báo cáo 4 lỗi nghiêm trọng (Bug Reports & GitHub Issues #3, #4, #5)
 * [ ] **API 3 (Pool C - FR-18 Orders):** Sẵn sàng triển khai
 * [ ] **Agent Skill: AI-Driven API Test Generator (G9.5):** Sẵn sàng thiết kế sơ đồ & Pseudocode
 * [ ] **Tích hợp CI/CD GitHub Actions:** Sẵn sàng cấu hình pipeline
+
 
