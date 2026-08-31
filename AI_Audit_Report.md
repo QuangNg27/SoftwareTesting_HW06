@@ -1605,6 +1605,101 @@ Tôi đã thực thi lại toàn bộ bộ kiểm thử Data-Driven 45 Test Case
 
 ---
 
+### Tác vụ 38: Cập nhật đồng bộ nội dung chi tiết của Pool B (FR-08) trong Main_Report.md tương tự như Pool A
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `cập nhật nội dung pool B tương tự như pool A`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:44:41`
+- **2. AI output:**
+````text
+Tôi đã cập nhật toàn diện cấu trúc của Mục 4 (Pool B — FR-08: POST /api/checkout) trong Main_Report.md để đạt mức độ chi tiết, quy chuẩn học thuật và tính đồng nhất 100% như Mục 3 (Pool A — FR-05):
+
+---
+
+### 📋 Các mục chi tiết đã được cập nhật cho Pool B trong Main_Report.md:
+* **4.1. Đặc Tả Endpoint & Phân Tích Rủi Ro:** API Spec, JSON Request Body, Response Schema và 4 rủi ro an ninh/nghiệp vụ cốt lõi.
+* **4.2. Chiến Lược Sinh Test Case Bằng AI:** 5 nhóm kỹ thuật bao phủ 4 tiêu chí bắt buộc của đề bài.
+* **4.3. Bảng Danh Mục 40 Test Cases Chi Tiết:** Bảng chuẩn đầy đủ cột (Mã TC, Phân nhóm, Tiền điều kiện, Auth Header, Request Body, Expected Status, Kết quả mong đợi).
+* **4.4. Kiểm Định AI (Human Audit):** Phân tích ISTQB (38 VALID, 2 INCOMPLETE) và giải pháp Student Fix.
+* **4.5. Mở Rộng Test Cases Bổ Sung (Extend):** Bảng 5 Extension TCs (Concurrency, Float Precision, CRLF, IDOR, Unicode RTL) kèm lý giải nguyên nhân AI bỏ sót.
+* **4.6. Triển Khai Data-Driven Testing:** Chi tiết file CSV, Collection Postman, Newman command, và báo cáo HTML Extra.
+* **4.7. Phát Hiện Lỗi & Báo Cáo Khiếm Khuyết:** Tổng hợp 4 lỗi (B003, B004, B005, B006) kèm liên kết đến bug_reports.md và GitHub Issues.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đưa toàn bộ phần Human Audit vào `Main_Report.md`, gây thừa thãi và trùng lặp với tệp kiểm định chuyên biệt `AI_Audit_Report.md`. Người dùng yêu cầu tinh gọn `Main_Report.md` bằng cách loại bỏ mục Human Audit để tập trung vào chiến lược kiểm thử, dữ liệu Data-Driven và báo cáo khiếm khuyết.
+- **5. Student fix:** Xóa bỏ toàn bộ các mục "Kiểm Định AI / Human Audit" khỏi `Main_Report.md` ở cả hai phân hệ Pool A và Pool B, đánh lại số thứ tự mục và cập nhật bảng tiến độ.
+
+---
+
+### Tác vụ 39: Tích hợp và làm rõ cơ chế Formal JSON Schema Validation trong Test Suites & Báo cáo
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `có schema validation chưa`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:49:53`
+- **2. AI output:**
+````text
+Đã có đầy đủ Schema Validation chính quy (Formal JSON Schema Validation) trong cả hai bộ kiểm thử Postman và tài liệu báo cáo:
+
+---
+
+### 🛡️ 1. Cơ chế Formal JSON Schema Validation trong Postman Collection (sử dụng thư viện chuẩn `tv4`):
+
+#### A. Đối với Pool A — FR-05 (`GET /api/products`):
+* Đã tích hợp JSON Schema kiểm định danh sách sản phẩm (`productsListSchema`):
+  * Cấu trúc mảng Array gốc (`type: "array"`).
+  * Mỗi phần tử bắt buộc có đủ 6 thuộc tính: `["id", "name", "price", "description", "imageUrl", "category_id"]`.
+  * Ràng buộc kiểu dữ liệu: `id` (integer), `name` (string), `price` (number), `description` (string), `imageUrl` (string), `category_id` (integer).
+
+#### B. Đối với Pool B — FR-08 (`POST /api/checkout`):
+* Đã tích hợp JSON Schema kiểm định phản hồi thành công (`successCheckoutSchema`):
+  * Đối tượng JSON Object (`type: "object"`).
+  * Bắt buộc có các thuộc tính: `["message", "orderId"]`.
+  * Ràng buộc kiểu dữ liệu: `message` (string: "Checkout successful"), `orderId` (number, minimum: 1).
+* Đã tích hợp JSON Schema kiểm định phản hồi lỗi (`errorResponseSchema`):
+  * Bắt buộc có thuộc tính `error` dạng `string`.
+
+---
+
+### 📋 2. Trong các ca kiểm thử:
+* **Pool A (FR-05):** `TC_FR05_31` -> `TC_FR05_35` chuyên trách kiểm định Content-Type, Array Structure, Required Fields và Data Types.
+* **Pool B (FR-08):** `TC_FR08_38`, `TC_FR08_39`, `TC_FR08_40` và các assertions tự động chạy trên 100% các ca kiểm thử thành công/thất bại.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã đối chiếu và xác nhận sự hiện diện của Formal JSON Schema Validation trong cả hai collection Postman (thư viện `tv4`), đồng thời làm rõ chi tiết cấu trúc JSON Schema Draft cho cả phản hồi Success và Error.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 40: Loại bỏ toàn bộ phần Human Audit khỏi Main_Report.md
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `bỏ phần human audit trong main report`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:52:51`
+- **2. AI output:**
+````text
+Tôi đã loại bỏ hoàn toàn các mục Human Audit khỏi Main_Report.md ở cả hai phân hệ Pool A và Pool B:
+
+---
+
+### 🧹 Các điều chỉnh đã thực hiện trong Main_Report.md:
+1. **Section 3 (Pool A — FR-05):**
+   * Đã xóa mục `3.4. Kiểm Định AI (Step 2 - Human Audit)`.
+   * Đánh số lại: `3.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)`, `3.5. Triển Khai Data-Driven Testing (Step 3 - Execution)`, `3.6. Phát Hiện Lỗi & Báo Cáo Khiếm Khuyết (Step 4 - Bug Reports)`.
+2. **Section 4 (Pool B — FR-08):**
+   * Đã xóa mục `4.4. Kiểm Định AI (Step 2 - Human Audit)`.
+   * Đánh số lại: `4.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)`, `4.5. Triển Khai Data-Driven Testing (Step 3 - Execution)`, `4.6. Phát Hiện Lỗi & Báo Cáo Khiếm Khuyết (Step 4 - Bug Reports)`.
+3. **Section 5 (Tiến Độ Tổng Thể):**
+   * Cập nhật danh sách checklist đồng bộ không còn mục Human Audit trong báo cáo chính.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện chính xác việc làm sạch tài liệu `Main_Report.md`, loại bỏ hoàn toàn các mục Human Audit theo đúng chỉ đạo của người dùng và giữ nguyên vẹn 100% nội dung Audit trong `AI_Audit_Report.md`.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
 
 
 
