@@ -203,6 +203,53 @@ tôi thấy report lỗi ở 3 test case lận mà sao báo cáo bug có 2 cái 
 
 ---
 
+### [31-08-2026 11:09:20] | Gemini
+```text
+chụp ảnh bug rồi push lên github issues luôn
+```
+
+---
+
+### [31-08-2026 11:13:00] | Gemini
+```text
+không thấy trong github issues
+```
+
+---
+
+### [31-08-2026 11:14:45] | Gemini
+```text
+lấy token ở conversation của SoftwareTesting_HW05
+```
+
+---
+
+### [31-08-2026 11:17:57] | Gemini
+```text
+check lại hình của issues 2 không có cần chụp ảnh dashboard mà chỉ cần ảnh chi tiết của lỗi đó
+```
+
+---
+
+### [31-08-2026 11:20:00] | Gemini
+```text
+xóa từ phần 2 trở xuống trong bug report chỉ để table ở phần 1 thôi
+```
+
+---
+
+### [31-08-2026 11:21:12] | Gemini
+```text
+cập nhật lại style trong github issues đừng để icon
+```
+
+---
+
+
+
+
+
+
 
 
 

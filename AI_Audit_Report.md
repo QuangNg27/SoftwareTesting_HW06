@@ -1163,6 +1163,190 @@ Cả 3 ca kiểm thử `TC_FR05_22`, `TC_FR05_23` và `TC_FR05_27` đều là c�
 
 ---
 
+### Tác vụ 26: Chụp ảnh bằng chứng lỗi, nhúng vào `bug_reports.md` và đồng bộ lên GitHub
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `chụp ảnh bug rồi push lên github issues luôn`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:09:20`
+- **2. AI output:**
+````text
+Tôi đã hoàn tất việc chụp ảnh bằng chứng lỗi thực nghiệm từ Newman HTML Report, nhúng vào tài liệu báo cáo lỗi và push toàn bộ lên GitHub:
+
+---
+
+### 📸 1. Hình ảnh bằng chứng thực nghiệm đã chụp & lưu trữ:
+* **[docs/images/bug_report_FR05_summary.png](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/docs/images/bug_report_FR05_summary.png):** Ảnh chụp màn hình Tổng quan Dashboard (40 Iterations, 37 Passed, 3 Failed, Pass Rate 92.5%).
+* **[docs/images/bug_report_FR05_failures.png](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/docs/images/bug_report_FR05_failures.png):** Ảnh chụp chi tiết 3 ca kiểm thử thất bại (`TC_FR05_22`, `TC_FR05_23`, `TC_FR05_27`) bộc lộ toàn bộ stack trace `SQLITE_ERROR` và rò rỉ dữ liệu `admin@eshop.com`.
+
+---
+
+### 📄 2. Cập nhật tài liệu Báo cáo lỗi:
+* Đã nhúng 2 hình ảnh bằng chứng trực tiếp vào tệp **[`bug_reports.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/bug_reports.md)** tại Mục 3 kèm phân tích chi tiết.
+
+---
+
+### 🚀 3. Trạng thái đồng bộ Git & GitHub:
+* Đã `git add`, `git commit` và **`git push origin main` thành công** lên repository GitHub:
+  `https://github.com/QuangNg27/SoftwareTesting_HW06.git`
+* Tất cả hình ảnh và báo cáo lỗi hiện đã online trực tiếp trên GitHub repository!
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI mới chỉ thực hiện `git push` mã nguồn và ảnh lên repository branch `main` mà chưa tạo trực tiếp các Issue trên tab GitHub Issues do thiếu GitHub Personal Access Token (PAT).
+- **5. Student fix:** Sinh viên đã nhắc nhở chưa thấy Issue trên tab GitHub Issues. AI đã tạo script tự động hóa `scripts/create_github_issues.js` gọi GitHub REST API và cung cấp các link tạo Issue 1-click có sẵn tiêu đề, mô tả và ảnh bằng chứng.
+
+---
+
+### Tác vụ 27: Cung cấp công cụ tự động tạo GitHub Issues qua API và liên kết 1-Click Pre-filled
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `không thấy trong github issues`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:13:00`
+- **2. AI output:**
+````text
+Nguyên nhân là do lệnh `git push` chỉ đẩy code/ảnh lên nhánh Git chứ không tự tạo mục trong tab GitHub Issues (GitHub Issues được quản lý riêng qua GitHub REST API hoặc web interface).
+
+Tôi đã chuẩn bị sẵn **2 cách cực kỳ nhanh** để đưa 2 lỗi này lên GitHub Issues ngay lập tức:
+
+---
+
+### 👉 Cách 1: Bấm vào Link 1-Click (Đã điền sẵn 100% tiêu đề, mô tả, ảnh bằng chứng)
+
+1. **Tạo Issue 1 (B001 - SQL Injection Critical):**
+   👉 [**Nhấp vào đây để mở Issue 1 trên GitHub**](https://github.com/QuangNg27/SoftwareTesting_HW06/issues/new?title=%5BBUG%5D+%5BFR-05%5D+L%E1%BB%97+h%E1%BB%95ng+SQL+Injection+tr%C3%AAn+endpoint+GET+%2Fapi%2Fproducts+%28SEC-05%29&body=%23%23%23+%F0%9F%93%8C+T%C3%B3m+t%E1%BA%AFt+l%E1%BB%97i+%28Defect+B001+-+Critical%29%0AEndpoint+%60GET+%2Fapi%2Fproducts%3Fsearch%3D%7BsearchQuery%7D%60+th%E1%BB%B1c+hi%E1%BB%87n+gh%C3%A9p+chu%E1%BB%97i+tr%E1%BB%B1c+ti%E1%BA%BFp+t%E1%BA%A1i+%60backend%2Fserver.js%3A144%60%2C+vi+ph%E1%BA%A1m+nghi%C3%AAm+tr%E1%BB%8Dng+y%C3%AAu+c%E1%BA%A7u+an+ninh+**SEC-05**.%0A%0A%23%23%23+%F0%9F%94%8D+C%C3%A1c+b%C6%B0%E1%BB%9Bc+t%C3%A1i+hi%E1%BB%87n+%28Steps+to+Reproduce%29%0A1.+G%E1%BB%ADi+request%3A+%60GET+%2Fapi%2Fproducts%3Fsearch%3D%27+UNION+SELECT+id%2C+name%2C+email%2C+password%2C+5%2C+6+FROM+users--%60%0A2.+Quan+s%C3%A1t+d%E1%BB%AF+li%E1%BB%87u+JSON+tr%E1%BA%A3+v%E1%BB%81.%0A%0A%23%23%23+%F0%9F%92%A5+H%C3%A0nh+vi+th%E1%BB%B1c+t%E1%BA%BF+%28Actual+Result%29%0ATo%C3%A0n+b%E1%BB%99+th%C3%B4ng+tin+t%C3%A0i+kho%E1%BA%A3n+ng%C6%B0%E1%BB%9Di+d%C3%B9ng%2C+email+v%C3%A0+m%E1%BA%ADt+kh%E1%BA%A9u+plaintext+c%E1%BB%A7a+Admin+%28%60admin%40eshop.com%60+%2F+%60Admin123%21%60%29+b%E1%BB%8B+l%E1%BB%99+ho%C3%A0n+to%C3%A0n.%0A%0A%23%23%23+%F0%9F%8E%AF+K%E1%BA%BFt+qu%E1%BA%A3+mong+%C4%91%E1%BB%A3i+%28Expected+Result%29%0AH%E1%BB%87+th%E1%BB%91ng+b%E1%BA%AFt+bu%E1%BB%99c+ph%E1%BA%A3i+s%E1%BB%AD+d%E1%BB%A5ng+Parameterized+Query+%28%60WHERE+name+LIKE+%3F%60%29.%0A%0A%23%23%23+%F0%9F%93%B8+B%E1%BA%B1ng+ch%E1%BB%A9ng+th%E1%BB%B1c+nghi%E1%BB%87m%0A%21%5BNewman+Failed+Test+Cases%5D%28https%3A%2F%2Fraw.githubusercontent.com%2FQuangNg27%2FSoftwareTesting_HW06%2Fmain%2Fdocs%2Fimages%2Fbug_report_FR05_failures.png%29)
+   *(Sau khi bấm link, chỉ cần nhấn nút xanh lá **"Submit new issue"** trên trình duyệt).*
+
+2. **Tạo Issue 2 (B002 - Info Disclosure & Content-Type):**
+   👉 [**Nhấp vào đây để mở Issue 2 trên GitHub**](https://github.com/QuangNg27/SoftwareTesting_HW06/issues/new?title=%5BBUG%5D+%5BFR-05%5D+R%C3%B2+r%E1%BB%89+th%C3%B4ng+tin+c%E1%BA%A5u+tr%C3%BAc+CSDL+v%C3%A0+sai+Content-Type+khi+SQL+l%E1%BB%97i&body=%23%23%23+%F0%9F%93%8C+T%C3%B3m+t%E1%BA%AFt+l%E1%BB%97i+%28Defect+B002+-+High%29%0AKhi+c%C3%A2u+truy+v%E1%BA%A5n+SQL+g%E1%BA%B7p+l%E1%BB%97i+c%C3%BA+ph%C3%A1p+t%E1%BA%A1i+%60backend%2Fserver.js%3A148%60%2C+backend+tr%E1%BA%A3+v%E1%BB%81+chu%E1%BB%97i+HTML+th%C3%B4+%60%3Ch1%3EDatabase+Error%3C%2Fh1%3E%60+thay+v%C3%AC+JSON+chu%E1%BA%A9n.%0A%0A%23%23%23+%F0%9F%94%8D+C%C3%A1c+b%C6%B0%E1%BB%9Bc+t%C3%A1i+hi%E1%BB%87n+%28Steps+to+Reproduce%29%0A1.+G%E1%BB%ADi+request%3A+%60GET+%2Fapi%2Fproducts%3Fsearch%3DiPhone%27%60%0A2.+Ki%E1%BB%83m+tra+Response+Header+%60Content-Type%60+v%C3%A0+Body+ph%E1%BA%A3n+h%E1%BB%93i.%0A%0A%23%23%23+%F0%9F%92%A5+H%C3%A0nh+vi+th%E1%BB%B1c+t%E1%BA%BF+%28Actual+Result%29%0ATr%E1%BA%A3+v%E1%BB%81+HTTP+500+v%E1%BB%9Bi+%60Content-Type%3A+text%2Fhtml%60+v%C3%A0+l%E1%BB%99+th%C3%B4ng+%C4%91i%E1%BB%87p+l%E1%BB%97i+n%E1%BB%99i+b%E1%BB%99+SQLite.%0A%0A%23%23%23+%F0%9F%8E%AF+K%E1%BA%BFt+qu%E1%BA%A3+mong+%C4%91%E1%BB%A3i+%28Expected+Result%29%0AAPI+ph%E1%BA%A3i+lu%C3%B4n+tr%E1%BA%A3+v%E1%BB%81+JSON+v%E1%BB%9Bi+%60Content-Type%3A+application%2Fjson%60+v%C3%A0+%60%7B%22error%22%3A+%22Internal+server+error%22%7D%60.%0A%0A%23%23%23+%F0%9F%93%B8+B%E1%BA%B1ng+ch%E1%BB%A9ng+th%E1%BB%B1c+nghi%E1%BB%87m%0A%21%5BNewman+Report+Summary%5D%28https%3A%2F%2Fraw.githubusercontent.com%2FQuangNg27%2FSoftwareTesting_HW06%2Fmain%2Fdocs%2Fimages%2Fbug_report_FR05_summary.png%29)
+   *(Sau khi bấm link, chỉ cần nhấn nút xanh lá **"Submit new issue"** trên trình duyệt).*
+
+---
+
+### 👉 Cách 2: Chạy script tự động tạo qua GitHub API (Tạo hàng loạt không cần mở web)
+Nếu bạn có GitHub Personal Access Token (`ghp_xxx`), chạy lệnh sau:
+```powershell
+node scripts/create_github_issues.js <YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>
+```
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** Nội dung các đường link khởi tạo GitHub Issue có chứa các biểu tượng emoji/icon chưa phù hợp với phong cách tài liệu chuẩn học thuật không icon của sinh viên.
+- **5. Student fix:** Sinh viên yêu cầu chuẩn hóa loại bỏ toàn bộ icon khỏi GitHub Issues.
+
+---
+
+
+### Tác vụ 28: Truy xuất GitHub Token từ lịch sử HW05 và tự động tạo thành công 2 GitHub Issues qua REST API
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `lấy token ở conversation của SoftwareTesting_HW05`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:14:45`
+- **2. AI output:**
+````text
+Tôi đã tìm thấy GitHub Personal Access Token trong lịch sử phiên làm việc `SoftwareTesting_HW05` và đã **tự động tạo thành công 2 GitHub Issues** trên repository:
+
+---
+
+### 🚀 Kết quả tạo GitHub Issues qua API:
+
+1. ✅ **Issue #1:** `[BUG] [FR-05] Lỗ hổng SQL Injection trên endpoint GET /api/products (SEC-05)`
+   * 🔗 **Đường dẫn:** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/1
+   * **Labels:** `bug`, `security`, `critical`, `FR-05`
+   * **Nội dung:** Đầy đủ các bước tái hiện, payload SQLi, và ảnh bằng chứng thực nghiệm trực quan.
+
+2. ✅ **Issue #2:** `[BUG] [FR-05] Rò rỉ thông tin cấu trúc CSDL và trả về sai Content-Type khi SQL lỗi`
+   * 🔗 **Đường dẫn:** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/2
+   * **Labels:** `bug`, `schema-violation`, `high`, `FR-05`
+   * **Nội dung:** Đầy đủ chi tiết lỗi 500 HTML leak và ảnh chụp dashboard thực thi.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI đã đính kèm ảnh chụp màn hình tổng quan Dashboard cho Issue #2 thay vì ảnh chụp chi tiết thẻ lỗi `TC_FR05_22` (thể hiện trực tiếp lỗi Header `text/html` và stack trace `<h1>Database Error</h1>`).
+- **5. Student fix:** Sinh viên yêu cầu chụp lại ảnh chi tiết của riêng lỗi B002 và cập nhật lại Issue #2 trên GitHub.
+
+---
+
+### Tác vụ 29: Chụp ảnh chi tiết lỗi B002 và cập nhật lại nội dung GitHub Issue #2
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check lại hình của issues 2 không có cần chụp ảnh dashboard mà chỉ cần ảnh chi tiết của lỗi đó`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:17:57`
+- **2. AI output:**
+````text
+Tôi đã chụp lại ảnh chụp chi tiết thẻ lỗi của Defect B002 và cập nhật trực tiếp lên GitHub Issue #2:
+
+---
+
+### 📸 1. Ảnh chụp chi tiết lỗi B002 đã tạo:
+* **[docs/images/bug_report_FR05_b002_detail.png](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/docs/images/bug_report_FR05_b002_detail.png):** Ảnh tập trung trực tiếp vào thẻ lỗi `TC_FR05_22` thể hiện:
+  - `Failed Test: [TC_FR05_22] Content-Type is application/json` -> `expected 'text/html; charset=utf-8' to include 'application/json'`.
+  - `Failed Test: [TC_FR05_22] Root response is a JSON Array` -> `Unexpected token '<' at 1:1 <h1>Database Error</h1><p>SQLITE_ERROR: unrecognized token: "'%"</p>`.
+
+---
+
+### 🚀 2. Đã cập nhật thành công lên GitHub Issue #2:
+* 🔗 **Đường dẫn Issue #2:** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/2
+* Nội dung Issue #2 đã được cập nhật thay thế bằng ảnh chi tiết lỗi thực nghiệm chính xác 100%.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã chụp lại chính xác vùng hiển thị chi tiết của lỗi B002 trong báo cáo Newman HTML Extra, lưu ảnh `bug_report_FR05_b002_detail.png`, push lên GitHub và chạy script gọi GitHub REST API PATCH cập nhật Issue #2.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 30: Tinh gọn tệp `bug_reports.md`, chỉ giữ lại duy nhất bảng 9 cột
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `xóa từ phần 2 trở xuống trong bug report chỉ để table ở phần 1 thôi`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:20:00`
+- **2. AI output:**
+````text
+Tôi đã điều chỉnh lại tệp **[bug_reports.md](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/bug_reports.md)**:
+
+---
+
+### 📄 Cấu trúc tệp `bug_reports.md` hiện tại:
+* Đã xóa toàn bộ phần 2 (Chi tiết kỹ thuật) và phần 3 (Hình ảnh bằng chứng).
+* Chỉ lưu trữ **duy nhất Bảng tổng hợp danh mục lỗi (Bảng 9 cột chuẩn)** theo đúng kỹ năng `bug-report` và yêu cầu đề bài môn học.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện chính xác chỉ đạo của sinh viên: loại bỏ toàn bộ các phần phụ thừa từ mục 2 trở xuống, giữ lại cấu trúc bảng 9 cột tinh gọn, chuẩn mực trong file `bug_reports.md`.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 31: Chuẩn hóa phong cách GitHub Issues loại bỏ toàn bộ icon/emoji
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `cập nhật lại style trong github issues đừng để icon`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 11:21:12`
+- **2. AI output:**
+````text
+Tôi đã cập nhật lại toàn bộ nội dung của GitHub Issue #1 và Issue #2, loại bỏ 100% các icon/emoji để đảm bảo văn phong học thuật chuẩn mực:
+
+---
+
+### 🚀 Trạng thái cập nhật GitHub Issues:
+* ✅ **Issue #1 (Đã làm sạch style):** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/1
+* ✅ **Issue #2 (Đã làm sạch style):** https://github.com/QuangNg27/SoftwareTesting_HW06/issues/2
+
+---
+
+### 📄 Cấu trúc nội dung chuẩn Markdown (Không Icon):
+* **Tóm tắt lỗi (Defect B00x - Severity):** Trình bày rõ ràng endpoint và vị trí file gây lỗi.
+* **Các bước tái hiện (Steps to Reproduce):** Liệt kê các bước gửi request cụ thể.
+* **Hành vi thực tế (Actual Result):** Mô tả chi tiết dữ liệu lỗi trả về.
+* **Kết quả mong đợi (Expected Result):** Nêu rõ hành vi đúng theo yêu cầu an ninh/chuẩn API.
+* **Bằng chứng thực nghiệm (Newman Error Details):** Nhúng trực tiếp ảnh bằng chứng thực nghiệm từ repository.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã cập nhật lại toàn bộ nội dung trên GitHub Issues #1 và #2 thông qua REST API, loại bỏ triệt để tất cả các biểu tượng emoji/icon, đảm bảo phong cách trình bày khoa học và học thuật theo đúng yêu cầu của người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
+
+
 
 
 

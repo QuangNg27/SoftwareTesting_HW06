@@ -39,3 +39,5 @@ scratch/
 *.sqlite
 *.sqlite3
 *.db
+
+scripts
