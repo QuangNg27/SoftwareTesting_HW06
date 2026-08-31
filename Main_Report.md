@@ -145,7 +145,26 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
 
 ---
 
-## 4. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
+---
+
+## 4. QUY TRÌNH KIỂM THỬ API 2: POOL B — FR-08 (`POST /api/checkout`)
+
+### 4.1. Đặc Tả Endpoint & Phân Tích Rủi Ro
+* **Endpoint:** `POST /api/checkout`
+* **Mục đích:** Người dùng tiến hành thanh toán và tạo đơn hàng từ giỏ hàng hiện tại.
+* **Yêu cầu bảo mật:** Bắt buộc Bearer Token hợp lệ (`authenticateToken`).
+* **Các rủi ro bảo mật & Logic cốt lõi:**
+  1. *Price Tampering:* Người dùng can thiệp sửa giá tiền `total_amount` rẻ hơn giá trị thực của giỏ hàng.
+  2. *Negative/Zero Amount:* Chấp nhận `total_amount <= 0`.
+  3. *Empty Cart Checkout:* Cho phép đặt hàng khi giỏ hàng chưa có sản phẩm nào.
+  4. *Stored XSS / SQLi:* Tấn công qua trường `shipping_address`.
+
+### 4.2. Danh Mục 40 Test Cases Sinh Tự Động (AI Generation)
+Hệ thống AI đã sinh 40 ca kiểm thử bao phủ toàn diện 5 nhóm kỹ thuật: Functional, BVA cho `total_amount` & `shipping_address`, Equivalence Partitioning cho các kiểu dữ liệu, Security Token (SEC-02), và State-Dependent Business Logic.
+
+---
+
+## 5. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
 
 * [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
 * [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
@@ -154,8 +173,14 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
   * [x] Kiểm định chất lượng (Human Audit)
   * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
   * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-  * [x] Phát hiện & Phân tích 2 lỗi bảo mật nghiêm trọng (Bug Reports)
-* [ ] **API 2 (Pool B):** Sẵn sàng triển khai
-* [ ] **API 3 (Pool C):** Sẵn sàng triển khai
+  * [x] Phát hiện & Báo cáo 2 lỗi bảo mật nghiêm trọng (Bug Reports)
+* [ ] **API 2 (Pool B - FR-08 Checkout):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [ ] Kiểm định chất lượng (Human Audit)
+  * [ ] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [ ] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+  * [ ] Phân tích & Báo cáo lỗi (Bug Reports)
+* [ ] **API 3 (Pool C - FR-18 Orders):** Sẵn sàng triển khai
 * [ ] **Agent Skill: AI-Driven API Test Generator (G9.5):** Sẵn sàng thiết kế sơ đồ & Pseudocode
 * [ ] **Tích hợp CI/CD GitHub Actions:** Sẵn sàng cấu hình pipeline
+

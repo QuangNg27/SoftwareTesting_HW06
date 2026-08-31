@@ -1,0 +1,46 @@
+testCaseId,description,authType,contentType,sendRawBody,bodyOverride,totalAmount,shippingAddress,extraFieldsJson,setupCart,expectedStatus,expectSuccess,expectOrderId
+TC_FR08_01,"Happy Path - Valid checkout with valid user token and cart",valid_user,application/json,false,,150.00,"123 Nguyen Hue, District 1, HCMC",,true,200,true,true
+TC_FR08_02,"Valid checkout with Vietnamese UTF-8 address",valid_user,application/json,false,,250000.0,"Số 45, Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",,true,200,true,true
+TC_FR08_03,"Valid checkout with 2 decimal precision amount",valid_user,application/json,false,,99.99,"456 Tran Hung Dao, Da Nang",,true,200,true,true
+TC_FR08_04,"Valid checkout with international address format",valid_user,application/json,false,,499.00,"Apt 4B, 742 Evergreen Terrace, Springfield, OR, 97477, USA",,true,200,true,true
+TC_FR08_05,"Valid checkout with large integer amount",valid_user,application/json,false,,50000000,"789 Ba Thang Hai, Q10, HCMC",,true,200,true,true
+TC_FR08_06,"BVA - total_amount equals 0 (Boundary 0)",valid_user,application/json,false,,0,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_07,"BVA - total_amount is negative -1",valid_user,application/json,false,,-1,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_08,"BVA - total_amount is large negative -999999.99",valid_user,application/json,false,,-999999.99,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_09,"BVA - total_amount is minimum positive 0.01",valid_user,application/json,false,,0.01,"123 Le Loi, HCM",,true,200,true,true
+TC_FR08_10,"BVA - total_amount has 3 decimal places 100.555",valid_user,application/json,false,,100.555,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_11,"EP - total_amount is null",valid_user,application/json,true,"{""total_amount"": null, ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_12,"EP - total_amount is empty string",valid_user,application/json,true,"{""total_amount"": """", ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_13,"EP - total_amount is text string free",valid_user,application/json,true,"{""total_amount"": ""free"", ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_14,"EP - total_amount is numeric string 100.50 instead of number",valid_user,application/json,true,"{""total_amount"": ""100.50"", ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_15,"EP - total_amount is boolean true",valid_user,application/json,true,"{""total_amount"": true, ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_16,"EP - total_amount is object {}",valid_user,application/json,true,"{""total_amount"": {}, ""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_17,"EP - total_amount field is missing",valid_user,application/json,true,"{""shipping_address"": ""123 Le Loi, HCM""}",,,false,400,false,false
+TC_FR08_18,"EP - shipping_address is empty string",valid_user,application/json,false,,100,"",,true,400,false,false
+TC_FR08_19,"EP - shipping_address is only whitespace",valid_user,application/json,false,,100,"   ",,true,400,false,false
+TC_FR08_20,"EP - shipping_address is null",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": null}",,,false,400,false,false
+TC_FR08_21,"EP - shipping_address field is missing",valid_user,application/json,true,"{""total_amount"": 100}",,,false,400,false,false
+TC_FR08_22,"EP - shipping_address is number 12345",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": 12345}",,,false,400,false,false
+TC_FR08_23,"EP - shipping_address is boolean true",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": true}",,,false,400,false,false
+TC_FR08_24,"EP - shipping_address is object {}",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": {}}",,,false,400,false,false
+TC_FR08_25,"EP - shipping_address is array []",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": []}",,,false,400,false,false
+TC_FR08_26,"BVA - shipping_address is 1 char (too short)",valid_user,application/json,false,,100,"A",,true,400,false,false
+TC_FR08_27,"BVA - shipping_address is maximum length 500 chars",valid_user,application/json,false,,100,"123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Dist",,true,200,true,true
+TC_FR08_28,"Security SEC-02 - Missing Authorization header",missing,application/json,false,,100,"123 Le Loi, HCM",,false,401,false,false
+TC_FR08_29,"Security SEC-02 - Empty Bearer token",empty,application/json,false,,100,"123 Le Loi, HCM",,false,401,false,false
+TC_FR08_30,"Security SEC-02 - Invalid signature JWT token",invalid,application/json,false,,100,"123 Le Loi, HCM",,false,403,false,false
+TC_FR08_31,"Security SEC-02 - Authorization header without Bearer prefix",no_bearer,application/json,false,,100,"123 Le Loi, HCM",,false,401,false,false
+TC_FR08_32,"Security SEC-02 - Basic Auth instead of Bearer token",basic,application/json,false,,100,"123 Le Loi, HCM",,false,403,false,false
+TC_FR08_33,"Security SEC-04 - Stored XSS payload in shipping_address",valid_user,application/json,false,,100,"<script>alert('XSS')</script>",,true,200,true,true
+TC_FR08_34,"Security SEC-05 - SQL Injection in shipping_address",valid_user,application/json,false,,100,"123 Le Loi', 'hacked')--",,true,200,true,true
+TC_FR08_35,"Security SEC-05 - SQL DROP TABLE in shipping_address",valid_user,application/json,false,,100,"123 Le Loi; DROP TABLE orders;--",,true,200,true,true
+TC_FR08_36,"Business Logic - Checkout with empty cart",valid_user,application/json,false,,100,"123 Le Loi, HCM",,false,400,false,false
+TC_FR08_37,"Business Logic - Price tampering total amount mismatch",valid_user,application/json,false,,10.0,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_38,"Edge Case - Empty JSON body {}",valid_user,application/json,true,"{}",,,false,400,false,false
+TC_FR08_39,"Security - Mass Assignment privilege tampering status and user_id",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": ""123 Le Loi"", ""status"": ""delivered"", ""user_id"": 1}",,,true,200,true,true
+TC_FR08_40,"Schema - Content-Type text/plain instead of JSON",valid_user,text/plain,true,"total_amount=100&shipping_address=HCM",,,false,400,false,false
+TC_FR08_EXT01,"Extension - Double checkout race condition",valid_user,application/json,false,,100,"123 Le Loi, HCM",,false,400,false,false
+TC_FR08_EXT02,"Extension - Float precision overflow MAX_SAFE_INTEGER + 1",valid_user,application/json,false,,9007199254740992,"123 Le Loi, HCM",,true,400,false,false
+TC_FR08_EXT03,"Extension - CRLF Injection in shipping_address",valid_user,application/json,false,,100,"123 Le Loi\r\nSet-Cookie: session=hacked",,true,200,true,true
+TC_FR08_EXT04,"Extension - IDOR user_id tampering in body",valid_user,application/json,true,"{""total_amount"": 100, ""shipping_address"": ""123 Le Loi"", ""user_id"": 999}",,,true,200,true,true
+TC_FR08_EXT05,"Extension - Unicode RTL Override and Zero-Width Space",valid_user,application/json,false,,100,"123 Le Loi \u202E\u200B hcm",,true,200,true,true

@@ -1,0 +1,156 @@
+{
+  "info": {
+    "_postman_id": "8f2a1d9c-4b3e-47a1-9c88-e9f0d1a2b3c4",
+    "name": "HW06_PoolB_FR08_DataDriven",
+    "description": "Data-Driven Test Suite for Pool B - FR-08 (POST /api/checkout) covering Domain Partitions, Boundary Values, State Transitions, Security, and Schema Validation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Data-Driven Request: POST /api/checkout",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Ensure X-Student-Id header is always set per Anti-AI-Cheat constraint",
+              "pm.request.headers.upsert({ key: 'X-Student-Id', value: '23127462' });",
+              "",
+              "const token = pm.environment.get('userToken') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3ODgxNTA5MjB9.r-ESdm_hMmJF7PQfZEVfYVUp0CXN9usVDlUsH7tqx8s';",
+              "const authType = pm.iterationData.get('authType') || 'valid_user';",
+              "const contentType = pm.iterationData.get('contentType') || 'application/json';",
+              "const sendRawBody = pm.iterationData.get('sendRawBody');",
+              "const isRaw = (sendRawBody === true || sendRawBody === 'true');",
+              "const bodyOverride = pm.iterationData.get('bodyOverride');",
+              "",
+              "// 2. Handle Authorization Header",
+              "pm.request.headers.remove('Authorization');",
+              "if (authType === 'valid_user') {",
+              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + token });",
+              "} else if (authType === 'empty') {",
+              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' });",
+              "} else if (authType === 'invalid') {",
+              "    pm.request.headers.add({ key: 'Authorization', value: 'Bearer invalid.signature.token' });",
+              "} else if (authType === 'no_bearer') {",
+              "    pm.request.headers.add({ key: 'Authorization', value: token });",
+              "} else if (authType === 'basic') {",
+              "    pm.request.headers.add({ key: 'Authorization', value: 'Basic YWRtaW46MTIz' });",
+              "}",
+              "",
+              "// 3. Handle Content-Type Header",
+              "pm.request.headers.upsert({ key: 'Content-Type', value: contentType });",
+              "",
+              "// 4. Handle Request Body",
+              "if (isRaw) {",
+              "    pm.request.body.raw = bodyOverride || '{}';",
+              "} else {",
+              "    const bodyObj = {};",
+              "    const totalAmount = pm.iterationData.get('totalAmount');",
+              "    const shippingAddress = pm.iterationData.get('shippingAddress');",
+              "    const extraFieldsJson = pm.iterationData.get('extraFieldsJson');",
+              "",
+              "    if (totalAmount !== undefined && totalAmount !== '') {",
+              "        bodyObj.total_amount = isNaN(Number(totalAmount)) ? totalAmount : Number(totalAmount);",
+              "    }",
+              "    if (shippingAddress !== undefined && shippingAddress !== '') {",
+              "        bodyObj.shipping_address = shippingAddress;",
+              "    }",
+              "    if (extraFieldsJson) {",
+              "        try {",
+              "            Object.assign(bodyObj, JSON.parse(extraFieldsJson));",
+              "        } catch (e) {}",
+              "    }",
+              "    pm.request.body.raw = JSON.stringify(bodyObj);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = pm.iterationData.get('testCaseId') || 'TC_FR08_UNKNOWN';",
+              "const expectedStatus = Number(pm.iterationData.get('expectedStatus')) || 200;",
+              "const expectSuccessRaw = pm.iterationData.get('expectSuccess');",
+              "const isExpectSuccess = (expectSuccessRaw === true || expectSuccessRaw === 'true');",
+              "const expectOrderIdRaw = pm.iterationData.get('expectOrderId');",
+              "const isExpectOrderId = (expectOrderIdRaw === true || expectOrderIdRaw === 'true');",
+              "",
+              "// 1. Status Code Validation",
+              "pm.test('[' + testCaseId + '] Status code is ' + expectedStatus, function () {",
+              "    pm.response.to.have.status(expectedStatus);",
+              "});",
+              "",
+              "// 2. Content-Type Header Validation",
+              "pm.test('[' + testCaseId + '] Response Content-Type is application/json', function () {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "// 3. Security Assertions",
+              "pm.test('[' + testCaseId + '] No Database Internal Error leakage', function () {",
+              "    const responseText = pm.response.text();",
+              "    pm.expect(responseText).to.not.include('<h1>Database Error</h1>');",
+              "    pm.expect(responseText).to.not.include('SQLITE_ERROR');",
+              "});",
+              "",
+              "// 4. Schema & Business Logic Validation",
+              "if (isExpectSuccess) {",
+              "    pm.test('[' + testCaseId + '] Successful Checkout Response Schema', function () {",
+              "        const jsonData = pm.response.json();",
+              "        pm.expect(jsonData).to.be.an('object');",
+              "        pm.expect(jsonData).to.have.property('message', 'Checkout successful');",
+              "        if (isExpectOrderId) {",
+              "            pm.expect(jsonData).to.have.property('orderId');",
+              "            pm.expect(jsonData.orderId).to.be.a('number');",
+              "            pm.expect(jsonData.orderId).to.be.greaterThan(0);",
+              "        }",
+              "    });",
+              "} else {",
+              "    pm.test('[' + testCaseId + '] Error Response Schema contains error message', function () {",
+              "        if (pm.response.code !== 200) {",
+              "            const jsonData = pm.response.json();",
+              "            pm.expect(jsonData).to.be.an('object');",
+              "            pm.expect(jsonData).to.have.property('error');",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "X-Student-Id",
+            "value": "23127462",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"total_amount\": 150.00,\n  \"shipping_address\": \"123 Nguyen Hue, District 1, HCMC\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/checkout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "checkout"
+          ]
+        },
+        "description": "Executes data-driven test cases for FR-08 (POST /api/checkout)."
+      },
+      "response": []
+    }
+  ]
+}
