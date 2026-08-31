@@ -315,6 +315,22 @@ trên github issues đang thiếu b006
 
 ---
 
+### [31-08-2026 14:39:14] | Gemini
+```text
+build cho tôi agent skill nhận vào api spec và tạo ra test case
+```
+
+---
+
+### [31-08-2026 14:41:04] | Gemini
+```text
+không cần vẽ architecture trong skill
+```
+
+---
+
+
+
 
 
 

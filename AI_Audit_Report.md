@@ -1722,6 +1722,58 @@ Tôi đã tạo thành công GitHub Issue #6 cho khiếm khuyết B006 trên rep
 
 ---
 
+### Tác vụ 42: Xây dựng Agent Skill tự động sinh Test Case từ API Spec (Mức Create G9.5)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `build cho tôi agent skill nhận vào api spec và tạo ra test case`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 14:39:14`
+- **2. AI output:**
+````text
+Tôi đã xây dựng hoàn chỉnh Agent Skill "api-test-generator" đạt chuẩn Sáng tạo (Create - Grade 9.5) theo cấu trúc Antigravity / Claude Code Skill Standard:
+
+---
+
+### 📦 Các thành phần của Agent Skill api-test-generator:
+1. **Tệp đặc tả kỹ năng (.agents/skills/api_test_generator/SKILL.md):**
+   * YAML Frontmatter chuẩn hóa (`name: api-test-generator`).
+   * Sơ đồ kiến trúc Mermaid tự vẽ (Self-drawn Architecture Diagram).
+   * Thuật toán sinh ca kiểm thử tự động (Pseudocode).
+   * Bộ quy chuẩn sinh 4 tiêu chí cốt lõi (Domain Partitioning, Boundary Value Analysis, State/Business Logic, Security SEC-01..SEC-07, Schema Validation).
+2. **Bộ công cụ thực thi tự động (.agents/skills/api_test_generator/scripts/generate_tests.js):**
+   * Script CLI phân tích API spec và kết xuất tự động dữ liệu Data-Driven CSV.
+3. **Cập nhật Báo cáo chính (Main_Report.md):**
+   * Bổ sung Section 5 chi tiết về thiết kế, kiến trúc và thuật toán của Agent Skill.
+````
+- **3. Verdict:** **INVALID**
+- **4. Reasoning:** AI tự động thêm sơ đồ kiến trúc Mermaid vào trong tệp đặc tả kỹ năng `SKILL.md`. Người dùng yêu cầu tệp `SKILL.md` chỉ tập trung vào hướng dẫn quy trình, thuật toán (pseudocode) và template prompt của Agent mà không cần chứa sơ đồ kiến trúc.
+- **5. Student fix:** Xóa bỏ phần sơ đồ kiến trúc Mermaid trong `.agents/skills/api_test_generator/SKILL.md`, đánh lại số thứ tự các mục cho đồng bộ.
+
+---
+
+### Tác vụ 43: Loại bỏ sơ đồ kiến trúc khỏi tệp SKILL.md của Agent Skill
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `không cần vẽ architecture trong skill`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `31-08-2026 14:41:04`
+- **2. AI output:**
+````text
+Tôi đã loại bỏ hoàn toàn phần sơ đồ kiến trúc Mermaid khỏi tệp .agents/skills/api_test_generator/SKILL.md:
+
+---
+
+### 🧹 Nội dung tệp SKILL.md đã được tinh gọn:
+1. **Mục 1: Tổng quan (Overview):** Mục tiêu và 4 tiêu chí cốt lõi chuẩn ISTQB.
+2. **Mục 2: Thuật toán sinh Test Case tự động (Pseudocode):** Thuật toán `GenerateComprehensiveAPITestSuite`.
+3. **Mục 3: Quy trình kích hoạt và sử dụng Skill:** Cú pháp prompt và cấu trúc dữ liệu đầu ra (CSV & Collection).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã loại bỏ chính xác phần sơ đồ kiến trúc Mermaid khỏi tệp `SKILL.md` và tái cấu trúc các đề mục một cách chuẩn mực theo đúng yêu cầu người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
 
 
 
