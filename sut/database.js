@@ -118,7 +118,16 @@ function initDatabase() {
         insertCoupon.run('SUPERFIX', 'fixed', 400000, 200000, '2099-12-31', 1, 1); // 15% off, min 1M
         insertCoupon.finalize();
 
-        console.log('Database initialized and seeded (Phase 2).');
+        // Seed 50 Orders with 5 Distinct States for FR-18 Data-Driven Testing
+        const insertOrder = db.prepare('INSERT INTO orders (id, user_id, total_amount, status, shipping_address) VALUES (?, ?, ?, ?, ?)');
+        for (let i = 1; i <= 20; i++) insertOrder.run(i, 2, 100000 * i, 'pending', `Address ${i} HCMC`);
+        for (let i = 21; i <= 30; i++) insertOrder.run(i, 2, 100000 * i, 'confirmed', `Address ${i} HCMC`);
+        for (let i = 31; i <= 40; i++) insertOrder.run(i, 2, 100000 * i, 'shipping', `Address ${i} HCMC`);
+        for (let i = 41; i <= 45; i++) insertOrder.run(i, 2, 100000 * i, 'delivered', `Address ${i} HCMC`);
+        for (let i = 46; i <= 50; i++) insertOrder.run(i, 2, 100000 * i, 'canceled', `Address ${i} HCMC`);
+        insertOrder.finalize();
+
+        console.log('Database initialized and seeded (Phase 2 & 50 Orders).');
     });
 }
 

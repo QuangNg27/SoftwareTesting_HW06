@@ -1,4 +1,4 @@
-name: Automated API Tests (CI/CD Pipeline)
+name: Automated API Tests CI-CD Pipeline
 
 on:
   push:
@@ -13,33 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Set up Node.js Environment
+      - name: Set up Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
 
-      - name: 📦 Install Project Dependencies
+      - name: Install Dependencies
         run: |
           npm install
 
-      - name: 🚀 Start EShop SUT Backend Server
+      - name: Start EShop SUT Backend Server
         run: |
           node sut/server.js &
           echo "Waiting for SUT server to be ready on http://localhost:3000..."
           for i in {1..30}; do
             if curl -s http://localhost:3000/api/products > /dev/null; then
-              echo "✅ SUT Backend is up and healthy!"
+              echo "SUT Backend is ready!"
               break
             fi
             echo "Waiting for SUT ($i/30)..."
             sleep 1
           done
 
-      - name: 🧪 Execute Pool A: FR-05 Products API Tests
+      - name: Execute Pool A (FR-05 Products API Tests)
         id: test_fr05
         continue-on-error: true
         run: |
@@ -50,7 +50,7 @@ jobs:
             -r cli,htmlextra \
             --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
 
-      - name: 🧪 Execute Pool B: FR-08 Checkout API Tests
+      - name: Execute Pool B (FR-08 Checkout API Tests)
         id: test_fr08
         continue-on-error: true
         run: |
@@ -60,7 +60,7 @@ jobs:
             -r cli,htmlextra \
             --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html
 
-      - name: 🧪 Execute Pool C: FR-18 Orders Management API Tests
+      - name: Execute Pool C (FR-18 Orders API Tests)
         id: test_fr18
         continue-on-error: true
         run: |
@@ -70,7 +70,7 @@ jobs:
             -r cli,htmlextra \
             --reporter-htmlextra-export reports/newman_report_FR18_DataDriven.html
 
-      - name: 📊 Publish Newman HTML Reports as Artifact
+      - name: Publish Newman HTML Reports as Artifact
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -78,15 +78,15 @@ jobs:
           path: reports/*.html
           retention-days: 14
 
-      - name: 📋 Generate GitHub Actions Job Summary
+      - name: Generate Job Summary
         if: always()
         run: |
-          echo "## 🚀 API Test Automation Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## API Test Automation Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Test Suite | API Endpoint | Data-Driven Iterations | Status | Report |" >> $GITHUB_STEP_SUMMARY
-          echo "| :--- | :--- | :---: | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Pool A (FR-05)** | \`GET /api/products\` | 40 | ${{ steps.test_fr05.outcome == 'success' && '✅ Passed' || '⚠️ Completed (Defects Detected)' }} | [FR-05 Report](reports/newman_report_FR05_DataDriven.html) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Pool B (FR-08)** | \`POST /api/checkout\` | 45 | ${{ steps.test_fr08.outcome == 'success' && '✅ Passed' || '⚠️ Completed (Defects Detected)' }} | [FR-08 Report](reports/newman_report_FR08_DataDriven.html) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Pool C (FR-18)** | \`PUT/GET /api/admin/orders\` | 45 | ${{ steps.test_fr18.outcome == 'success' && '✅ Passed' || '⚠️ Completed (Defects Detected)' }} | [FR-18 Report](reports/newman_report_FR18_DataDriven.html) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | API Endpoint | Iterations | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :---: | :---: |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pool A (FR-05) | GET /api/products | 40 | ${{ steps.test_fr05.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pool B (FR-08) | POST /api/checkout | 45 | ${{ steps.test_fr08.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pool C (FR-18) | PUT/GET /api/admin/orders | 45 | ${{ steps.test_fr18.outcome }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "> ℹ️ **Anti-Cheat Verification**: All requests injected Header \`X-Student-Id: 23127462\`." >> $GITHUB_STEP_SUMMARY
+          echo "Anti-Cheat Header: X-Student-Id: 23127462" >> $GITHUB_STEP_SUMMARY
