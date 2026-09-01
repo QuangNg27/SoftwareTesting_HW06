@@ -1,0 +1,46 @@
+test_case_id,category,sub_type,order_id,auth_type,request_body,expected_status,expected_result,verdict,reasoning
+TC_FR18_01,Domain Partition,Valid Existing ID,1,ADMIN,"{""status"": ""confirmed""}",200,Cập nhật trạng thái đơn hàng thành công,VALID,Bao phủ trường hợp hợp lệ với ID đơn hàng tồn tại.
+TC_FR18_02,Domain Partition,Non-existent ID,999999,ADMIN,"{""status"": ""confirmed""}",404,Báo lỗi không tìm thấy đơn hàng (Order not found),VALID,Kiểm tra xử lý mã định danh không tồn tại.
+TC_FR18_03,Domain Partition,Zero Boundary ID,0,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID = 0 không hợp lệ,VALID,Kiểm thử giá trị biên số trị 0 cho path parameter.
+TC_FR18_04,Domain Partition,Negative Integer ID,-1,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID âm không hợp lệ,VALID,Kiểm thử giá trị số âm cho path parameter.
+TC_FR18_05,Domain Partition,String Non-Numeric ID,abc,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID chuỗi ký tự chữ,VALID,Kiểm thử ép kiểu dữ liệu schema cho path parameter.
+TC_FR18_06,Domain Partition,Float Number ID,1.5,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID số thực dấu phẩy động,VALID,Kiểm thử kiểu số nguyên nghiêm ngặt (Strict Integer).
+TC_FR18_07,Domain Partition,Whitespace ID,1%20,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID chứa khoảng trắng,VALID,Kiểm tra xử lý khoảng trắng trong URL path.
+TC_FR18_08,EP Body,Null Status,2,ADMIN,"{""status"": null}",400,Từ chối giá trị status null,VALID,Phân vùng kiểm tra giá trị null cho trường status.
+TC_FR18_09,EP Body,Empty Status String,3,ADMIN,"{""status"": """"}",400,Từ chối chuỗi status rỗng,VALID,Phân vùng kiểm tra chuỗi rỗng cho trường status.
+TC_FR18_10,EP Body,Whitespace Status,4,ADMIN,"{""status"": ""   ""}",400,Từ chối chuỗi status chỉ chứa khoảng trắng,VALID,Phân vùng kiểm tra chuỗi whitespace.
+TC_FR18_11,EP Body,Number Type Mismatch,7,ADMIN,"{""status"": 123}",400,Báo lỗi Schema Type Mismatch (Number thay vì String),VALID,Kiểm định Schema Type Mismatch cho trường status.
+TC_FR18_12,EP Body,Boolean Type Mismatch,8,ADMIN,"{""status"": true}",400,Báo lỗi Schema Type Mismatch (Boolean thay vì String),VALID,Kiểm định Schema Type Mismatch kiểu Boolean.
+TC_FR18_13,State Transition,Valid: Pending to Confirmed,9,ADMIN,"{""status"": ""confirmed""}",200,Chuyển trạng thái từ pending sang confirmed thành công,VALID,Bao phủ 100% bước chuyển hợp lệ pending -> confirmed.
+TC_FR18_14,State Transition,Valid: Pending to Canceled,10,ADMIN,"{""status"": ""canceled""}",200,Chuyển trạng thái từ pending sang canceled thành công,VALID,Bao phủ 100% bước chuyển hợp lệ pending -> canceled.
+TC_FR18_15,State Transition,Valid: Confirmed to Shipping,21,ADMIN,"{""status"": ""shipping""}",200,Chuyển trạng thái từ confirmed sang shipping thành công,VALID,Bao phủ bước chuyển hợp lệ confirmed -> shipping.
+TC_FR18_16,State Transition,Valid: Confirmed to Canceled,22,ADMIN,"{""status"": ""canceled""}",200,Chuyển trạng thái từ confirmed sang canceled thành công,VALID,Bao phủ bước chuyển hợp lệ confirmed -> canceled.
+TC_FR18_17,State Transition,Valid: Shipping to Delivered,31,ADMIN,"{""status"": ""delivered""}",200,Chuyển trạng thái từ shipping sang delivered thành công,VALID,Bao phủ bước chuyển hợp lệ shipping -> delivered.
+TC_FR18_18,State Transition,Illegal: Pending to Delivered,11,ADMIN,"{""status"": ""delivered""}",400,Từ chối bước chuyển bất hợp lệ pending -> delivered,VALID,Chặn bước nhảy cóc trạng thái vi phạm quy trình.
+TC_FR18_19,State Transition,Illegal: Pending to Shipping,12,ADMIN,"{""status"": ""shipping""}",400,Từ chối bước chuyển bất hợp lệ pending -> shipping,VALID,Chặn bước chuyển bỏ qua xác nhận đơn.
+TC_FR18_20,State Transition,Illegal: Confirmed to Pending,23,ADMIN,"{""status"": ""pending""}",400,Từ chối bước chuyển lùi confirmed -> pending,VALID,Chặn rollback trạng thái bất hợp lệ.
+TC_FR18_21,State Transition,Illegal: Confirmed to Delivered,24,ADMIN,"{""status"": ""delivered""}",400,Từ chối bước chuyển confirmed -> delivered,VALID,Chặn bước chuyển bỏ qua giai đoạn vận chuyển.
+TC_FR18_22,State Transition,Illegal: Shipping to Pending,32,ADMIN,"{""status"": ""pending""}",400,Từ chối bước chuyển lùi shipping -> pending,VALID,Chặn rollback trạng thái khi đang giao hàng.
+TC_FR18_23,State Transition,Illegal: Shipping to Canceled,33,ADMIN,"{""status"": ""canceled""}",400,Từ chối hủy đơn khi đơn hàng đang trên đường giao,VALID,Chặn hủy đơn khi đang vận chuyển.
+TC_FR18_24,State Transition,Illegal: Terminal State Mutation,41,ADMIN,"{""status"": ""pending""}",400,Từ chối sửa đổi trạng thái đơn hàng đã giao thành công,VALID,Bảo vệ trạng thái kết thúc (Terminal State).
+TC_FR18_25,Security SEC-02,Missing Authorization Header,13,NONE,"{""status"": ""confirmed""}",401,Trả về HTTP 401 Unauthorized do thiếu token,VALID,Kiểm tra xác thực khi thiếu Authorization Header.
+TC_FR18_26,Security SEC-02,Empty Bearer Token,14,EMPTY,"{""status"": ""confirmed""}",401,Từ chối truy cập do chuỗi token rỗng,VALID,Kiểm tra xác thực khi token rỗng.
+TC_FR18_27,Security SEC-02,Malformed JWT Signature,15,INVALID,"{""status"": ""confirmed""}",403,Trả về HTTP 403 Forbidden do sai chữ ký JWT,VALID,Kiểm tra từ chối token giả mạo chữ ký.
+TC_FR18_28,Security SEC-02,Unsupported Basic Auth,16,BASIC,"{""status"": ""confirmed""}",403,Từ chối phương thức xác thực Basic Auth,VALID,Kiểm tra từ chối scheme xác thực không được hỗ trợ.
+TC_FR18_29,Security SEC-03,RBAC Privilege Escalation PUT,17,USER,"{""status"": ""confirmed""}",403,Từ chối User thường sửa trạng thái đơn (Phát hiện lỗi B007),VALID,Kiểm tra kiểm soát truy cập RBAC Admin (SEC-03).
+TC_FR18_30,Security SEC-03,RBAC Admin Data Leakage GET,1,USER,"",403,Từ chối User thường xem toàn bộ đơn hàng (Phát hiện lỗi B007),VALID,Kiểm tra phân quyền bảo vệ danh sách đơn hàng Admin.
+TC_FR18_31,Security SEC-04,Stored XSS Injection,18,ADMIN,"{""status"": ""<script>alert(1)</script>""}",400,Từ chối chuỗi status chứa mã độc XSS,VALID,Kiểm thử phòng chống tấn công Stored XSS.
+TC_FR18_32,Security SEC-05,SQLi Tautology in Status,19,ADMIN,"{""status"": ""' OR '1'='1""}",400,Từ chối chuỗi status chứa payload SQLi,VALID,Kiểm thử phòng chống SQL Injection trong body.
+TC_FR18_33,Security SEC-05,SQLi in Path Parameter ID,"1' OR '1'='1",ADMIN,"{""status"": ""confirmed""}",400,Từ chối SQLi trong tham số đường dẫn URL,VALID,Kiểm thử phòng chống SQL Injection trong path parameter.
+TC_FR18_34,Security SEC-07,Mass Assignment Extra Fields,20,ADMIN,"{""status"": ""confirmed"", ""role"": ""admin"", ""total_amount"": 0}",200,Chỉ cập nhật status và bỏ qua các trường ngoài schema,VALID,Kiểm thử an toàn Mass Assignment.
+TC_FR18_35,Schema Validation,Root JSON Contract GET,1,ADMIN,"",200,Dữ liệu trả về là mảng JSON Array khớp Schema đặc tả,VALID,Kiểm định Root JSON Structure cho API danh sách đơn.
+TC_FR18_36,Schema Validation,Content-Type Header GET,1,ADMIN,"",200,Header Content-Type chứa application/json,VALID,Kiểm định Header Content-Type theo chuẩn REST.
+TC_FR18_37,Schema Validation,tv4 Formal Success Schema PUT,16,ADMIN,"{""status"": ""confirmed""}",200,Response khớp 100% JSON Schema Success (message property),VALID,Kiểm định Formal JSON Schema qua thư viện tv4.
+TC_FR18_38,Schema Validation,tv4 Formal Error Schema PUT,28,ADMIN,"{""status"": ""invalid_xyz""}",400,Response khớp 100% JSON Schema Error (error property),VALID,Kiểm định cấu trúc phản hồi lỗi chuẩn.
+TC_FR18_39,Schema Header,Content-Type text/plain Tampering,29,ADMIN,"status=confirmed",400,Từ chối Header Content-Type text/plain dạng JSON,VALID,Kiểm định Header Content-Type không hợp lệ.
+TC_FR18_40,Edge Case,Empty Request Body,30,ADMIN,"{}",400,Báo lỗi thiếu trường status bắt buộc,INCOMPLETE,AI sinh thiếu assertion kiểm tra chi tiết thông báo lỗi.
+TC_FR18_EXT01,Extension,Logic Flaw: Canceled to Delivered,46,ADMIN,"{""status"": ""delivered""}",400,Từ chối chuyển trực tiếp từ canceled sang delivered (Lỗi B008),VALID,Mở rộng chuyên sâu phát hiện lỗi logic máy trạng thái.
+TC_FR18_EXT02,Extension,Concurrency Race Condition,1,ADMIN,"{""status"": ""confirmed""}",400,Chỉ 1 request thành công khi gửi đồng thời (Race Condition),VALID,Mở rộng kịch bản kiểm thử tương tranh trạng thái.
+TC_FR18_EXT03,Extension,Arbitrary Non-Existent Status,2,ADMIN,"{""status"": ""super_vip_status""}",400,Từ chối trạng thái không thuộc tập enum định nghĩa,VALID,Kiểm tra tính toàn vẹn tập giá trị trạng thái.
+TC_FR18_EXT04,Extension,IDOR Privilege Bypass by User,19,USER,"{""status"": ""confirmed""}",403,Chặn người dùng thường bypass IDOR sửa đơn hàng (Lỗi B007),VALID,Kiểm tra phòng chống tấn công IDOR / BAC.
+TC_FR18_EXT05,Extension,Integer Overflow in Path ID,9007199254740992,ADMIN,"{""status"": ""confirmed""}",400,Từ chối ID vượt ngưỡng an toàn IEEE 754 MAX_SAFE_INTEGER,VALID,Kiểm thử giới hạn biểu diễn số nguyên an toàn trong Node.js.
