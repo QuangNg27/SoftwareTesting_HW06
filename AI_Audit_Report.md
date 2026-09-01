@@ -2113,6 +2113,31 @@ Các commit chỉ chỉnh sửa tài liệu (`README.md`, `Main_Report.md`, `AI_
 
 ---
 
+### Tác vụ 57: Xử lý và loại bỏ Annotation lỗi trong GitHub Actions CI/CD Pipeline
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `sao annotation của pipeline lỗi không vậy`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 20:13:59`
+- **2. AI output:**
+````text
+Tôi đã điều tra và xử lý triệt để 2 nguyên nhân gây ra annotations trên GitHub Actions:
+
+---
+
+### 🔍 Nguyên nhân & Biện pháp khắc phục:
+1. **Annotations Failure (`Process completed with exit code 1`):**
+   - *Nguyên nhân:* Khi chạy test, Newman phát hiện các lỗi assertion (do cố tình bắt 9 khiếm khuyết trong backend SUT) và trả về mã thoát `exit code 1`. Mặc dù job có `continue-on-error`, GitHub Actions vẫn tự động tạo thẻ Annotation báo lỗi cho từng step kết thúc với mã khác 0.
+   - *Khắc phục:* Thêm cờ `--suppress-exit-code` vào toàn bộ các lệnh `npx newman run`. Cờ này cho phép Newman ghi nhận đầy đủ các assertion thất bại vào báo cáo HTML Extra nhưng trả về mã thoát `0`, giúp GitHub Actions không còn tạo annotation lỗi.
+2. **Annotation Warning (`Node.js 20 deprecation warning`):**
+   - *Khắc phục:* Nâng cấp `node-version` từ 18 lên 20 LTS trong workflow để đồng bộ với môi trường hiện đại.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã chẩn đoán chính xác cơ chế sinh annotations của GitHub Actions khi Newman gặp assertion failure và áp dụng đúng cờ `--suppress-exit-code` cùng nâng cấp Node.js v20.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 

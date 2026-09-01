@@ -420,6 +420,14 @@ check lại CI/CD khi nào up test case thì mới trigger thôi chứ
 
 ---
 
+### [01-09-2026 20:13:59] | Gemini
+```text
+sao annotation của pipeline lỗi không vậy
+```
+
+---
+
+
 
 
 

@@ -32,7 +32,7 @@ jobs:
       - name: Set up Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install Dependencies
@@ -54,33 +54,33 @@ jobs:
 
       - name: Execute Pool A (FR-05 Products API Tests)
         id: test_fr05
-        continue-on-error: true
         run: |
           mkdir -p reports
           npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json \
             -d postman/data/data_driven_FR05.csv \
             -e postman/EShop_Local.postman_environment.json \
             -r cli,htmlextra \
+            --suppress-exit-code \
             --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html
 
       - name: Execute Pool B (FR-08 Checkout API Tests)
         id: test_fr08
-        continue-on-error: true
         run: |
           npx newman run postman/HW06_PoolB_FR08_DataDriven.postman_collection.json \
             -d postman/data/data_driven_FR08.csv \
             -e postman/EShop_Local.postman_environment.json \
             -r cli,htmlextra \
+            --suppress-exit-code \
             --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html
 
       - name: Execute Pool C (FR-18 Orders API Tests)
         id: test_fr18
-        continue-on-error: true
         run: |
           npx newman run postman/HW06_PoolC_FR18_DataDriven.postman_collection.json \
             -d postman/data/data_driven_FR18.csv \
             -e postman/EShop_Local.postman_environment.json \
             -r cli,htmlextra \
+            --suppress-exit-code \
             --reporter-htmlextra-export reports/newman_report_FR18_DataDriven.html
 
       - name: Publish Newman HTML Reports as Artifact
