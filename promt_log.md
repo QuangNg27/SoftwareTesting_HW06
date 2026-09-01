@@ -343,6 +343,14 @@ phải làm nó theo kiểu tổng quát nha
 
 ---
 
+### [01-09-2026 12:20:56] | Gemini
+```text
+copy phần pseudo code trong agent skill ra một file md
+```
+
+---
+
+
 
 
 

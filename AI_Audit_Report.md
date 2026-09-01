@@ -1827,6 +1827,32 @@ Tôi đã nâng cấp toàn diện Agent Skill api-test-generator thành Univers
 
 ---
 
+### Tác vụ 46: Trích xuất thuật toán Pseudocode của Agent Skill sang tệp markdown riêng biệt
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `copy phần pseudo code trong agent skill ra một file md`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 12:20:56`
+- **2. AI output:**
+````text
+Tôi đã sao chép toàn bộ thuật toán Pseudocode tổng quát của Agent Skill api-test-generator sang tệp markdown riêng biệt tại:
+📄 pseudocode.md
+
+Nội dung bao gồm đầy đủ 7 bước thuật toán tổng quát hóa:
+1. Canonical Baseline & Combinatorial Happy Path.
+2. Recursive EP & Boundary Value Analysis (BVA).
+3. Generalized State Machine & Invariants Modeler.
+4. Universal Security Vectors (SEC-01 .. SEC-07).
+5. Formal Schema Validation Contract (tv4).
+6. Advanced Extension Vectors.
+7. ISTQB Quality Gate, Anti-Cheat Header Injection & CSV/Collection Export.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã trích xuất chính xác và đầy đủ 100% thuật toán pseudocode của Agent Skill `api-test-generator` sang tệp riêng `pseudocode.md` theo đúng yêu cầu người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 
