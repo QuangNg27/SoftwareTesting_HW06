@@ -356,6 +356,118 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
    npx newman run postman/HW06_PoolC_FR18_DataDriven.postman_collection.json -d postman/data/data_driven_FR18.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR18_DataDriven.html
    ```
 
+---
+
+## 6. THIẾT KẾ & TRIỂN KHAI AGENT SKILL: UNIVERSAL AI-DRIVEN API TEST GENERATOR (MỨC CREATE - G9.5)
+
+### 6.1. Mục Tiêu & Cấu Trúc Tổng Quát Hóa (Universal Schema-Agnostic Engine)
+Để đáp ứng chuẩn mực kiểm thử tự động **mức Sáng tạo (Create - Grade 9.5)**, sinh viên đã xây dựng một **Custom Agent Skill** tổng quát hóa hoàn toàn theo cấu trúc Antigravity / Claude Code Skill Standard:
+* **Vị trí lưu trữ:** [`.agents/skills/api_test_generator/`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/)
+* **Cấu trúc tệp:**
+  * [`SKILL.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/SKILL.md): Đặc tả Frontmatter YAML, System Prompt, cơ chế phân tích đệ quy mọi cây Schema và thuật toán sinh 4 trụ cột ISTQB.
+  * [`pseudocode.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/pseudocode.md): Bản trích xuất thuật toán mã giả tổng quát hóa hoàn chỉnh.
+  * [`scripts/generate_tests.js`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/scripts/generate_tests.js): Engine CLI độc lập tiếp nhận bất kỳ đối tượng API Spec nào và sinh trực tiếp bộ dữ liệu Data-Driven CSV.
+
+### 6.2. Sơ Đồ Kiến Trúc Hệ Thống (Architecture Diagram)
+
+```mermaid
+flowchart TD
+    subgraph S1["1. TẦNG TIẾP NHẬN ĐẶC TẢ (INGESTION LAYER)"]
+        Spec["API Specification (OpenAPI 3.0 / JSON / REST Spec)"]
+        SpecParser["Universal Spec Parser & Schema Lexer"]
+        Spec --> SpecParser
+    end
+
+    subgraph S2["2. ĐỘNG CƠ SINH 4 TRỤ CỘT ISTQB (CORE ENGINE)"]
+        P1["Trụ Cột 1: EP & BVA Engine (Recursive Schema Tree Walk)"]
+        P2["Trụ Cột 2: Generalized State Machine Modeler"]
+        P3["Trụ Cột 3: Universal Security Injector (SEC-01..SEC-07)"]
+        P4["Trụ Cột 4: Formal tv4 Schema Contract Engine"]
+        SpecParser --> P1
+        SpecParser --> P2
+        SpecParser --> P3
+        SpecParser --> P4
+    end
+
+    subgraph S3["3. MỞ RỘNG NÂNG CAO & KẾT XUẤT (SYNTHESIS & EXPORT)"]
+        Ext["Advanced Extensions (Race Condition, Float Overflow, CRLF, Unicode RTL)"]
+        AntiCheat["Anti-Cheat Injector (X-Student-Id: 23127462)"]
+        CSVOut["Data-Driven Matrix (.csv)"]
+        ColOut["Postman Collection v2.1 (.json)"]
+        
+        P1 --> Ext
+        P2 --> Ext
+        P3 --> Ext
+        P4 --> Ext
+        Ext --> AntiCheat
+        AntiCheat --> CSVOut
+        AntiCheat --> ColOut
+    end
+```
+
+---
+
+## 7. TÍCH HỢP CI/CD PIPELINE TRÊN GITHUB ACTIONS (CONTINUOUS INTEGRATION)
+
+### 7.1. Cấu Hình Workflow (`.github/workflows/api-tests.yml`)
+Hệ thống CI/CD được thiết lập nhằm tự động hóa $100\%$ quy trình kiểm thử hồi quy (Regression Testing) mỗi khi có commit hoặc Pull Request vào nhánh `main`:
+
+* **Kích hoạt tự động (Triggers):**
+  * `push` lên nhánh `main`
+  * `pull_request` vào nhánh `main`
+  * `workflow_dispatch` (Kích hoạt thủ công từ giao diện GitHub Actions)
+* **Quy trình thực thi (Execution Flow):**
+  1. **Checkout Code:** Khởi tạo môi trường Ubuntu trên GitHub Runner (`actions/checkout@v4`).
+  2. **Cài đặt môi trường:** Thiết lập Node.js v18 LTS (`actions/setup-node@v4`) và cài đặt các phụ thuộc `npm install`.
+  3. **Khởi chạy SUT Backend:** Kích hoạt máy chủ backend ngầm `node sut/server.js &` và thực hiện vòng lặp Health Check thăm dò qua `curl http://localhost:3000/api/products` cho đến khi máy chủ sẵn sàng.
+  4. **Thực thi bộ kiểm thử tự động Data-Driven:**
+     * **Pool A (FR-05 Products):** 40 iterations CSV với Newman CLI xuất báo cáo HTML.
+     * **Pool B (FR-08 Checkout):** 45 iterations CSV với Newman CLI xuất báo cáo HTML.
+     * **Pool C (FR-18 Orders):** 45 iterations CSV với Newman CLI xuất báo cáo HTML.
+  5. **Lưu trữ Báo cáo Artifacts:** Đóng gói và lưu trữ toàn bộ các tệp báo cáo `reports/*.html` lên GitHub Actions Artifacts (`actions/upload-artifact@v4`) với thời gian lưu trữ 14 ngày.
+  6. **Xuất Bảng Tổng Kết (Job Summary):** Tự động tổng hợp kết quả thực thi ra Markdown Step Summary đính kèm trạng thái và số lượng ca kiểm thử.
+
+### 7.2. Sơ Đồ Quy Trình CI/CD (Pipeline Flowchart)
+
+```mermaid
+flowchart LR
+    A["Developer Push / PR"] --> B["GitHub Actions Runner"]
+    B --> C["Node.js Setup & npm install"]
+    C --> D["Start SUT Server (localhost:3000)"]
+    D --> E["Health Check Polling (curl)"]
+    E --> F["Newman Runner Matrix"]
+    F --> F1["Run Pool A FR-05 (40 TCs)"]
+    F --> F2["Run Pool B FR-08 (45 TCs)"]
+    F --> F3["Run Pool C FR-18 (45 TCs)"]
+    F1 --> G["Generate HTML Extra Reports"]
+    F2 --> G
+    F3 --> G
+    G --> H["Upload Artifacts (reports/*.html)"]
+    G --> I["Publish Step Summary Report"]
+```
+
+---
+
+## 8. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
+
+* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
+* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
+* [x] **API 1 (Pool A - FR-05 Products):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
+* [x] **API 2 (Pool B - FR-08 Checkout):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+* [x] **API 3 (Pool C - FR-18 Orders):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+* [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
+* [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml`
+
+
 
 
 

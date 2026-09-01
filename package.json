@@ -1,6 +1,22 @@
 {
+  "name": "softwaretesting_hw06",
+  "version": "1.0.0",
+  "description": "API Test Suite with Postman, Newman & GitHub Actions CI/CD for EShop SUT (HW06)",
+  "main": "sut/server.js",
+  "scripts": {
+    "sut:start": "node sut/server.js",
+    "test:pool-a": "newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d postman/data/data_driven_FR05.csv -e postman/EShop_Local.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR05_DataDriven.html",
+    "test:pool-b": "newman run postman/HW06_PoolB_FR08_DataDriven.postman_collection.json -d postman/data/data_driven_FR08.csv -e postman/EShop_Local.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html",
+    "test:pool-c": "newman run postman/HW06_PoolC_FR18_DataDriven.postman_collection.json -d postman/data/data_driven_FR18.csv -e postman/EShop_Local.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/newman_report_FR18_DataDriven.html",
+    "test:all": "npm run test:pool-a && npm run test:pool-b && npm run test:pool-c"
+  },
   "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "newman": "^6.2.2",
-    "newman-reporter-htmlextra": "^1.23.1"
+    "newman-reporter-htmlextra": "^1.23.1",
+    "sqlite3": "^5.1.7"
   }
 }
