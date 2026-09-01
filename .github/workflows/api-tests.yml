@@ -70,7 +70,6 @@ jobs:
             -d postman/data/data_driven_FR08.csv \
             -e postman/EShop_Local.postman_environment.json \
             -r cli,htmlextra \
-            --suppress-exit-code \
             --reporter-htmlextra-export reports/newman_report_FR08_DataDriven.html
 
       - name: Execute Pool C (FR-18 Orders API Tests)

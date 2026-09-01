@@ -303,7 +303,7 @@ app.post("/api/checkout", authenticateToken, (req, res) => {
     total_amount === undefined ||
     total_amount === null ||
     typeof total_amount !== "number" ||
-    total_amount <= 0 ||
+    total_amount < 0 ||
     !Number.isInteger(total_amount) ||
     total_amount > 1000000000
   ) {
