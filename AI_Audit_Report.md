@@ -2035,6 +2035,35 @@ Tôi đã xóa bỏ toàn bộ các ảnh chụp tổng quan/toàn màn hình c�
 
 ---
 
+### Tác vụ 54: Thiết lập và tích hợp toàn diện CI/CD Pipeline trên GitHub Actions
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `thực hiện integrate into CI/CD`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 19:54:09`
+- **2. AI output:**
+````text
+Tôi đã hoàn tất tích hợp hệ thống Continuous Integration (CI/CD) tự động hóa 100% trên GitHub Actions:
+
+---
+
+### 🚀 Chi tiết triển khai CI/CD:
+1. **Cấu hình Workflow:** `.github/workflows/api-tests.yml` tự động kích hoạt trên các sự kiện `push`, `pull_request` (main branch) và `workflow_dispatch`.
+2. **Khởi chạy SUT & Health Check:** Tự động cài đặt dependencies, khởi động máy chủ SUT backend (`node sut/server.js`) và thăm dò curl health check đến khi máy chủ sẵn sàng.
+3. **Thực thi đồng thời 3 bộ Test Suites qua Newman Data-Driven:**
+   - Pool A (FR-05 Products): 40 test cases CSV (`reports/newman_report_FR05_DataDriven.html`).
+   - Pool B (FR-08 Checkout): 45 test cases CSV (`reports/newman_report_FR08_DataDriven.html`).
+   - Pool C (FR-18 Orders): 45 test cases CSV (`reports/newman_report_FR18_DataDriven.html`).
+4. **Lưu trữ Báo cáo Artifacts:** Tự động upload toàn bộ báo cáo HTML Extra lên GitHub Actions Artifacts (`newman-api-test-reports`).
+5. **Xuất Bảng Tổng Kết (Job Summary):** Tổng hợp trực quan trạng thái thực thi và Anti-Cheat Header `X-Student-Id: 23127462`.
+6. **Báo cáo chính:** Bổ sung Section 7 (CI/CD Pipeline) kèm sơ đồ Mermaid trực quan vào `Main_Report.md`.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã xây dựng và cấu hình thành công 100% pipeline GitHub Actions CI/CD tự động thực thi toàn bộ 3 bộ test suites, kiểm tra sức khỏe máy chủ SUT, tải lên báo cáo HTML và xuất job summary chuẩn xác.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 
