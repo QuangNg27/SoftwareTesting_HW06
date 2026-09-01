@@ -1,5 +1,7 @@
 # Bug Report — EShop SUT
 
+Link Github issues: https://github.com/QuangNg27/SoftwareTesting_HW06/issues
+
 ## 1. BẢNG TỔNG HỢP DANH MỤC LỖI
 
 | Defect ID | Defect Title | Defect Description | Function ID | Severity | Reported By | Date Reported | Status | Comment |
