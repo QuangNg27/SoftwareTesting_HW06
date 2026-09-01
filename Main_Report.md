@@ -49,7 +49,7 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 
 ---
 
-### 3.2. Chiến Lược Sinh Test Case Bằng AI (Step 1 - AI Generation)
+### 3.2. Chiến Lược Sinh Test Case Bằng AI
 Áp dụng chiến lược **AI-First & Step-by-Step Prompting**, AI được hướng dẫn sinh bộ dữ liệu kiểm thử bao phủ toàn diện 5 nhóm khía cạnh với tổng cộng **40 Test Cases** (vượt chỉ tiêu $\ge 35$ test cases của đề bài):
 
 1. **Nhóm 1: Domain Partitioning & Functional Testing (14 TCs):** Phân vùng giá trị cho tham số `search` (không truyền query, query rỗng, khoảng trắng, khớp chính xác, tiền tố, hậu tố, infix, không phân biệt hoa/thường, Unicode tiếng Việt có dấu, số, khoảng trắng biên, từ khóa không tồn tại, chuỗi 255 ký tự).
@@ -107,8 +107,7 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 
 ---
 
-### 3.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)
-Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập trung vào các góc cạnh bảo mật và bẻ gãy hệ thống mà AI sinh cơ bản thường bỏ sót:
+### 3.4. Mở Rộng Test Cases Bổ Sung
 1. **`TC_FR05_22` (SQL Syntax Break with `'`):** Kiểm tra xem hệ thống có bị trả về mã lỗi `500 Internal Server Error` kèm trang HTML rò rỉ cấu trúc CSDL (`<h1>Database Error</h1>`) hay không khi gặp dấu nháy đơn.
 2. **`TC_FR05_23` (Union-based Privilege Data Extraction):** Kiểm tra khả năng kẻ tấn công dùng câu lệnh `UNION SELECT` để trích xuất email và mật khẩu của người dùng/Admin từ bảng `users`.
 3. **`TC_FR05_25` (Stacked Queries Destructive Testing):** Kiểm tra xem SQLite driver có cho phép thực thi nhiều câu lệnh liên tiếp qua dấu chấm phẩy (ví dụ `; DROP TABLE products;`) hay không.
@@ -117,7 +116,7 @@ Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập t
 
 ---
 
-### 3.5. Triển Khai Data-Driven Testing (Step 3 - Execution)
+### 3.5. Triển Khai Data-Driven Testing
 
 Toàn bộ 40 test cases được triển khai theo mô hình **Data-Driven Testing (DDT)** thông qua các file cấu hình chuẩn:
 
@@ -166,7 +165,7 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
 
 ---
 
-### 4.2. Chiến Lược Sinh Test Case Bằng AI (Step 1 - AI Generation)
+### 4.2. Chiến Lược Sinh Test Case Bằng AI
 Áp dụng chiến lược **AI-First & Step-by-Step Prompting**, AI được hướng dẫn sinh bộ dữ liệu kiểm thử bao phủ toàn diện 4 tiêu chí bắt buộc theo Mục 6.1 của đề bài với tổng cộng **40 Test Cases**:
 
 1. **Nhóm 1: Functional & Happy Path (5 TCs):** Đặt hàng thành công với thông tin chuẩn, số tiền nguyên lớn, số tiền thập phân 2 chữ số, địa chỉ tiếng Việt UTF-8, và địa chỉ quốc tế có ZIP code.
@@ -224,8 +223,7 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
 
 ---
 
-### 4.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)
-Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập trung vào các rủi ro tương tranh, tràn số thực và tiêm ký tự đặc biệt mà AI sinh cơ bản thường bỏ sót:
+### 4.4. Mở Rộng Test Cases Bổ Sung
 
 | Mã Test Case | Phân nhóm kiểm thử | Request Body (JSON) | Expected Status | Kết quả mong đợi & Lý do AI bỏ sót |
 | :--- | :--- | :--- | :---: | :--- |
@@ -237,7 +235,7 @@ Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập t
 
 ---
 
-### 4.5. Triển Khai Data-Driven Testing (Step 3 - Execution)
+### 4.5. Triển Khai Data-Driven Testing
 Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven Testing (DDT)**:
 
 * **Tệp dữ liệu CSV:** `postman/data/data_driven_FR08.csv`
@@ -271,7 +269,7 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
 
 ---
 
-### 5.2. Kế Hoạch Kiểm Thử & Tiếp Cận Đa Chiều (Step 1 - AI Generation)
+### 5.2. Kế Hoạch Kiểm Thử & Tiếp Cận Đa Chiều
 Bộ kiểm thử 40 Test Cases được thiết kế đa chiều bao phủ toàn diện 4 tiêu chuẩn ISTQB:
 1. **Domain Partitions & BVA (12 TCs):** Phân vùng giá trị cho path parameter `:id` ($1, 999999, 0, -1, "abc", 1.5$) và trường `status` (null, rỗng, whitespace, number, boolean).
 2. **State Machine Transitions (12 TCs):** Bao phủ $100\%$ bước chuyển hợp lệ (`pending` $\rightarrow$ `confirmed`, `shipping` $\rightarrow$ `delivered`) và tập bước chuyển bất hợp lệ (nhảy cóc, rollback, sửa đơn đã giao).
@@ -327,8 +325,7 @@ Bộ kiểm thử 40 Test Cases được thiết kế đa chiều bao phủ toà
 
 ---
 
-### 5.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)
-Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập trung vào các rủi ro tương tranh, tràn số nguyên và lỗi logic máy trạng thái:
+### 5.4. Mở Rộng Test Cases Bổ Sung
 
 | Mã Test Case | Phân nhóm kiểm thử | Request Payload | Expected Status | Kết quả mong đợi & Lý do AI bỏ sót |
 | :--- | :--- | :--- | :---: | :--- |
@@ -340,7 +337,7 @@ Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập t
 
 ---
 
-### 5.5. Triển Khai Data-Driven Testing (Step 3 - Execution)
+### 5.5. Triển Khai Data-Driven Testing
 Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven Testing (DDT)**:
 
 * **Tệp dữ liệu CSV:** `postman/data/data_driven_FR18.csv`
@@ -425,7 +422,7 @@ flowchart TD
 #### Kịch Bản 1: Tất Cả Test Cases Đều Thành Công (100% Green Run)
 * **Commit:** [`02ba69f`](https://github.com/QuangNg27/SoftwareTesting_HW06/commit/02ba69f) — `ci(demo): all API test cases passing in CI/CD pipeline (Pool A, B, C 100% Green)`
 * **GitHub Actions Run:** [Run #33512958064](https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33512958064)
-* **Trạng thái thực thi:** ✅ **Success (100% Passed - 0 Failures)**
+* **Trạng thái thực thi:** **Success (100% Passed - 0 Failures)**
 * **Mô tả chi tiết:** Toàn bộ **130 ca kiểm thử Data-Driven** qua 3 Collections (Pool A: 40 TCs, Pool B: 45 TCs, Pool C: 45 TCs) đều vượt qua các điều kiện assertions. Tất cả các bước trong pipeline đều đạt trạng thái màu xanh hoàn hảo.
 
 ![CI/CD All Passed](docs/images/ci_cd_all_passed.png)
@@ -435,37 +432,7 @@ flowchart TD
 #### Kịch Bản 2: Phát Hiện 1 Test Case Thất Bại (Pipeline Failure Alert)
 * **Commit:** [`a65a208`](https://github.com/QuangNg27/SoftwareTesting_HW06/commit/a65a208) — `ci(demo): pipeline run showing one test case failing (regression in TC_FR08_08 total_amount=0)`
 * **GitHub Actions Run:** [Run #33513099187](https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33513099187)
-* **Trạng thái thực thi:** ❌ **Failure (1 Defect Detected)**
+* **Trạng thái thực thi:** **Failure (1 Defect Detected)**
 * **Mô tả chi tiết:** Khi xuất hiện lỗi hồi quy tại ca kiểm thử `TC_FR08_08` (`POST /api/checkout` với `total_amount = 0`), Newman ngay lập tức bắt được lỗi Assertion (`expected 400 but got 200`). Pipeline dừng lại và chuyển sang trạng thái báo động đỏ (Failed), cảnh báo kịp thời cho lập trình viên và vẫn hoàn thành việc tải lên báo cáo chi tiết phục vụ chẩn đoán.
 
 ![CI/CD One Failed](docs/images/ci_cd_one_failed.png)
-
----
-
-## 8. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
-
-* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
-* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
-* [x] **API 1 (Pool A - FR-05 Products):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-* [x] **API 2 (Pool B - FR-08 Checkout):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **API 3 (Pool C - FR-18 Orders):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
-* [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml` kèm 2 minh chứng commits mẫu
-
-
-
-
-
-
-
-
-
