@@ -2137,6 +2137,38 @@ Tôi đã điều tra và xử lý triệt để 2 nguyên nhân gây ra annotat
 
 ---
 
+### Tác vụ 58: Cung cấp 2 commits mẫu thực chứng cho CI/CD Pipeline (All Passing vs 1 Failing)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `Provide two sample commits: one whose pipeline run shows all API test cases passing, and another whose pipeline run shows one test case failing. Mô tả vào report kèm screenshot và link`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 20:17:34`
+- **2. AI output:**
+````text
+Tôi đã tạo và thực thi thành công 2 commit mẫu thực tế trên GitHub Actions đại diện cho hai kịch bản kiểm thử:
+
+---
+
+### 📌 Chi tiết 2 Commits Mẫu:
+1. **Commit 1 (Tất cả test cases thành công - 100% Green Run):**
+   - Commit Hash: 02ba69f (ci(demo): all API test cases passing in CI/CD pipeline (Pool A, B, C 100% Green))
+   - Commit Link: https://github.com/QuangNg27/SoftwareTesting_HW06/commit/02ba69f
+   - GitHub Actions Run: https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33512958064 (Success)
+   - Hình minh chứng: docs/images/ci_cd_all_passed.png
+2. **Commit 2 (Phát hiện 1 test case thất bại - Failure Alert):**
+   - Commit Hash: a65a208 (ci(demo): pipeline run showing one test case failing (regression in TC_FR08_08 total_amount=0))
+   - Commit Link: https://github.com/QuangNg27/SoftwareTesting_HW06/commit/a65a208
+   - GitHub Actions Run: https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33513099187 (Failure)
+   - Hình minh chứng: docs/images/ci_cd_one_failed.png
+
+Đã mô tả chi tiết cả 2 kịch bản vào Mục 7.3 của Main_Report.md kèm hình ảnh và link liên kết trực tiếp.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã tạo thành công 2 commit mẫu đại diện cho 2 trạng thái kiểm thử thực tế trên GitHub Actions (100% Success và Failure phát hiện 1 lỗi hồi quy), chụp màn hình chứng minh, tải ảnh lên repo và cập nhật đầy đủ vào báo cáo chính.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 

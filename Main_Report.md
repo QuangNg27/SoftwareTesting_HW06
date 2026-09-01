@@ -418,7 +418,49 @@ flowchart TD
     end
 ```
 
+### 7.3. Minh Chứng Thực Thi Pipeline (Two Sample Commits)
+
+Để kiểm chứng tính năng tự động hóa và khả năng phát hiện lỗi hồi quy của hệ thống CI/CD trên GitHub Actions, sinh viên đã thực hiện **2 Commit mẫu thực tế** đại diện cho hai kịch bản:
+
+#### Kịch Bản 1: Tất Cả Test Cases Đều Thành Công (100% Green Run)
+* **Commit:** [`02ba69f`](https://github.com/QuangNg27/SoftwareTesting_HW06/commit/02ba69f) — `ci(demo): all API test cases passing in CI/CD pipeline (Pool A, B, C 100% Green)`
+* **GitHub Actions Run:** [Run #33512958064](https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33512958064)
+* **Trạng thái thực thi:** ✅ **Success (100% Passed - 0 Failures)**
+* **Mô tả chi tiết:** Toàn bộ **130 ca kiểm thử Data-Driven** qua 3 Collections (Pool A: 40 TCs, Pool B: 45 TCs, Pool C: 45 TCs) đều vượt qua các điều kiện assertions. Tất cả các bước trong pipeline đều đạt trạng thái màu xanh hoàn hảo.
+
+![CI/CD All Passed](docs/images/ci_cd_all_passed.png)
+
 ---
+
+#### Kịch Bản 2: Phát Hiện 1 Test Case Thất Bại (Pipeline Failure Alert)
+* **Commit:** [`a65a208`](https://github.com/QuangNg27/SoftwareTesting_HW06/commit/a65a208) — `ci(demo): pipeline run showing one test case failing (regression in TC_FR08_08 total_amount=0)`
+* **GitHub Actions Run:** [Run #33513099187](https://github.com/QuangNg27/SoftwareTesting_HW06/actions/runs/33513099187)
+* **Trạng thái thực thi:** ❌ **Failure (1 Defect Detected)**
+* **Mô tả chi tiết:** Khi xuất hiện lỗi hồi quy tại ca kiểm thử `TC_FR08_08` (`POST /api/checkout` với `total_amount = 0`), Newman ngay lập tức bắt được lỗi Assertion (`expected 400 but got 200`). Pipeline dừng lại và chuyển sang trạng thái báo động đỏ (Failed), cảnh báo kịp thời cho lập trình viên và vẫn hoàn thành việc tải lên báo cáo chi tiết phục vụ chẩn đoán.
+
+![CI/CD One Failed](docs/images/ci_cd_one_failed.png)
+
+---
+
+## 8. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
+
+* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
+* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
+* [x] **API 1 (Pool A - FR-05 Products):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
+* [x] **API 2 (Pool B - FR-08 Checkout):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+* [x] **API 3 (Pool C - FR-18 Orders):**
+  * [x] Sinh 40 Test Cases (AI Generation)
+  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
+  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
+* [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
+* [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml` kèm 2 minh chứng commits mẫu
+
 
 
 

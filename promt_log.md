@@ -427,6 +427,14 @@ sao annotation của pipeline lỗi không vậy
 
 ---
 
+### [01-09-2026 20:17:34] | Gemini
+```text
+Provide two sample commits: one whose pipeline run shows all API test cases passing, and another whose pipeline run shows one test case failing. Mô tả vào report kèm screenshot và link
+```
+
+---
+
+
 
 
 
