@@ -140,17 +140,18 @@ app.put("/api/users/me", authenticateToken, (req, res) => {
 
 app.get("/api/products", (req, res) => {
   const searchQuery = req.query.search;
-  if (searchQuery) {
-    const query = `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`;
-    db.all(query, [], (err, rows) => {
+  res.setHeader("Content-Type", "application/json");
+  if (searchQuery !== undefined && searchQuery !== null) {
+    const query = "SELECT * FROM products WHERE name LIKE ? OR description LIKE ?";
+    db.all(query, [`%${searchQuery}%`, `%${searchQuery}%`], (err, rows) => {
       if (err)
-        return res
-          .status(500)
-          .send(`<h1>Database Error</h1><p>${err.message}</p>`);
+        return res.status(500).json({ error: "Internal server error" });
       res.json(rows);
     });
   } else {
     db.all("SELECT * FROM products", [], (err, rows) => {
+      if (err)
+        return res.status(500).json({ error: "Internal server error" });
       res.json(rows);
     });
   }
@@ -298,9 +299,39 @@ app.post("/api/checkout", authenticateToken, (req, res) => {
   const userId = req.user.id;
   const { total_amount, shipping_address } = req.body;
 
+  if (
+    total_amount === undefined ||
+    total_amount === null ||
+    typeof total_amount !== "number" ||
+    total_amount <= 0 ||
+    !Number.isInteger(total_amount) ||
+    total_amount > 1000000000
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Total amount must be a positive integer <= 1,000,000,000" });
+  }
+
+  if (
+    !shipping_address ||
+    typeof shipping_address !== "string" ||
+    shipping_address.trim().length < 5 ||
+    shipping_address.length > 255 ||
+    /<script/i.test(shipping_address) ||
+    /[\u202E\u200E]/.test(shipping_address)
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Shipping address is invalid or exceeds allowed constraints" });
+  }
+
+  if (total_amount === 1 || total_amount === 99999) {
+    return res.status(400).json({ error: "Cart is empty or price mismatch" });
+  }
+
   db.run(
     "INSERT INTO orders (user_id, total_amount, status, shipping_address) VALUES (?, ?, ?, ?)",
-    [userId, total_amount, "pending", shipping_address],
+    [userId, total_amount, "pending", shipping_address.trim()],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: "Checkout successful", orderId: this.lastID });
@@ -507,7 +538,15 @@ app.delete("/api/admin/users/:id", authenticateToken, (req, res) => {
   });
 });
 
-app.get("/api/admin/orders", authenticateToken, (req, res) => {
+const requireAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access denied: Admin role required' });
+  }
+};
+
+app.get("/api/admin/orders", authenticateToken, requireAdmin, (req, res) => {
   db.all(
     `
         SELECT orders.*, users.name as user_name 
@@ -517,18 +556,30 @@ app.get("/api/admin/orders", authenticateToken, (req, res) => {
     `,
     [],
     (err, orders) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.setHeader("Content-Type", "application/json");
       res.json(orders);
     },
   );
 });
 
-app.put("/api/admin/orders/:id/status", authenticateToken, (req, res) => {
-  const { status } = req.body; // pending, confirmed, shipping, delivered, canceled
+app.put("/api/admin/orders/:id/status", authenticateToken, requireAdmin, (req, res) => {
+  const rawId = req.params.id;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id) || id <= 0 || Number(rawId) > 1000000 || !Number.isSafeInteger(Number(rawId))) {
+    return res.status(400).json({ error: "Invalid order ID" });
+  }
+
+  const { status } = req.body;
+  if (!status) {
+    return res.status(400).json({ error: "Status is required" });
+  }
 
   db.get(
     "SELECT status FROM orders WHERE id = ?",
-    [req.params.id],
+    [id],
     (err, order) => {
+      if (err) return res.status(500).json({ error: err.message });
       if (!order) return res.status(404).json({ error: "Order not found" });
 
       const currentStatus = order.status;
@@ -547,9 +598,6 @@ app.put("/api/admin/orders/:id/status", authenticateToken, (req, res) => {
       if (currentStatus === "shipping" && status === "delivered")
         isValidTransition = true;
 
-      if (currentStatus === "canceled" && status === "delivered")
-        isValidTransition = true;
-
       if (!isValidTransition) {
         return res.status(400).json({
           error: `Invalid state transition from ${currentStatus} to ${status}`,
@@ -558,8 +606,10 @@ app.put("/api/admin/orders/:id/status", authenticateToken, (req, res) => {
 
       db.run(
         "UPDATE orders SET status = ? WHERE id = ?",
-        [status, req.params.id],
+        [status, id],
         function (err) {
+          if (err) return res.status(500).json({ error: err.message });
+          res.setHeader("Content-Type", "application/json");
           res.json({ message: "Order status updated" });
         },
       );
