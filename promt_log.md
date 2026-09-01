@@ -329,6 +329,22 @@ không cần vẽ architecture trong skill
 
 ---
 
+### [01-09-2026 11:42:51] | Gemini
+```text
+sao  tôi check skill không thấy state transitions và schema validation vậy
+```
+
+---
+
+### [01-09-2026 11:45:18] | Gemini
+```text
+phải làm nó theo kiểu tổng quát nha
+```
+
+---
+
+
+
 
 
 
