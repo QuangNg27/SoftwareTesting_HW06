@@ -3,7 +3,7 @@ name: api-test-generator
 description: Universal AI-Driven API Test Generator - Tự động phân tích đặc tả API tùy ý (OpenAPI 3.0/Swagger, Postman Collection, JSON Schema, REST Route) và sinh bộ kiểm thử Data-Driven CSV + Postman Collection tổng quát bao phủ toàn diện 4 trụ cột chuẩn ISTQB (Domain Partitions & BVA, State Machine & Invariants, Security SEC-01..SEC-07, Formal Schema Validation) và Advanced Edge Extensions.
 ---
 
-# Universal AI-Driven API Test Generator Skill (Mức Create G9.5)
+# Universal AI-Driven API Test Generator Skill
 
 ## 1. TỔNG QUAN HỆ THỐNG (UNIVERSAL ARCHITECTURAL OVERVIEW)
 `api-test-generator` là một Agent Skill chuyên biệt được thiết kế theo **mô hình tổng quát hóa hướng Schema (Universal Schema-Agnostic Engine)**. Kỹ năng này không phụ thuộc vào bất kỳ nghiệp vụ cụ thể nào, mà có khả năng tiếp nhận **mọi đặc tả API RESTful tùy ý** (OpenAPI 3.0, Swagger 2.0, JSON Schema, RAML, Postman Collection v2.1) với cấu trúc tham số, phân quyền và máy trạng thái bất kỳ, từ đó tự động sinh ra bộ dữ liệu kiểm thử Data-Driven CSV ($\ge 40$ test cases) và Postman Collection v2.1 hoàn chỉnh.

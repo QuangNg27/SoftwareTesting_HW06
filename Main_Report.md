@@ -62,48 +62,48 @@ Theo yêu cầu của đề bài HW06, 3 API được lựa chọn đại diện
 
 ### 3.3. Bảng Danh Mục 40 Test Cases Chi Tiết
 
-| Mã Test Case | Phân nhóm kiểm thử | Query String / Dữ liệu gửi | Expected Status | Kết quả mong đợi (Expected Result) |
-| :--- | :--- | :--- | :---: | :--- |
-| **TC_FR05_01** | Domain Partition | *(None - Không query)* | `200 OK` | Trả về mảng JSON chứa tất cả sản phẩm trong CSDL. |
-| **TC_FR05_02** | Domain Partition | `?search=` | `200 OK` | Trả về danh sách sản phẩm bình thường. |
-| **TC_FR05_03** | Domain Partition | `?search=%20%20` | `200 OK` | Trim khoảng trắng và trả về danh sách sản phẩm hoặc `[]`. |
-| **TC_FR05_04** | Domain Partition | `?search=iPhone 15` | `200 OK` | Khớp chính xác sản phẩm có tên "iPhone 15". |
-| **TC_FR05_05** | Domain Partition | `?search=iPh` | `200 OK` | Khớp các sản phẩm có tên bắt đầu bằng "iPh". |
-| **TC_FR05_06** | Domain Partition | `?search=Pro` | `200 OK` | Khớp các sản phẩm có tên chứa hậu tố "Pro". |
-| **TC_FR05_07** | Domain Partition | `?search=Phone` | `200 OK` | Khớp các sản phẩm chứa từ "Phone" ở giữa tên. |
-| **TC_FR05_08** | Domain Partition | `?search=iphone` | `200 OK` | Khớp sản phẩm không phân biệt chữ thường. |
-| **TC_FR05_09** | Domain Partition | `?search=IPHONE` | `200 OK` | Khớp sản phẩm không phân biệt chữ hoa. |
-| **TC_FR05_10** | Domain Partition | `?search=Điện thoại` | `200 OK` | Xử lý an toàn chuỗi Unicode tiếng Việt có dấu. |
-| **TC_FR05_11** | Domain Partition | `?search=15` | `200 OK` | Khớp các sản phẩm có chứa số "15". |
-| **TC_FR05_12** | Domain Partition | `?search= iPhone ` | `200 OK` | Tự động loại bỏ whitespace đầu/cuối và tìm kiếm đúng. |
-| **TC_FR05_13** | Domain Partition | `?search=NonExistentProduct_XYZ999` | `200 OK` | Trả về mảng rỗng `[]` (Empty State). |
-| **TC_FR05_14** | Boundary Value | `?search=` *(Chuỗi 255 ký tự)* | `200 OK` | Xử lý an toàn chuỗi đạt giới hạn độ dài biên 255 ký tự. |
-| **TC_FR05_15** | Special Characters | `?search=%25` (`%`) | `200 OK` | Escape an toàn ký tự wildcard `%` của SQL LIKE. |
-| **TC_FR05_16** | Special Characters | `?search=_` | `200 OK` | Escape an toàn ký tự wildcard `_` của SQL LIKE. |
-| **TC_FR05_17** | Special Characters | `?search=\` | `200 OK` | Xử lý an toàn ký tự backslash, không gây crash regex. |
-| **TC_FR05_18** | Special Characters | `?search=type-c.2.0` | `200 OK` | Nhận diện đúng chuỗi chứa ký tự `-` và `.`. |
-| **TC_FR05_19** | Special Characters | `?search=Dolce%26Gabbana` | `200 OK` | Nhận diện đúng ký tự `&` trong query value. |
-| **TC_FR05_20** | Boundary Value | `?search=` *(Chuỗi 2000 ký tự)* | `200 OK / 414` | Server không bị crash (500 Error) khi gửi chuỗi cực lớn. |
-| **TC_FR05_21** | Security SEC-05 | `?search=' OR '1'='1` | `200 OK` | Tautology SQLi không bẻ gãy câu lệnh, trả về `[]`. |
-| **TC_FR05_22** | Security SEC-05 | `?search=iPhone'` | `200 OK` | Không bị lỗi cú pháp SQL dẫn đến 500 Database Error HTML. |
-| **TC_FR05_23** | Security SEC-05 | `?search=' UNION SELECT id,name,email,password,5,6 FROM users--` | `200 OK` | Tuyệt đối không để lộ danh sách email/mật khẩu bảng `users`. |
-| **TC_FR05_24** | Security SEC-05 | `?search=test'--` | `200 OK` | Comment line SQL được xử lý an toàn như chuỗi text thuần. |
-| **TC_FR05_25** | Security SEC-05 | `?search=test'; DROP TABLE products;--` | `200 OK` | Không thực thi stacked query, bảng `products` an toàn. |
-| **TC_FR05_26** | Security SEC-05 | `?search=iPhone' AND 1=0--` | `200 OK` | Câu lệnh được bảo vệ qua Parameterized Query. |
-| **TC_FR05_27** | Security SEC-04 | `?search=<script>alert('XSS')</script>` | `200 OK` | Response là JSON an toàn, không thực thi mã độc. |
-| **TC_FR05_28** | Security SEC-04 | `?search="><img src=x onerror=alert(1)>` | `200 OK` | Giữ nguyên dạng chuỗi an toàn trong payload JSON. |
-| **TC_FR05_29** | Security HPP | `?search=iPhone&search=Samsung` | `200 OK` | Xử lý an toàn khi bị truyền nhiều tham số `search`. |
-| **TC_FR05_30** | Security Tampering | `?search=phone&role=admin&isAdmin=true` | `200 OK` | Bỏ qua các tham số lạ, không làm sai lệch phân quyền. |
-| **TC_FR05_31** | Schema Validation | *(None)* | `200 OK` | `Content-Type` chứa `application/json`. |
-| **TC_FR05_32** | Schema Validation | *(None)* | `200 OK` | Dữ liệu gốc trả về là một JSON Array `[]`. |
-| **TC_FR05_33** | Schema Validation | *(None)* | `200 OK` | Tất cả object sản phẩm có đủ các trường: `id`, `name`, `price`, `description`, `imageUrl`, `category_id`. |
-| **TC_FR05_34** | Schema Validation | *(None)* | `200 OK` | Trường `price` luôn là kiểu số (`number`) và $> 0$. |
-| **TC_FR05_35** | Schema Validation | *(None)* | `200 OK` | Không rò rỉ các trường nhạy cảm (`password`, `secret`). |
-| **TC_FR05_36** | Protocol & Header | `Header: X-Student-Id: 22127001` | `200 OK` | Ghi nhận header mã số sinh viên theo đúng yêu cầu đề bài. |
-| **TC_FR05_37** | Protocol & Header | `Header: Authorization: Bearer <token>` | `200 OK` | Hoạt động bình thường khi gửi kèm token hợp lệ. |
-| **TC_FR05_38** | Security SEC-03 | `POST /api/products` *(No Admin Auth)* | `401 / 403` | Từ chối tạo sản phẩm khi không có quyền Admin. |
-| **TC_FR05_39** | Protocol & Negative | `DELETE /api/products` | `404 / 405` | Báo lỗi không hỗ trợ DELETE trên root collection. |
-| **TC_FR05_40** | Functional Edge | `?search=iPhone&page=1&limit=10` | `200 OK` | Xử lý an toàn query tìm kiếm kèm các tham số phân trang mở rộng. |
+| Mã Test Case | Phân nhóm kiểm thử | Query String / Dữ liệu gửi | Expected Status | Kết quả mong đợi (Expected Result) | Đánh giá AI (Verdict) | Lý giải kiểm định (Reasoning) |
+| :--- | :--- | :--- | :---: | :--- | :---: | :--- |
+| **`TC_FR05_01`** | Domain Partition | *(None - Không query)* | `200 OK` | Trả về mảng JSON chứa tất cả sản phẩm trong CSDL. | **VALID** | Bao phủ đúng trường hợp mặc định khi không truyền tham số lọc. |
+| **`TC_FR05_02`** | Domain Partition | `?search=` | `200 OK` | Trả về danh sách sản phẩm bình thường. | **VALID** | Kiểm tra xử lý chuỗi rỗng hợp lệ của query parameter. |
+| **`TC_FR05_03`** | Domain Partition | `?search=%20%20` | `200 OK` | Trim khoảng trắng và trả về danh sách sản phẩm hoặc `[]`. | **VALID** | Phân vùng kiểm tra xử lý chuỗi chỉ chứa ký tự khoảng trắng. |
+| **`TC_FR05_04`** | Domain Partition | `?search=iPhone 15` | `200 OK` | Khớp chính xác sản phẩm có tên "iPhone 15". | **VALID** | Kiểm thử chức năng tìm kiếm chuỗi chính xác (Exact match). |
+| **`TC_FR05_05`** | Domain Partition | `?search=iPh` | `200 OK` | Khớp các sản phẩm có tên bắt đầu bằng "iPh". | **VALID** | Kiểm thử tìm kiếm tiền tố (Prefix match). |
+| **`TC_FR05_06`** | Domain Partition | `?search=Pro` | `200 OK` | Khớp các sản phẩm có tên chứa hậu tố "Pro". | **VALID** | Kiểm thử tìm kiếm hậu tố (Suffix match). |
+| **`TC_FR05_07`** | Domain Partition | `?search=Phone` | `200 OK` | Khớp các sản phẩm chứa từ "Phone" ở giữa tên. | **VALID** | Kiểm thử tìm kiếm chuỗi con ở giữa (Infix match). |
+| **`TC_FR05_08`** | Domain Partition | `?search=iphone` | `200 OK` | Khớp sản phẩm không phân biệt chữ thường. | **VALID** | Kiểm tra tính năng Case-insensitive với chữ thường. |
+| **`TC_FR05_09`** | Domain Partition | `?search=IPHONE` | `200 OK` | Khớp sản phẩm không phân biệt chữ hoa. | **VALID** | Kiểm tra tính năng Case-insensitive với chữ hoa. |
+| **`TC_FR05_10`** | Domain Partition | `?search=Điện thoại` | `200 OK` | Xử lý an toàn chuỗi Unicode tiếng Việt có dấu. | **VALID** | Kiểm tra mã hóa và tìm kiếm UTF-8 tiếng Việt chính xác. |
+| **`TC_FR05_11`** | Domain Partition | `?search=15` | `200 OK` | Khớp các sản phẩm có chứa số "15". | **VALID** | Phân vùng tìm kiếm ký tự số trong tên sản phẩm. |
+| **`TC_FR05_12`** | Domain Partition | `?search= iPhone ` | `200 OK` | Tự động loại bỏ whitespace đầu/cuối và tìm kiếm đúng. | **VALID** | Kiểm tra chức năng tự động trim khoảng trắng biên. |
+| **`TC_FR05_13`** | Domain Partition | `?search=NonExistentProduct_XYZ999` | `200 OK` | Trả về mảng rỗng `[]` (Empty State). | **VALID** | Phân vùng tìm kiếm từ khóa không tồn tại trả về mảng rỗng. |
+| **`TC_FR05_14`** | Boundary Value | `?search=` *(Chuỗi 255 ký tự)* | `200 OK` | Xử lý an toàn chuỗi đạt giới hạn độ dài biên 255 ký tự. | **VALID** | Kiểm thử giá trị biên trên độ dài tối đa cho phép. |
+| **`TC_FR05_15`** | Special Characters | `?search=%25` (`%`) | `200 OK` | Escape an toàn ký tự wildcard `%` của SQL LIKE. | **VALID** | Kiểm tra ký tự đặc biệt của cú pháp LIKE trong SQL. |
+| **`TC_FR05_16`** | Special Characters | `?search=_` | `200 OK` | Escape an toàn ký tự wildcard `_` của SQL LIKE. | **VALID** | Kiểm tra ký tự wildcard đại diện 1 ký tự trong SQL LIKE. |
+| **`TC_FR05_17`** | Special Characters | `?search=\` | `200 OK` | Xử lý an toàn ký tự backslash, không gây crash regex. | **VALID** | Kiểm tra escape ký tự phân tách đặc biệt. |
+| **`TC_FR05_18`** | Special Characters | `?search=type-c.2.0` | `200 OK` | Nhận diện đúng chuỗi chứa ký tự `-` và `.`. | **VALID** | Kiểm tra chuỗi chứa ký tự chấm và gạch ngang thông dụng. |
+| **`TC_FR05_19`** | Special Characters | `?search=Dolce%26Gabbana` | `200 OK` | Nhận diện đúng ký tự `&` trong query value. | **VALID** | Kiểm tra ký tự phân tách tham số URL `&` đã URL-encoded. |
+| **`TC_FR05_20`** | Boundary Value | `?search=` *(Chuỗi 2000 ký tự)* | `200 OK / 414` | Server không bị crash (500 Error) khi gửi chuỗi cực lớn. | **VALID** | Kiểm thử khả năng chịu tải và chống DoS với payload lớn. |
+| **`TC_FR05_21`** | Security SEC-05 | `?search=' OR '1'='1` | `200 OK` | Tautology SQLi không bẻ gãy câu lệnh, trả về `[]`. | **VALID** | Kiểm thử phòng chống tấn công SQLi Tautology. |
+| **`TC_FR05_22`** | Security SEC-05 | `?search=iPhone'` | `200 OK` | Không bị lỗi cú pháp SQL dẫn đến 500 Database Error HTML. | **VALID** | Phát hiện lỗi bẻ gãy cú pháp SQL dẫn đến sập máy chủ. |
+| **`TC_FR05_23`** | Security SEC-05 | `?search=' UNION SELECT id,name,email,password,5,6 FROM users--` | `200 OK` | Tuyệt đối không để lộ danh sách email/mật khẩu bảng `users`. | **VALID** | Phát hiện lỗ hổng SQLi Union-based trích xuất CSDL nhạy cảm. |
+| **`TC_FR05_24`** | Security SEC-05 | `?search=test'--` | `200 OK` | Comment line SQL được xử lý an toàn như chuỗi text thuần. | **VALID** | Kiểm tra xử lý ký hiệu comment SQL `--`. |
+| **`TC_FR05_25`** | Security SEC-05 | `?search=test'; DROP TABLE products;--` | `200 OK` | Không thực thi stacked query, bảng `products` an toàn. | **VALID** | Kiểm thử phòng chống tấn công SQLi phá hoại cấu trúc bảng. |
+| **`TC_FR05_26`** | Security SEC-05 | `?search=iPhone' AND 1=0--` | `200 OK` | Câu lệnh được bảo vệ qua Parameterized Query. | **VALID** | Kiểm thử logic điều kiện Boolean trong câu truy vấn SQL. |
+| **`TC_FR05_27`** | Security SEC-04 | `?search=<script>alert('XSS')</script>` | `200 OK` | Response là JSON an toàn, không thực thi mã độc. | **VALID** | Kiểm thử phòng chống tấn công Reflected XSS qua query. |
+| **`TC_FR05_28`** | Security SEC-04 | `?search="><img src=x onerror=alert(1)>` | `200 OK` | Giữ nguyên dạng chuỗi an toàn trong payload JSON. | **VALID** | Kiểm thử mã độc HTML Image Tag XSS. |
+| **`TC_FR05_29`** | Security HPP | `?search=iPhone&search=Samsung` | `200 OK` | Xử lý an toàn khi bị truyền nhiều tham số `search`. | **INCOMPLETE** | AI sinh thiếu assertion kiểm tra kiểu mảng của Express query parser. |
+| **`TC_FR05_30`** | Security Tampering | `?search=phone&role=admin&isAdmin=true` | `200 OK` | Bỏ qua các tham số lạ, không làm sai lệch phân quyền. | **VALID** | Kiểm thử khả năng miễn nhiễm với tham số phân quyền lạ. |
+| **`TC_FR05_31`** | Schema Validation | *(None)* | `200 OK` | `Content-Type` chứa `application/json`. | **VALID** | Kiểm định Header Content-Type tuân thủ đúng chuẩn REST JSON. |
+| **`TC_FR05_32`** | Schema Validation | *(None)* | `200 OK` | Dữ liệu gốc trả về là một JSON Array `[]`. | **VALID** | Kiểm định cấu trúc gốc (Root JSON Type) là một mảng. |
+| **`TC_FR05_33`** | Schema Validation | *(None)* | `200 OK` | Tất cả object sản phẩm có đủ các trường: `id`, `name`, `price`, `description`, `imageUrl`, `category_id`. | **VALID** | Kiểm định sự hiện diện đầy đủ của 6 trường dữ liệu bắt buộc. |
+| **`TC_FR05_34`** | Schema Validation | *(None)* | `200 OK` | Trường `price` luôn là kiểu số (`number`) và $> 0$. | **VALID** | Kiểm định kiểu dữ liệu nghiêm ngặt, chống lỗi ép kiểu chuỗi. |
+| **`TC_FR05_35`** | Schema Validation | *(None)* | `200 OK` | Không rò rỉ các trường nhạy cảm (`password`, `secret`). | **VALID** | Kiểm định tính toàn vẹn và an toàn thông tin sản phẩm. |
+| **`TC_FR05_36`** | Protocol & Header | `Header: X-Student-Id: 23127462` | `200 OK` | Ghi nhận header mã số sinh viên theo đúng yêu cầu đề bài. | **VALID** | Kiểm định cơ chế chống gian lận Anti-Cheat bắt buộc. |
+| **`TC_FR05_37`** | Protocol & Header | `Header: Authorization: Bearer <token>` | `200 OK` | Hoạt động bình thường khi gửi kèm token hợp lệ. | **VALID** | Kiểm định tính tương thích khi Public API nhận Bearer token. |
+| **`TC_FR05_38`** | Security SEC-03 | `POST /api/products` *(No Admin Auth)* | `401 / 403` | Từ chối tạo sản phẩm khi không có quyền Admin. | **VALID** | Kiểm thử phân quyền RBAC ngăn chặn thao tác ghi trái phép. |
+| **`TC_FR05_39`** | Protocol & Negative | `DELETE /api/products` | `404 / 405` | Báo lỗi không hỗ trợ DELETE trên root collection. | **VALID** | Kiểm thử Negative Testing phương thức HTTP không được hỗ trợ. |
+| **`TC_FR05_40`** | Functional Edge | `?search=iPhone&page=1&limit=10` | `200 OK` | Xử lý an toàn query tìm kiếm kèm các tham số phân trang mở rộng. | **INCOMPLETE** | AI sinh tham số phân trang nhưng SUT chưa hiện thực phân trang. |
 
 ---
 
@@ -179,48 +179,48 @@ npx newman run postman/HW06_PoolA_FR05_DataDriven.postman_collection.json -d pos
 
 ### 4.3. Bảng Danh Mục 40 Test Cases Chi Tiết
 
-| Mã Test Case | Phân nhóm kiểm thử | Tiền điều kiện | Authorization Header | Request Body (JSON) | Expected Status | Kết quả mong đợi (Expected Result) |
-| :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| **`TC_FR08_01`** | Happy Path | User login, giỏ có hàng | `Bearer {{userToken}}` | `{"total_amount": 150.00, "shipping_address": "123 Nguyen Hue, Q1, HCMC"}` | `200 OK` | Tạo đơn hàng thành công, trả về `orderId` > 0. |
-| **`TC_FR08_02`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 250000.0, "shipping_address": "Số 45, Đường Lê Lợi, P. Bến Nghé, Q.1, TP.HCM"}` | `200 OK` | Lưu trữ chính xác chuỗi UTF-8 tiếng Việt có dấu. |
-| **`TC_FR08_03`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 99.99, "shipping_address": "456 Tran Hung Dao, Da Nang"}` | `200 OK` | Chấp nhận và lưu trữ chính xác số thập phân 99.99. |
-| **`TC_FR08_04`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 499.00, "shipping_address": "Apt 4B, 742 Evergreen Terrace, Springfield, OR, USA"}` | `200 OK` | Xử lý thành công địa chỉ định dạng quốc tế. |
-| **`TC_FR08_05`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 50000000, "shipping_address": "789 Ba Thang Hai, Q10, HCMC"}` | `200 OK` | Chấp nhận số tiền nguyên lớn hợp lệ. |
-| **`TC_FR08_06`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 0, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối đơn hàng có giá trị 0 đồng. |
-| **`TC_FR08_07`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": -1, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối số tiền âm. |
-| **`TC_FR08_08`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": -999999.99, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối số tiền âm cực lớn. |
-| **`TC_FR08_09`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 0.01, "shipping_address": "123 Le Loi, HCM"}` | `200 OK` | Chấp nhận giá trị biên nhỏ nhất hợp lệ > 0. |
-| **`TC_FR08_10`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 100.555, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Kiểm tra validation định dạng tiền tệ tối đa 2 chữ số lẻ. |
-| **`TC_FR08_11`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": null, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi trường `total_amount` không được null. |
-| **`TC_FR08_12`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi chuỗi rỗng không hợp lệ cho trường số. |
-| **`TC_FR08_13`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "free", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối chuỗi ký tự chữ không phải số. |
-| **`TC_FR08_14`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "100.50", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi sai kiểu dữ liệu Schema (String thay vì Number). |
-| **`TC_FR08_15`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": true, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối kiểu Boolean. |
-| **`TC_FR08_16`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": {}, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối Object. |
-| **`TC_FR08_17`** | EP Amount | User login | `Bearer {{userToken}}` | `{"shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi thiếu trường bắt buộc `total_amount`. |
-| **`TC_FR08_18`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": ""}` | `400 Bad Request` | Báo lỗi địa chỉ giao hàng không được để trống. |
-| **`TC_FR08_19`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "   "}` | `400 Bad Request` | Báo lỗi chuỗi chỉ chứa whitespace không hợp lệ. |
-| **`TC_FR08_20`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": null}` | `400 Bad Request` | Báo lỗi địa chỉ không được là null. |
-| **`TC_FR08_21`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100}` | `400 Bad Request` | Báo lỗi thiếu trường bắt buộc `shipping_address`. |
-| **`TC_FR08_22`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": 12345}` | `400 Bad Request` | Báo lỗi sai kiểu dữ liệu Schema (Number thay vì String). |
-| **`TC_FR08_23`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": true}` | `400 Bad Request` | Từ chối kiểu Boolean. |
-| **`TC_FR08_24`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": {}}` | `400 Bad Request` | Từ chối Object. |
-| **`TC_FR08_25`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": []}` | `400 Bad Request` | Từ chối Array. |
-| **`TC_FR08_26`** | BVA Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "A"}` | `400 Bad Request` | Báo lỗi độ dài địa chỉ tối thiểu (minLength >= 5 ký tự). |
-| **`TC_FR08_27`** | BVA Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "Repeating Address... 500 chars"}` | `200 OK` | Lưu trữ thành công chuỗi 500 ký tự mà không bị cắt xén. |
-| **`TC_FR08_28`** | Security SEC-02 | Bất kỳ | *(Không có)* | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401 Unauthorized` | Trả về mã lỗi 401 (`error: "Access token required"`). |
-| **`TC_FR08_29`** | Security SEC-02 | Bất kỳ | `Bearer ` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401/403` | Từ chối truy cập do thiếu chuỗi JWT token. |
-| **`TC_FR08_30`** | Security SEC-02 | Bất kỳ | `Bearer invalid.jwt.token` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `403 Forbidden` | Trả về mã lỗi 403 (`error: "Invalid or expired token"`). |
-| **`TC_FR08_31`** | Security SEC-02 | User login | `{{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401/403` | Từ chối do sai format Authorization header (thiếu Bearer). |
-| **`TC_FR08_32`** | Security SEC-02 | Bất kỳ | `Basic YWRtaW46MTIz` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `403 Forbidden` | Từ chối phương thức xác thực không được hỗ trợ. |
-| **`TC_FR08_33`** | Security SEC-04 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "<script>alert('XSS')</script>"}` | `200 OK` | Xử lý escape an toàn, không bị crash, lưu an toàn trong JSON. |
-| **`TC_FR08_34`** | Security SEC-05 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi', 'hacked')--"}` | `200 OK` | Câu lệnh INSERT dùng Parameterized Query an toàn, không bị SQLi. |
-| **`TC_FR08_35`** | Security SEC-05 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi; DROP TABLE orders;--"}` | `200 OK` | Dữ liệu lưu dạng chuỗi thô, không thực thi câu lệnh SQL phá hoại. |
-| **`TC_FR08_36`** | Business Logic | Giỏ hàng rỗng | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `400 Bad Request` | Từ chối tạo đơn hàng khi người dùng chưa có sản phẩm trong giỏ. |
-| **`TC_FR08_37`** | Business Logic | Sửa giá tiền | `Bearer {{userToken}}` | `{"total_amount": 100.0, "shipping_address": "123 Le Loi"}` | `400 Bad Request` | Backend phải tự tính toán lại tổng tiền từ giỏ hàng. |
-| **`TC_FR08_38`** | Edge Case | User login | `Bearer {{userToken}}` | `{}` | `400 Bad Request` | Báo lỗi thiếu toàn bộ các trường bắt buộc. |
-| **`TC_FR08_39`** | Mass Assignment | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi", "status": "delivered", "user_id": 1}` | `200 OK` | Đơn hàng phải luôn tạo với status="pending" và user_id từ Token. |
-| **`TC_FR08_40`** | Schema Header | User login | `Bearer {{userToken}}` | `total_amount=100&shipping_address=HCM` *(Content-Type: text/plain)* | `400/415` | Báo lỗi định dạng Content-Type không được hỗ trợ. |
+| Mã Test Case | Phân nhóm kiểm thử | Tiền điều kiện | Authorization Header | Request Body (JSON) | Expected Status | Kết quả mong đợi (Expected Result) | Đánh giá AI (Verdict) | Lý giải kiểm định (Reasoning) |
+| :--- | :--- | :--- | :--- | :--- | :---: | :--- | :---: | :--- |
+| **`TC_FR08_01`** | Happy Path | User login, giỏ có hàng | `Bearer {{userToken}}` | `{"total_amount": 150.00, "shipping_address": "123 Nguyen Hue, Q1, HCMC"}` | `200 OK` | Tạo đơn hàng thành công, trả về `orderId` > 0. | **VALID** | Bao phủ Happy Path luồng đặt hàng chuẩn với đầy đủ điều kiện. |
+| **`TC_FR08_02`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 250000.0, "shipping_address": "Số 45, Đường Lê Lợi, P. Bến Nghé, Q.1, TP.HCM"}` | `200 OK` | Lưu trữ chính xác chuỗi UTF-8 tiếng Việt có dấu. | **VALID** | Kiểm định hỗ trợ lưu trữ địa chỉ tiếng Việt có dấu. |
+| **`TC_FR08_03`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 99.99, "shipping_address": "456 Tran Hung Dao, Da Nang"}` | `200 OK` | Chấp nhận và lưu trữ chính xác số thập phân 99.99. | **VALID** | Kiểm định số tiền dạng số thực 2 chữ số thập phân hợp lệ. |
+| **`TC_FR08_04`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 499.00, "shipping_address": "Apt 4B, 742 Evergreen Terrace, Springfield, OR, USA"}` | `200 OK` | Xử lý thành công địa chỉ định dạng quốc tế. | **VALID** | Kiểm định chuỗi địa chỉ định dạng quốc tế có ký tự đặc biệt. |
+| **`TC_FR08_05`** | Functional | User login | `Bearer {{userToken}}` | `{"total_amount": 50000000, "shipping_address": "789 Ba Thang Hai, Q10, HCMC"}` | `200 OK` | Chấp nhận số tiền nguyên lớn hợp lệ. | **VALID** | Phân vùng kiểm tra số tiền nguyên lớn hợp lệ. |
+| **`TC_FR08_06`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 0, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối đơn hàng có giá trị 0 đồng. | **VALID** | Kiểm thử giá trị biên 0 đồng (phát hiện lỗi B003). |
+| **`TC_FR08_07`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": -1, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối số tiền âm. | **VALID** | Kiểm thử giá trị biên số âm (phát hiện lỗi B003). |
+| **`TC_FR08_08`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": -999999.99, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối số tiền âm cực lớn. | **VALID** | Kiểm thử số âm cực hạn. |
+| **`TC_FR08_09`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 0.01, "shipping_address": "123 Le Loi, HCM"}` | `200 OK` | Chấp nhận giá trị biên nhỏ nhất hợp lệ > 0. | **VALID** | Kiểm định giá trị biên dương nhỏ nhất cho phép. |
+| **`TC_FR08_10`** | BVA Amount | User login | `Bearer {{userToken}}` | `{"total_amount": 100.555, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Kiểm tra validation định dạng tiền tệ tối đa 2 chữ số lẻ. | **VALID** | Kiểm thử độ chính xác định dạng tiền tệ (precision). |
+| **`TC_FR08_11`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": null, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi trường `total_amount` không được null. | **VALID** | Phân vùng kiểm tra giá trị null cho trường số. |
+| **`TC_FR08_12`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi chuỗi rỗng không hợp lệ cho trường số. | **VALID** | Phân vùng kiểm tra chuỗi rỗng cho trường số. |
+| **`TC_FR08_13`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "free", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối chuỗi ký tự chữ không phải số. | **VALID** | Phân vùng kiểm tra ký tự chữ không hợp lệ cho tiền. |
+| **`TC_FR08_14`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": "100.50", "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi sai kiểu dữ liệu Schema (String thay vì Number). | **VALID** | Kiểm định Schema Type Mismatch (String thay vì Number). |
+| **`TC_FR08_15`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": true, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối kiểu Boolean. | **VALID** | Phân vùng kiểm tra kiểu Boolean. |
+| **`TC_FR08_16`** | EP Amount | User login | `Bearer {{userToken}}` | `{"total_amount": {}, "shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Từ chối Object. | **VALID** | Phân vùng kiểm tra kiểu Object. |
+| **`TC_FR08_17`** | EP Amount | User login | `Bearer {{userToken}}` | `{"shipping_address": "123 Le Loi, HCM"}` | `400 Bad Request` | Báo lỗi thiếu trường bắt buộc `total_amount`. | **VALID** | Phân vùng kiểm tra thiếu trường bắt buộc. |
+| **`TC_FR08_18`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": ""}` | `400 Bad Request` | Báo lỗi địa chỉ giao hàng không được để trống. | **VALID** | Phân vùng kiểm tra địa chỉ rỗng (phát hiện lỗi B004). |
+| **`TC_FR08_19`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "   "}` | `400 Bad Request` | Báo lỗi chuỗi chỉ chứa whitespace không hợp lệ. | **VALID** | Phân vùng kiểm tra địa chỉ chỉ chứa khoảng trắng (lỗi B004). |
+| **`TC_FR08_20`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": null}` | `400 Bad Request` | Báo lỗi địa chỉ không được là null. | **VALID** | Phân vùng kiểm tra giá trị null cho trường chuỗi. |
+| **`TC_FR08_21`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100}` | `400 Bad Request` | Báo lỗi thiếu trường bắt buộc `shipping_address`. | **VALID** | Phân vùng kiểm tra thiếu trường địa chỉ bắt buộc. |
+| **`TC_FR08_22`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": 12345}` | `400 Bad Request` | Báo lỗi sai kiểu dữ liệu Schema (Number thay vì String). | **VALID** | Kiểm định Schema Type Mismatch cho trường địa chỉ. |
+| **`TC_FR08_23`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": true}` | `400 Bad Request` | Từ chối kiểu Boolean. | **VALID** | Phân vùng kiểm tra kiểu Boolean cho địa chỉ. |
+| **`TC_FR08_24`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": {}}` | `400 Bad Request` | Từ chối Object. | **VALID** | Phân vùng kiểm tra kiểu Object cho địa chỉ. |
+| **`TC_FR08_25`** | EP Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": []}` | `400 Bad Request` | Từ chối Array. | **VALID** | Phân vùng kiểm tra kiểu Array cho địa chỉ. |
+| **`TC_FR08_26`** | BVA Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "A"}` | `400 Bad Request` | Báo lỗi độ dài địa chỉ tối thiểu (minLength >= 5 ký tự). | **VALID** | Kiểm thử giá trị biên dưới độ dài tối thiểu cho phép. |
+| **`TC_FR08_27`** | BVA Address | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "Repeating Address... 500 chars"}` | `200 OK` | Lưu trữ thành công chuỗi 500 ký tự mà không bị cắt xén. | **VALID** | Kiểm thử giá trị biên trên độ dài tối đa 500 ký tự. |
+| **`TC_FR08_28`** | Security SEC-02 | Bất kỳ | *(Không có)* | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401 Unauthorized` | Trả về mã lỗi 401 (`error: "Access token required"`). | **VALID** | Kiểm tra xác thực khi thiếu hoàn toàn Authorization Header. |
+| **`TC_FR08_29`** | Security SEC-02 | Bất kỳ | `Bearer ` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401/403` | Từ chối truy cập do thiếu chuỗi JWT token. | **VALID** | Kiểm tra xác thực khi gửi header Bearer nhưng chuỗi token rỗng. |
+| **`TC_FR08_30`** | Security SEC-02 | Bất kỳ | `Bearer invalid.jwt.token` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `403 Forbidden` | Trả về mã lỗi 403 (`error: "Invalid or expired token"`). | **VALID** | Kiểm tra từ chối token giả mạo/sai chữ ký mật mã. |
+| **`TC_FR08_31`** | Security SEC-02 | User login | `{{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `401/403` | Từ chối do sai format Authorization header (thiếu Bearer). | **VALID** | Kiểm tra định dạng Authorization Header bắt buộc tiền tố Bearer. |
+| **`TC_FR08_32`** | Security SEC-02 | Bất kỳ | `Basic YWRtaW46MTIz` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `403 Forbidden` | Từ chối phương thức xác thực không được hỗ trợ. | **VALID** | Kiểm tra từ chối phương thức xác thực Basic Auth. |
+| **`TC_FR08_33`** | Security SEC-04 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "<script>alert('XSS')</script>"}` | `200 OK` | Xử lý escape an toàn, không bị crash, lưu an toàn trong JSON. | **VALID** | Kiểm thử phòng chống tấn công Stored XSS trong địa chỉ. |
+| **`TC_FR08_34`** | Security SEC-05 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi', 'hacked')--"}` | `200 OK` | Câu lệnh INSERT dùng Parameterized Query an toàn, không bị SQLi. | **VALID** | Kiểm thử phòng chống SQL Injection trong câu lệnh INSERT. |
+| **`TC_FR08_35`** | Security SEC-05 | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi; DROP TABLE orders;--"}` | `200 OK` | Dữ liệu lưu dạng chuỗi thô, không thực thi câu lệnh SQL phá hoại. | **VALID** | Kiểm thử phòng chống tấn công SQLi Stacked Query. |
+| **`TC_FR08_36`** | Business Logic | Giỏ hàng rỗng | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi"}` | `400 Bad Request` | Từ chối tạo đơn hàng khi người dùng chưa có sản phẩm trong giỏ. | **INCOMPLETE** | AI sinh thiếu pre-request dọn giỏ hàng để thiết lập trạng thái rỗng. |
+| **`TC_FR08_37`** | Business Logic | Sửa giá tiền | `Bearer {{userToken}}` | `{"total_amount": 100.0, "shipping_address": "123 Le Loi"}` | `400 Bad Request` | Backend phải tự tính toán lại tổng tiền từ giỏ hàng. | **INCOMPLETE** | AI sinh thiếu logic đối chiếu tổng tiền tính toán từ giỏ hàng thực tế. |
+| **`TC_FR08_38`** | Edge Case | User login | `Bearer {{userToken}}` | `{}` | `400 Bad Request` | Báo lỗi thiếu toàn bộ các trường bắt buộc. | **VALID** | Kiểm định xử lý khi request body rỗng hoàn toàn `{}`. |
+| **`TC_FR08_39`** | Mass Assignment | User login | `Bearer {{userToken}}` | `{"total_amount": 100, "shipping_address": "123 Le Loi", "status": "delivered", "user_id": 1}` | `200 OK` | Đơn hàng phải luôn tạo với status="pending" và user_id từ Token. | **VALID** | Kiểm thử ngăn chặn Mass Assignment ghi đè status hoặc user_id. |
+| **`TC_FR08_40`** | Schema Header | User login | `Bearer {{userToken}}` | `total_amount=100&shipping_address=HCM` *(Content-Type: text/plain)* | `400/415` | Báo lỗi định dạng Content-Type không được hỗ trợ. | **VALID** | Kiểm định Header Content-Type (phát hiện lỗi máy chủ B006). |
 
 ---
 

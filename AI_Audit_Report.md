@@ -1852,6 +1852,32 @@ Nội dung bao gồm đầy đủ 7 bước thuật toán tổng quát hóa:
 
 ---
 
+### Tác vụ 47: Gắn nhãn đánh giá (VALID / INVALID / INCOMPLETE) và Reasoning cho toàn bộ Test Cases
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `gắn nhãn label cho các test case VALID / INVALID / INCOMPLETE kèm reasoning`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 14:43:23`
+- **2. AI output:**
+````text
+Tôi đã cập nhật trực tiếp 2 cột mới "Đánh giá AI (Verdict)" và "Lý giải kiểm định (Reasoning)" vào toàn bộ các bảng danh mục 40 Test Cases trong Main_Report.md:
+
+---
+
+### 🏷️ Chi tiết cập nhật:
+1. **Pool A - FR-05 (`GET /api/products`):**
+   - Đã gán nhãn cho 40 test cases: 38 VALID, 2 INCOMPLETE (`TC_FR05_29` - thiếu assertion mảng HPP, `TC_FR05_40` - tham số phân trang chưa hỗ trợ).
+   - Mỗi test case đều có lý giải kiểm định học thuật rõ ràng theo chuẩn ISTQB.
+2. **Pool B - FR-08 (`POST /api/checkout`):**
+   - Đã gán nhãn cho 40 test cases: 38 VALID, 2 INCOMPLETE (`TC_FR08_36` - thiếu pre-request dọn giỏ hàng, `TC_FR08_37` - thiếu logic đối chiếu tổng tiền giỏ hàng).
+   - Đính kèm đầy đủ phân tích cho các ca biên (B003, B004), bảo mật (SEC-02/04/05/07) và khế ước dữ liệu.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã bổ sung chuẩn xác 100% nhãn kiểm định `VALID` / `INCOMPLETE` cùng giải thích lý do (*Reasoning*) chi tiết, sắc bén cho toàn bộ các ca kiểm thử của cả 2 Pool tính năng theo đúng tiêu chí đánh giá Human Audit của HW06.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 

@@ -350,6 +350,14 @@ copy phần pseudo code trong agent skill ra một file md
 
 ---
 
+### [01-09-2026 14:43:23] | Gemini
+```text
+gắn nhãn label cho các test case VALID / INVALID / INCOMPLETE kèm reasoning
+```
+
+---
+
+
 
 
 
