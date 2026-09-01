@@ -3,9 +3,22 @@ name: Automated API Tests CI-CD Pipeline
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'postman/**'
+      - 'sut/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/api-tests.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'postman/**'
+      - 'sut/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/api-tests.yml'
   workflow_dispatch:
+
 
 jobs:
   api-regression-tests:

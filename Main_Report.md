@@ -363,10 +363,10 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
 ### 7.1. Cấu Hình Workflow (`.github/workflows/api-tests.yml`)
 Hệ thống CI/CD được thiết lập nhằm tự động hóa $100\%$ quy trình kiểm thử hồi quy (Regression Testing) mỗi khi có commit hoặc Pull Request vào nhánh `main`:
 
-* **Kích hoạt tự động (Triggers):**
-  * `push` lên nhánh `main`
-  * `pull_request` vào nhánh `main`
-  * `workflow_dispatch` (Kích hoạt thủ công từ giao diện GitHub Actions)
+* **Kích hoạt có chọn lọc (Precision Path Filtering Triggers):**
+  * `push` lên nhánh `main` khi có thay đổi tại các tệp kiểm thử: `postman/**`, `sut/**`, `package.json`, `.github/workflows/api-tests.yml`. (Không kích hoạt lãng phí tài nguyên khi chỉ sửa file tài liệu Markdown, Prompt Log hay ảnh báo cáo).
+  * `pull_request` vào nhánh `main` với cùng bộ lọc `paths`.
+  * `workflow_dispatch` (Kích hoạt thủ công theo nhu cầu từ giao diện GitHub Actions).
 * **Quy trình thực thi (Execution Flow):**
   1. **Checkout Code:** Khởi tạo môi trường Ubuntu trên GitHub Runner (`actions/checkout@v4`).
   2. **Cài đặt môi trường:** Thiết lập Node.js v18 LTS (`actions/setup-node@v4`) và cài đặt các phụ thuộc `npm install`.
@@ -419,25 +419,6 @@ flowchart TD
 ```
 
 ---
-
-## 8. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
-
-* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
-* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
-* [x] **API 1 (Pool A - FR-05 Products):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-* [x] **API 2 (Pool B - FR-08 Checkout):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **API 3 (Pool C - FR-18 Orders):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
-* [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml`
 
 
 

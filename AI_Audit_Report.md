@@ -2087,6 +2087,35 @@ Tôi đã kiểm tra và tái cấu trúc lại toàn bộ sơ đồ Mermaid t�
 
 ---
 
+### Tác vụ 56: Cấu hình Path Filtering cho CI/CD Workflow chỉ kích hoạt khi cập nhật test case
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check lại CI/CD khi nào up test case thì mới trigger thôi chứ`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 20:11:10`
+- **2. AI output:**
+````text
+Tôi đã cập nhật cấu hình triggers trong `.github/workflows/api-tests.yml` và đồng bộ vào Section 7.1 của `Main_Report.md` với cơ chế Precision Path Filtering:
+
+---
+
+### 🎯 Quy tắc kích hoạt mới:
+Pipeline CI/CD sẽ CHỈ tự động kích hoạt khi có thay đổi liên quan trực tiếp đến Test Cases và hạ tầng kiểm thử:
+- `postman/**` (Tập tệp Collection JSON, Data-Driven CSV, Environment).
+- `sut/**` (Mã nguồn backend SUT và tệp cơ sở dữ liệu SQLite).
+- `package.json` & `package-lock.json` (Danh sách dependencies kiểm thử).
+- `.github/workflows/api-tests.yml` (Bản thân tệp cấu hình pipeline).
+
+Các commit chỉ chỉnh sửa tài liệu (`README.md`, `Main_Report.md`, `AI_Audit_Report.md`, `promt_log.md`), ảnh báo cáo (`docs/images/**`) hoặc các tệp phụ trợ sẽ KHÔNG kích hoạt chạy CI, giúp tối ưu hóa 100% tài nguyên runner và thời gian build.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã bổ sung chính xác bộ lọc `paths` cho cả hai sự kiện `push` và `pull_request` trong workflow GitHub Actions và đồng bộ hóa tài liệu báo cáo đúng theo yêu cầu chuẩn hóa CI/CD.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
 
 
 

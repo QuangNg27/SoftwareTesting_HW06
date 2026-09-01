@@ -413,6 +413,16 @@ check lại sơ đồ 7.2 bị lỗi syntax hay sao á
 
 ---
 
+### [01-09-2026 20:11:10] | Gemini
+```text
+check lại CI/CD khi nào up test case thì mới trigger thôi chứ
+```
+
+---
+
+
+
+
 
 
 
