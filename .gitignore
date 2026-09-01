@@ -41,3 +41,5 @@ scratch/
 *.db
 
 scripts
+
+*.pdf

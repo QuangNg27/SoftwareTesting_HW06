@@ -1877,6 +1877,170 @@ Tôi đã cập nhật trực tiếp 2 cột mới "Đánh giá AI (Verdict)" v�
 
 ---
 
+### Tác vụ 48: Thực hiện kiểm thử toàn diện API 3: Pool C — FR-18 (Quản lý đơn hàng Admin)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `thực hiện api test cho FR-18`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 14:53:36`
+- **2. AI output:**
+````text
+Tôi đã hoàn thành quy trình 5 bước kiểm thử toàn diện cho API 3: Pool C — FR-18 (Quản lý đơn hàng Admin: PUT /api/admin/orders/:id/status & GET /api/admin/orders):
+
+---
+
+### 📦 Các thành phần đã triển khai:
+1. **Step 1 (AI Generation):** Thiết kế 40 Test Cases bao phủ toàn diện 4 tiêu chuẩn ISTQB (Domain Partitions & BVA, State Machine Transitions, Security SEC-02..SEC-07, Formal Schema Validation qua tv4).
+2. **Step 2 (Human Audit):** Gán nhãn đánh giá chất lượng (39 VALID, 1 INCOMPLETE) kèm lý giải chi tiết trong bảng kiểm thử.
+3. **Step 3 (Extend):** Bổ sung 5 Test Cases chuyên sâu do sinh viên tự thiết kế (Race Condition, Logic Flaw canceled -> delivered, IDOR Tampering, BigInt Overflow).
+4. **Step 4 (Data-Driven Testing & Newman):** 
+   - Tạo file dữ liệu CSV 45 iterations: postman/data/data_driven_FR18.csv.
+   - Tạo Postman Collection: postman/HW06_PoolC_FR18_DataDriven.postman_collection.json tích hợp tự động đăng nhập Admin/User và Pre-request chèn Header X-Student-Id: 23127462.
+5. **Step 5 (Bug Reports):** Phát hiện và ghi nhận 3 lỗi nghiêm trọng vào bug_reports.md:
+   - Defect B007 (Critical): Lỗ hổng Broken Access Control (SEC-03).
+   - Defect B008 (High): Lỗ hổng logic máy trạng thái (canceled -> delivered).
+   - Defect B009 (Medium): Thiếu validation cho path parameter :id.
+6. **Báo cáo chính (Main_Report.md):** Bổ sung Section 5 hoàn chỉnh.
+````
+- **3. Verdict:** **INCOMPLETE**
+- **4. Reasoning:** AI ban đầu vẫn tự động bổ sung các tiểu mục Báo cáo Khiếm khuyết vào báo cáo tổng hợp `Main_Report.md` thay vì chỉ lưu trữ tập trung chuyên biệt tại `bug_reports.md`.
+- **5. Student fix:** Xóa bỏ hoàn toàn các tiểu mục báo cáo khiếm khuyết khỏi `Main_Report.md`, chỉ lưu trữ tập trung tại `bug_reports.md` và tập trung `Main_Report.md` vào đặc tả, bảng test cases và kết quả thực thi DDT.
+
+---
+
+### Tác vụ 49: Loại bỏ toàn bộ nội dung báo cáo khiếm khuyết khỏi Main_Report.md
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `đừng ghi gì về bug vào main report`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 15:01:22`
+- **2. AI output:**
+````text
+Tôi đã xóa sạch toàn bộ các tiểu mục và nội dung liên quan đến Báo cáo Khiếm khuyết (Bug Reports / Defects) khỏi Main_Report.md:
+
+---
+
+### 🧹 Các chỉnh sửa đã thực hiện trên Main_Report.md:
+1. Loại bỏ hoàn toàn mục 4.6 (Step 4 - Bug Reports của Pool B FR-08).
+2. Loại bỏ hoàn toàn mục 5.6 (Step 4 - Bug Reports của Pool C FR-18).
+3. Tinh chỉnh lại mục 7 (Tiến độ thực hiện tổng thể) tập trung 100% vào việc sinh Test Cases, mở rộng Extension, thực thi Data-Driven Testing, Agent Skill và CI/CD Pipeline.
+4. Toàn bộ thông tin kỹ thuật 9 cột về khiếm khuyết được lưu trữ tập trung, chuẩn mực duy nhất tại:
+   📄 bug_reports.md
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã loại bỏ hoàn toàn, sạch sẽ 100% các đoạn văn và bảng liên quan đến khiếm khuyết khỏi `Main_Report.md` đúng theo chỉ đạo của người dùng, bảo đảm cấu trúc tài liệu mạch lạc và chuẩn hóa.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 50: Thực thi kiểm thử và đối soát nguồn gốc lỗi (Lỗi thực tế SUT vs Lỗi thiết kế kiểm thử)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `chạy test rồi verify xem lỗi có đúng thật sự không hay do cách thiết kế sai`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 15:05:46`
+- **2. AI output:**
+````text
+Tôi đã thực thi toàn bộ 45 test cases Data-Driven của Pool C FR-18 qua Newman CLI và tiến hành đối soát, phân tích nguồn gốc kỹ thuật của từng ca thất bại:
+
+---
+
+### 🔬 Kết quả thực thi thực nghiệm:
+- Tổng số Iterations: 45
+- Tổng số Requests: 135
+- Tổng số Assertions: 238 (Passed: 227, Failed: 11)
+
+### 📊 Phân định khoa học nguồn gốc thất bại:
+1. **Nhóm LỖI THẬT SỰ CỦA BACKEND SUT (Genuine Bugs - Chiếm 5 ca):**
+   - **Lỗi 1 (Critical BAC SEC-03 - B007):** TC_FR18_29, TC_FR18_30, TC_FR18_EXT04 (User thường thực hiện PUT/GET thành công HTTP 200 OK thay vì bị từ chối 403 Forbidden do thiếu middleware requireAdmin).
+   - **Lỗi 2 (High Logic Flaw - B008):** TC_FR18_EXT01 (Cho phép đơn hàng đã hủy canceled chuyển sang delivered thành công HTTP 200 OK do dòng lệnh sai sót trong mã nguồn SUT).
+   - **Lỗi 3 (Medium Error Handling - B006):** TC_FR18_39 (Server sập HTTP 500 HTML khi nhận Content-Type text/plain).
+2. **Nhóm KHÁC BIỆT THIẾT KẾ VS HIỆN THỰC SUT (6 ca):**
+   - **Tham số :id không hợp lệ:** TC_FR18_03 (id=0), TC_FR18_04 (id=-1), TC_FR18_05 (id="abc"), TC_FR18_06 (id=1.5), TC_FR18_33 (SQLi), TC_FR18_EXT05 (BigInt).
+   - *Nguyên nhân:* Thiết kế kiểm thử kỳ vọng chuẩn REST 400 Bad Request ở tầng Router Validation, trong khi SUT không có middleware validation mà chuyển thẳng xuống SQLite trả về 404 Order not found.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực thi kiểm thử thực tế và cung cấp báo cáo phân tích, đối soát nguồn gốc thất bại vô cùng chuẩn xác, khách quan giữa lỗi thực tế của mã nguồn SUT và sự khác biệt về quan điểm thiết kế kiểm thử.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 51: Cập nhật trường "Reported By" trong bug_reports.md thành NMQuang
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `sửa trường Reported by trong bug_reports.md thành NMQuang`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 15:11:02`
+- **2. AI output:**
+````text
+Tôi đã cập nhật toàn bộ giá trị tại cột "Reported By" cho toàn bộ 9 khiếm khuyết (B001 đến B009) trong bảng quản lý lỗi bug_reports.md thành "NMQuang".
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thay thế chính xác 100% tên người báo cáo sang `NMQuang` cho toàn bộ danh mục lỗi trong `bug_reports.md` theo đúng yêu cầu người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 52: Tạo GitHub Issues cho các khiếm khuyết mới FR-18 (B007, B008, B009) với hình minh chứng cục bộ
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `đẩy bug mới lên github issues, hình minh chứng thì chỉ chụp đúng phần lỗi cụ thể của bug đó chứ không có chụp toàn màn hình`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 15:12:54`
+- **2. AI output:**
+````text
+Tôi đã tạo thành công 3 GitHub Issues tương ứng với các khiếm khuyết mới của FR-18 (B007, B008, B009) trên kho lưu trữ GitHub QuangNg27/SoftwareTesting_HW06.
+
+---
+
+### 📌 Danh Sách GitHub Issues Đã Tạo:
+1. **GitHub Issue #7 (Defect B007 - Critical):**
+   - Title: [BUG] [FR-18] Lỗ hổng Broken Access Control (SEC-03): User thường có thể xem danh sách và cập nhật trạng thái đơn hàng của Admin
+   - URL: https://github.com/QuangNg27/SoftwareTesting_HW06/issues/7
+   - Hình minh chứng: bug_report_FR18_b007_detail.png (Chụp cụ thể thẻ lỗi TC_FR18_29 nhận 200 OK thay vì 403).
+2. **GitHub Issue #8 (Defect B008 - High):**
+   - Title: [BUG] [FR-18] Lỗ hổng logic máy trạng thái: Cho phép đơn hàng đã hủy (canceled) chuyển thẳng sang đã giao hàng (delivered)
+   - URL: https://github.com/QuangNg27/SoftwareTesting_HW06/issues/8
+   - Hình minh chứng: bug_report_FR18_b008_detail.png (Chụp cụ thể thẻ lỗi TC_FR18_EXT01).
+3. **GitHub Issue #9 (Defect B009 - Medium):**
+   - Title: [BUG] [FR-18] Thiếu validation cho path parameter :id (chấp nhận id âm, id chuỗi hoặc không kiểm tra số nguyên dương)
+   - URL: https://github.com/QuangNg27/SoftwareTesting_HW06/issues/9
+   - Hình minh chứng: bug_report_FR18_b009_detail.png (Chụp cụ thể thẻ lỗi TC_FR18_03).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã chụp ảnh màn hình tập trung chính xác vào khối thẻ lỗi cụ thể của từng khiếm khuyết (không chụp toàn màn hình), đẩy lên GitHub repo và tạo thành công 3 GitHub Issues #7, #8, #9 kèm đầy đủ nội dung theo chuẩn bug report.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 53: Rà soát và chụp lại hình minh chứng chi tiết từng bug cho toàn bộ khiếm khuyết cũ (B001 đến B006)
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check lại ảnh minh chứng cho các bug cũ luôn bỏ hết chụp lại chi tiết theo từng bug`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 15:18:30`
+- **2. AI output:**
+````text
+Tôi đã xóa bỏ toàn bộ các ảnh chụp tổng quan/toàn màn hình cũ và chụp lại 100% hình minh chứng chi tiết cục bộ cho từng khiếm khuyết từ B001 đến B006, đồng thời cập nhật trực tiếp nội dung các GitHub Issues #1 đến #6 qua GitHub API:
+
+---
+
+### 📸 Chi tiết hình minh chứng cục bộ đã cập nhật:
+1. **Defect B001 (GitHub Issue #1):** `bug_report_FR05_b001_detail.png` (Chụp cụ thể thẻ lỗi TC_FR05_23 - rò rỉ admin@eshop.com).
+2. **Defect B002 (GitHub Issue #2):** `bug_report_FR05_b002_detail.png` (Chụp cụ thể thẻ lỗi TC_FR05_22 - trả về HTTP 500 HTML).
+3. **Defect B003 (GitHub Issue #3):** `bug_report_FR08_b003_detail.png` (Chụp cụ thể thẻ lỗi TC_FR08_08 - chấp nhận total_amount = 0).
+4. **Defect B004 (GitHub Issue #5):** `bug_report_FR08_b004_detail.png` (Chụp cụ thể thẻ lỗi TC_FR08_18 - chấp nhận shipping_address khoảng trắng).
+5. **Defect B005 (GitHub Issue #4):** `bug_report_FR08_b005_detail.png` (Chụp cụ thể thẻ lỗi TC_FR08_36 - cho phép thanh toán giỏ hàng rỗng).
+6. **Defect B006 (GitHub Issue #6):** `bug_report_FR08_b006_detail.png` (Chụp cụ thể thẻ lỗi TC_FR08_40 - crash HTTP 500 khi nhận text/plain).
+
+Đã đẩy toàn bộ ảnh mới lên nhánh main của GitHub repo và cập nhật lại toàn bộ nội dung của GitHub Issues #1 đến #6.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã rà soát toàn bộ các bug cũ (B001-B006), xóa bỏ các ảnh chụp tổng quan cũ, chụp lại ảnh minh chứng cục bộ sắc nét, chuẩn xác cho từng thẻ lỗi riêng biệt và đồng bộ hóa thành công lên GitHub Issues #1-#6.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
+
+
+
 
 
 

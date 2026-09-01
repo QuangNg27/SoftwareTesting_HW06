@@ -357,6 +357,54 @@ gắn nhãn label cho các test case VALID / INVALID / INCOMPLETE kèm reasoning
 
 ---
 
+### [01-09-2026 14:53:36] | Gemini
+```text
+thực hiện api test cho FR-18
+```
+
+---
+
+### [01-09-2026 15:01:22] | Gemini
+```text
+đừng ghi gì về bug vào main report
+```
+
+---
+
+### [01-09-2026 15:05:46] | Gemini
+```text
+chạy test rồi verify xem lỗi có đúng thật sự không hay do cách thiết kế sai
+```
+
+---
+
+### [01-09-2026 15:11:02] | Gemini
+```text
+sửa trường Reported by trong bug_reports.md thành NMQuang
+```
+
+---
+
+### [01-09-2026 15:12:54] | Gemini
+```text
+đẩy bug mới lên github issues, hình minh chứng thì chỉ chụp đúng phần lỗi cụ thể của bug đó chứ không có chụp toàn màn hình
+```
+
+---
+
+### [01-09-2026 15:18:30] | Gemini
+```text
+check lại ảnh minh chứng cho các bug cũ luôn bỏ hết chụp lại chi tiết theo từng bug
+```
+
+---
+
+
+
+
+
+
+
 
 
 

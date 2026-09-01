@@ -240,9 +240,9 @@ Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập t
 ### 4.5. Triển Khai Data-Driven Testing (Step 3 - Execution)
 Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven Testing (DDT)**:
 
-* **Tệp dữ liệu CSV:** `postman/data/data_driven_FR08.csv` (45 iterations).
-* **Postman Collection Data-Driven:** `postman/HW06_PoolB_FR08_DataDriven.postman_collection.json`.
-* **Postman Environment:** `postman/EShop_Local.postman_environment.json`.
+* **Tệp dữ liệu CSV:** `postman/data/data_driven_FR08.csv`
+* **Postman Collection Data-Driven:** `postman/HW06_PoolB_FR08_DataDriven.postman_collection.json`
+* **Postman Environment:** `postman/EShop_Local.postman_environment.json`
 
 #### Cơ chế Tự Động Hóa & Anti-AI-Cheat:
 1. **Tự Động Xác Thực Token:** Collection tích hợp request Login tự động nạp Bearer Token vào biến môi trường và Pre-request script cấu hình động Header/Body theo từng dòng dữ liệu CSV.
@@ -255,23 +255,108 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
 
 ---
 
-## 5. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
+## 5. API 3: POOL C — FR-18 (QUẢN LÝ ĐƠN HÀNG ADMIN)
 
-* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
-* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
-* [x] **API 1 (Pool A - FR-05 Products):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-  * [x] Phát hiện & Báo cáo 2 lỗi bảo mật nghiêm trọng (Bug Reports & GitHub Issues #1, #2)
-* [x] **API 2 (Pool B - FR-08 Checkout):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-  * [x] Phát hiện & Báo cáo 4 lỗi nghiêm trọng (Bug Reports & GitHub Issues #3, #4, #5, #6)
-* [ ] **API 3 (Pool C - FR-18 Orders):** Sẵn sàng triển khai
-* [ ] **Agent Skill: AI-Driven API Test Generator (G9.5):** Sẵn sàng thiết kế sơ đồ & Pseudocode
-* [ ] **Tích hợp CI/CD GitHub Actions:** Sẵn sàng cấu hình pipeline
+### 5.1. Mô Tả API & Yêu Cầu Nghiệp Vụ
+* **Chức năng:** Quản lý danh sách và cập nhật trạng thái đơn hàng của quản trị viên (Admin).
+* **Endpoints:**
+  * `PUT /api/admin/orders/:id/status` (Cập nhật trạng thái đơn hàng).
+  * `GET /api/admin/orders` (Xem toàn bộ danh sách đơn hàng kèm thông tin khách hàng).
+* **Quy tắc chuyển trạng thái đơn hàng:**
+  * `pending` $\rightarrow$ `confirmed`, `canceled`
+  * `confirmed` $\rightarrow$ `shipping`, `canceled`
+  * `shipping` $\rightarrow$ `delivered`
+  * Các bước chuyển trạng thái khác đều bị cấm.
+* **Yêu cầu bảo mật:** Bắt buộc xác thực Admin Bearer Token (`role === 'admin'`) theo yêu cầu **SEC-02** và **SEC-03**.
+
+---
+
+### 5.2. Kế Hoạch Kiểm Thử & Tiếp Cận Đa Chiều (Step 1 - AI Generation)
+Bộ kiểm thử 40 Test Cases được thiết kế đa chiều bao phủ toàn diện 4 tiêu chuẩn ISTQB:
+1. **Domain Partitions & BVA (12 TCs):** Phân vùng giá trị cho path parameter `:id` ($1, 999999, 0, -1, "abc", 1.5$) và trường `status` (null, rỗng, whitespace, number, boolean).
+2. **State Machine Transitions (12 TCs):** Bao phủ $100\%$ bước chuyển hợp lệ (`pending` $\rightarrow$ `confirmed`, `shipping` $\rightarrow$ `delivered`) và tập bước chuyển bất hợp lệ (nhảy cóc, rollback, sửa đơn đã giao).
+3. **Security Testing (SEC-02, SEC-03, SEC-04, SEC-05, SEC-07) (10 TCs):** Thiếu token, token rỗng, JWT sai chữ ký, Basic Auth, leo thang đặc quyền RBAC User $\rightarrow$ Admin, Stored XSS, SQLi in path/body, Mass Assignment.
+4. **Schema Validation & Protocol (6 TCs):** Formal JSON Schema (`tv4`), Root Array contract, Content-Type headers, error schemas.
+
+---
+
+### 5.3. Bảng Danh Mục 40 Test Cases Chi Tiết
+
+| Mã Test Case | Phân nhóm kiểm thử | ID Đơn hàng | Auth Type | Request Body (JSON) | Expected Status | Kết quả mong đợi (Expected Result) | Đánh giá AI (Verdict) | Lý giải kiểm định (Reasoning) |
+| :--- | :--- | :---: | :--- | :--- | :---: | :--- | :---: | :--- |
+| **`TC_FR18_01`** | Domain Partition | `1` | `ADMIN` | `{"status": "confirmed"}` | `200 OK` | Cập nhật trạng thái đơn hàng thành công. | **VALID** | Bao phủ trường hợp hợp lệ với ID đơn hàng tồn tại. |
+| **`TC_FR18_02`** | Domain Partition | `999999` | `ADMIN` | `{"status": "confirmed"}` | `404 Not Found` | Báo lỗi không tìm thấy đơn hàng (Order not found). | **VALID** | Kiểm tra xử lý mã định danh không tồn tại. |
+| **`TC_FR18_03`** | Domain Partition | `0` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối ID = 0 không hợp lệ. | **VALID** | Kiểm thử giá trị biên số trị 0 cho path parameter. |
+| **`TC_FR18_04`** | Domain Partition | `-1` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối ID âm không hợp lệ. | **VALID** | Kiểm thử giá trị số âm cho path parameter. |
+| **`TC_FR18_05`** | Domain Partition | `abc` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối ID chuỗi ký tự chữ. | **VALID** | Kiểm thử ép kiểu dữ liệu schema cho path parameter. |
+| **`TC_FR18_06`** | Domain Partition | `1.5` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối ID số thực dấu phẩy động. | **VALID** | Kiểm thử kiểu số nguyên nghiêm ngặt (Strict Integer). |
+| **`TC_FR18_07`** | Domain Partition | `1%20` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối ID chứa khoảng trắng. | **VALID** | Kiểm tra xử lý khoảng trắng trong URL path. |
+| **`TC_FR18_08`** | EP Body | `1` | `ADMIN` | `{"status": null}` | `400 Bad Request` | Từ chối giá trị status null. | **VALID** | Phân vùng kiểm tra giá trị null cho trường status. |
+| **`TC_FR18_09`** | EP Body | `1` | `ADMIN` | `{"status": ""}` | `400 Bad Request` | Từ chối chuỗi status rỗng. | **VALID** | Phân vùng kiểm tra chuỗi rỗng cho trường status. |
+| **`TC_FR18_10`** | EP Body | `1` | `ADMIN` | `{"status": "   "}` | `400 Bad Request` | Từ chối chuỗi status chỉ chứa khoảng trắng. | **VALID** | Phân vùng kiểm tra chuỗi whitespace. |
+| **`TC_FR18_11`** | EP Body | `1` | `ADMIN` | `{"status": 123}` | `400 Bad Request` | Báo lỗi Schema Type Mismatch (Number thay vì String). | **VALID** | Kiểm định Schema Type Mismatch cho trường status. |
+| **`TC_FR18_12`** | EP Body | `1` | `ADMIN` | `{"status": true}` | `400 Bad Request` | Báo lỗi Schema Type Mismatch (Boolean thay vì String). | **VALID** | Kiểm định Schema Type Mismatch kiểu Boolean. |
+| **`TC_FR18_13`** | State Transition | `6` | `ADMIN` | `{"status": "confirmed"}` | `200 OK` | Chuyển trạng thái từ pending sang confirmed thành công. | **VALID** | Bao phủ 100% bước chuyển hợp lệ pending -> confirmed. |
+| **`TC_FR18_14`** | State Transition | `7` | `ADMIN` | `{"status": "canceled"}` | `200 OK` | Chuyển trạng thái từ pending sang canceled thành công. | **VALID** | Bao phủ 100% bước chuyển hợp lệ pending -> canceled. |
+| **`TC_FR18_15`** | State Transition | `2` | `ADMIN` | `{"status": "shipping"}` | `200 OK` | Chuyển trạng thái từ confirmed sang shipping thành công. | **VALID** | Bao phủ bước chuyển hợp lệ confirmed -> shipping. |
+| **`TC_FR18_16`** | State Transition | `8` | `ADMIN` | `{"status": "canceled"}` | `200 OK` | Chuyển trạng thái từ confirmed sang canceled thành công. | **VALID** | Bao phủ bước chuyển hợp lệ confirmed -> canceled. |
+| **`TC_FR18_17`** | State Transition | `3` | `ADMIN` | `{"status": "delivered"}` | `200 OK` | Chuyển trạng thái từ shipping sang delivered thành công. | **VALID** | Bao phủ bước chuyển hợp lệ shipping -> delivered. |
+| **`TC_FR18_18`** | State Transition | `1` | `ADMIN` | `{"status": "delivered"}` | `400 Bad Request` | Từ chối bước chuyển bất hợp lệ pending -> delivered. | **VALID** | Chặn bước nhảy cóc trạng thái vi phạm quy trình. |
+| **`TC_FR18_19`** | State Transition | `1` | `ADMIN` | `{"status": "shipping"}` | `400 Bad Request` | Từ chối bước chuyển bất hợp lệ pending -> shipping. | **VALID** | Chặn bước chuyển bỏ qua xác nhận đơn. |
+| **`TC_FR18_20`** | State Transition | `2` | `ADMIN` | `{"status": "pending"}` | `400 Bad Request` | Từ chối bước chuyển lùi confirmed -> pending. | **VALID** | Chặn rollback trạng thái bất hợp lệ. |
+| **`TC_FR18_21`** | State Transition | `2` | `ADMIN` | `{"status": "delivered"}` | `400 Bad Request` | Từ chối bước chuyển confirmed -> delivered. | **VALID** | Chặn bước chuyển bỏ qua giai đoạn vận chuyển. |
+| **`TC_FR18_22`** | State Transition | `3` | `ADMIN` | `{"status": "pending"}` | `400 Bad Request` | Từ chối bước chuyển lùi shipping -> pending. | **VALID** | Chặn rollback trạng thái khi đang giao hàng. |
+| **`TC_FR18_23`** | State Transition | `3` | `ADMIN` | `{"status": "canceled"}` | `400 Bad Request` | Từ chối hủy đơn khi đơn hàng đang trên đường giao. | **VALID** | Chặn hủy đơn khi đang vận chuyển. |
+| **`TC_FR18_24`** | State Transition | `4` | `ADMIN` | `{"status": "pending"}` | `400 Bad Request` | Từ chối sửa đổi trạng thái đơn hàng đã giao thành công. | **VALID** | Bảo vệ trạng thái kết thúc (Terminal State). |
+| **`TC_FR18_25`** | Security SEC-02 | `1` | `NONE` | `{"status": "confirmed"}` | `401 Unauthorized` | Trả về HTTP 401 Unauthorized do thiếu token. | **VALID** | Kiểm tra xác thực khi thiếu Authorization Header. |
+| **`TC_FR18_26`** | Security SEC-02 | `1` | `EMPTY` | `{"status": "confirmed"}` | `401/403` | Từ chối truy cập do chuỗi token rỗng. | **VALID** | Kiểm tra xác thực khi token rỗng. |
+| **`TC_FR18_27`** | Security SEC-02 | `1` | `INVALID` | `{"status": "confirmed"}` | `403 Forbidden` | Trả về HTTP 403 Forbidden do sai chữ ký JWT. | **VALID** | Kiểm tra từ chối token giả mạo chữ ký. |
+| **`TC_FR18_28`** | Security SEC-02 | `1` | `BASIC` | `{"status": "confirmed"}` | `403 Forbidden` | Từ chối phương thức xác thực Basic Auth. | **VALID** | Kiểm tra từ chối scheme xác thực không được hỗ trợ. |
+| **`TC_FR18_29`** | Security SEC-03 | `1` | `USER` | `{"status": "confirmed"}` | `403 Forbidden` | Từ chối User thường sửa trạng thái đơn (Phát hiện lỗi B007). | **VALID** | Kiểm tra kiểm soát truy cập RBAC Admin (SEC-03). |
+| **`TC_FR18_30`** | Security SEC-03 | `1` | `USER` | *(GET list)* | `403 Forbidden` | Từ chối User thường xem toàn bộ đơn hàng (Phát hiện lỗi B007). | **VALID** | Kiểm tra phân quyền bảo vệ danh sách đơn hàng Admin. |
+| **`TC_FR18_31`** | Security SEC-04 | `1` | `ADMIN` | `{"status": "<script>alert(1)</script>"}` | `400 Bad Request` | Từ chối chuỗi status chứa mã độc XSS. | **VALID** | Kiểm thử phòng chống tấn công Stored XSS. |
+| **`TC_FR18_32`** | Security SEC-05 | `1` | `ADMIN` | `{"status": "' OR '1'='1"}` | `400 Bad Request` | Từ chối chuỗi status chứa payload SQLi. | **VALID** | Kiểm thử phòng chống SQL Injection trong body. |
+| **`TC_FR18_33`** | Security SEC-05 | `1' OR '1'='1` | `ADMIN` | `{"status": "confirmed"}` | `400 Bad Request` | Từ chối SQLi trong tham số đường dẫn URL. | **VALID** | Kiểm thử phòng chống SQL Injection trong path parameter. |
+| **`TC_FR18_34`** | Security SEC-07 | `1` | `ADMIN` | `{"status": "confirmed", "role": "admin", "total_amount": 0}` | `200 OK` | Chỉ cập nhật status và bỏ qua các trường ngoài schema. | **VALID** | Kiểm thử an toàn Mass Assignment. |
+| **`TC_FR18_35`** | Schema Validation | `1` | `ADMIN` | *(GET list)* | `200 OK` | Dữ liệu trả về là mảng JSON Array khớp Schema đặc tả. | **VALID** | Kiểm định Root JSON Structure cho API danh sách đơn. |
+| **`TC_FR18_36`** | Schema Validation | `1` | `ADMIN` | *(GET list)* | `200 OK` | Header Content-Type chứa application/json. | **VALID** | Kiểm định Header Content-Type theo chuẩn REST. |
+| **`TC_FR18_37`** | Schema Validation | `1` | `ADMIN` | `{"status": "confirmed"}` | `200 OK` | Response khớp 100% JSON Schema Success (message property). | **VALID** | Kiểm định Formal JSON Schema qua thư viện tv4. |
+| **`TC_FR18_38`** | Schema Validation | `1` | `ADMIN` | `{"status": "invalid_xyz"}` | `400 Bad Request` | Response khớp 100% JSON Schema Error (error property). | **VALID** | Kiểm định cấu trúc phản hồi lỗi chuẩn. |
+| **`TC_FR18_39`** | Schema Header | `1` | `ADMIN` | `status=confirmed` *(Content-Type: text/plain)* | `400 Bad Request` | Từ chối Header Content-Type text/plain dạng JSON. | **VALID** | Kiểm định Header Content-Type không hợp lệ. |
+| **`TC_FR18_40`** | Edge Case | `1` | `ADMIN` | `{}` | `400 Bad Request` | Báo lỗi thiếu trường status bắt buộc. | **INCOMPLETE** | AI sinh thiếu assertion kiểm tra chi tiết thông báo lỗi. |
+
+---
+
+### 5.4. Mở Rộng Test Cases Bổ Sung (Step 2 - Extend)
+Sinh viên tự thiết kế và bổ sung **5 Test Cases chuyên sâu** tập trung vào các rủi ro tương tranh, tràn số nguyên và lỗi logic máy trạng thái:
+
+| Mã Test Case | Phân nhóm kiểm thử | Request Payload | Expected Status | Kết quả mong đợi & Lý do AI bỏ sót |
+| :--- | :--- | :--- | :---: | :--- |
+| **`TC_FR18_EXT01`** | Business Logic Flaw | `PUT /api/admin/orders/5/status` với body `{"status": "delivered"}` | `400 Bad Request` | Từ chối bước chuyển trực tiếp từ `canceled` sang `delivered` $\rightarrow$ Đơn hàng đã hủy không được phép giao hàng thành công (Phát hiện lỗi B008).<br>*Lý do AI bỏ sót:* AI thông thường chỉ kiểm tra các bước chuyển xuôi chuẩn mực, bỏ qua kiểm thử rủi ro logic sai sót do lập trình viên cấu hình nhầm điều kiện. |
+| **`TC_FR18_EXT02`** | Concurrency / Race Condition | 2 Request đồng thời `PUT /api/admin/orders/1/status`: 1 req chuyển `confirmed`, 1 req chuyển `canceled` | `200 OK` *(req 1)* & `400 Bad Request` *(req 2)* | Chỉ 1 request đầu tiên thành công; request đến sau phải bị từ chối do trạng thái đơn hàng đã thay đổi.<br>*Lý do AI bỏ sót:* AI chỉ sinh kịch bản đơn luồng, bỏ qua xung đột tương tranh. |
+| **`TC_FR18_EXT03`** | Non-Existent Status Enum | `PUT /api/admin/orders/1/status` với body `{"status": "super_vip_delivered"}` | `400 Bad Request` | Từ chối trạng thái không thuộc tập enum định nghĩa trong tài liệu đặc tả.<br>*Lý do AI bỏ sót:* AI bỏ qua kiểm tra ranh giới enum chặt chẽ cho trường trạng thái. |
+| **`TC_FR18_EXT04`** | IDOR Cross-Tenant Tampering | `PUT /api/admin/orders/2/status` bằng token User thường | `403 Forbidden` | Chặn triệt để người dùng thường can thiệp sửa đổi trạng thái đơn hàng của người khác hoặc hệ thống.<br>*Lý do AI bỏ sót:* AI bỏ qua kịch bản kết hợp IDOR và RBAC Admin. |
+| **`TC_FR18_EXT05`** | Integer Overflow Path Param | `PUT /api/admin/orders/9007199254740992/status` (`MAX_SAFE_INTEGER + 1`) | `400 / 404` | Xử lý an toàn số nguyên vượt ngưỡng an toàn trong JavaScript mà không làm sập tiến trình backend.<br>*Lý do AI bỏ sót:* AI bỏ qua giới hạn biểu diễn số nguyên `Number.MAX_SAFE_INTEGER`. |
+
+---
+
+### 5.5. Triển Khai Data-Driven Testing (Step 3 - Execution)
+Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven Testing (DDT)**:
+
+* **Tệp dữ liệu CSV:** `postman/data/data_driven_FR18.csv`
+* **Postman Collection Data-Driven:** `postman/HW06_PoolC_FR18_DataDriven.postman_collection.json`
+* **Postman Environment:** `postman/EShop_Local.postman_environment.json`
+
+#### Cơ chế Tự Động Hóa & Anti-AI-Cheat:
+1. **Tự Động Xác Thực Token Phân Quyền:** Collection tích hợp request Login tự động nạp đồng thời `adminToken` (`admin@eshop.com`) và `userToken` (`test@eshop.com`) vào biến môi trường để phục vụ kiểm thử RBAC SEC-03.
+2. **Header Chống Gian Lận (Anti-Cheat):** Tự động chèn Header bắt buộc `X-Student-Id: 23127462` vào tất cả các request gửi đến SUT.
+3. **Lệnh Thực Thi & Xuất Báo Cáo Newman:**
+   ```powershell
+   # Chạy 45 iterations kiểm thử tự động cho Pool C FR-18 và xuất báo cáo HTML Extra
+   npx newman run postman/HW06_PoolC_FR18_DataDriven.postman_collection.json -d postman/data/data_driven_FR18.csv -e postman/EShop_Local.postman_environment.json -r "cli,htmlextra" --reporter-htmlextra-export reports/newman_report_FR18_DataDriven.html
+   ```
+
+
 
 
 
