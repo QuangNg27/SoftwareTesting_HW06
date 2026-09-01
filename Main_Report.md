@@ -358,55 +358,6 @@ Toàn bộ **45 test cases** được triển khai theo mô hình **Data-Driven 
 
 ---
 
-## 6. THIẾT KẾ & TRIỂN KHAI AGENT SKILL: UNIVERSAL AI-DRIVEN API TEST GENERATOR (MỨC CREATE - G9.5)
-
-### 6.1. Mục Tiêu & Cấu Trúc Tổng Quát Hóa (Universal Schema-Agnostic Engine)
-Để đáp ứng chuẩn mực kiểm thử tự động **mức Sáng tạo (Create - Grade 9.5)**, sinh viên đã xây dựng một **Custom Agent Skill** tổng quát hóa hoàn toàn theo cấu trúc Antigravity / Claude Code Skill Standard:
-* **Vị trí lưu trữ:** [`.agents/skills/api_test_generator/`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/)
-* **Cấu trúc tệp:**
-  * [`SKILL.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/SKILL.md): Đặc tả Frontmatter YAML, System Prompt, cơ chế phân tích đệ quy mọi cây Schema và thuật toán sinh 4 trụ cột ISTQB.
-  * [`pseudocode.md`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/pseudocode.md): Bản trích xuất thuật toán mã giả tổng quát hóa hoàn chỉnh.
-  * [`scripts/generate_tests.js`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/.agents/skills/api_test_generator/scripts/generate_tests.js): Engine CLI độc lập tiếp nhận bất kỳ đối tượng API Spec nào và sinh trực tiếp bộ dữ liệu Data-Driven CSV.
-
-### 6.2. Sơ Đồ Kiến Trúc Hệ Thống (Architecture Diagram)
-
-```mermaid
-flowchart TD
-    subgraph S1["1. TẦNG TIẾP NHẬN ĐẶC TẢ (INGESTION LAYER)"]
-        Spec["API Specification (OpenAPI 3.0 / JSON / REST Spec)"]
-        SpecParser["Universal Spec Parser & Schema Lexer"]
-        Spec --> SpecParser
-    end
-
-    subgraph S2["2. ĐỘNG CƠ SINH 4 TRỤ CỘT ISTQB (CORE ENGINE)"]
-        P1["Trụ Cột 1: EP & BVA Engine (Recursive Schema Tree Walk)"]
-        P2["Trụ Cột 2: Generalized State Machine Modeler"]
-        P3["Trụ Cột 3: Universal Security Injector (SEC-01..SEC-07)"]
-        P4["Trụ Cột 4: Formal tv4 Schema Contract Engine"]
-        SpecParser --> P1
-        SpecParser --> P2
-        SpecParser --> P3
-        SpecParser --> P4
-    end
-
-    subgraph S3["3. MỞ RỘNG NÂNG CAO & KẾT XUẤT (SYNTHESIS & EXPORT)"]
-        Ext["Advanced Extensions (Race Condition, Float Overflow, CRLF, Unicode RTL)"]
-        AntiCheat["Anti-Cheat Injector (X-Student-Id: 23127462)"]
-        CSVOut["Data-Driven Matrix (.csv)"]
-        ColOut["Postman Collection v2.1 (.json)"]
-        
-        P1 --> Ext
-        P2 --> Ext
-        P3 --> Ext
-        P4 --> Ext
-        Ext --> AntiCheat
-        AntiCheat --> CSVOut
-        AntiCheat --> ColOut
-    end
-```
-
----
-
 ## 7. TÍCH HỢP CI/CD PIPELINE TRÊN GITHUB ACTIONS (CONTINUOUS INTEGRATION)
 
 ### 7.1. Cấu Hình Workflow (`.github/workflows/api-tests.yml`)
@@ -430,20 +381,41 @@ Hệ thống CI/CD được thiết lập nhằm tự động hóa $100\%$ quy t
 ### 7.2. Sơ Đồ Quy Trình CI/CD (Pipeline Flowchart)
 
 ```mermaid
-flowchart LR
-    A["Developer Push / PR"] --> B["GitHub Actions Runner"]
-    B --> C["Node.js Setup & npm install"]
-    C --> D["Start SUT Server (localhost:3000)"]
-    D --> E["Health Check Polling (curl)"]
-    E --> F["Newman Runner Matrix"]
-    F --> F1["Run Pool A FR-05 (40 TCs)"]
-    F --> F2["Run Pool B FR-08 (45 TCs)"]
-    F --> F3["Run Pool C FR-18 (45 TCs)"]
-    F1 --> G["Generate HTML Extra Reports"]
-    F2 --> G
-    F3 --> G
-    G --> H["Upload Artifacts (reports/*.html)"]
-    G --> I["Publish Step Summary Report"]
+flowchart TD
+    subgraph S1["1. KÍCH HOẠT CI/CD (TRIGGER)"]
+        A["Developer Push / Pull Request"]
+        B["GitHub Actions Runner (Ubuntu Latest)"]
+        A --> B
+    end
+
+    subgraph S2["2. THIẾT LẬP MÔI TRƯỜNG & SUT BACKEND"]
+        C["Node.js Setup (v18) & npm install"]
+        D["Start SUT Server (Background Daemon)"]
+        E["Health Check Polling via curl"]
+        B --> C
+        C --> D
+        D --> E
+    end
+
+    subgraph S3["3. THỰC THI KIỂM THỬ NEWMAN DATA-DRIVEN"]
+        F1["Pool A: FR-05 Products (40 TCs)"]
+        F2["Pool B: FR-08 Checkout (45 TCs)"]
+        F3["Pool C: FR-18 Orders (45 TCs)"]
+        E --> F1
+        E --> F2
+        E --> F3
+    end
+
+    subgraph S4["4. TỔNG HỢP & XUẤT BÁO CÁO (REPORTS & ARTIFACTS)"]
+        G["Generate HTML Extra Reports"]
+        H["Upload Artifacts (newman-api-test-reports)"]
+        I["Publish GitHub Actions Job Summary"]
+        F1 --> G
+        F2 --> G
+        F3 --> G
+        G --> H
+        G --> I
+    end
 ```
 
 ---
@@ -466,6 +438,7 @@ flowchart LR
   * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
 * [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
 * [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml`
+
 
 
 

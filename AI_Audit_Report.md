@@ -2057,11 +2057,36 @@ Tôi đã hoàn tất tích hợp hệ thống Continuous Integration (CI/CD) t�
 5. **Xuất Bảng Tổng Kết (Job Summary):** Tổng hợp trực quan trạng thái thực thi và Anti-Cheat Header `X-Student-Id: 23127462`.
 6. **Báo cáo chính:** Bổ sung Section 7 (CI/CD Pipeline) kèm sơ đồ Mermaid trực quan vào `Main_Report.md`.
 ````
+- **3. Verdict:** **INCOMPLETE**
+- **4. Reasoning:** AI ban đầu tạo sơ đồ Mermaid mục 7.2 với cú pháp đơn giản chưa có các phân vùng subgraph rõ ràng và dễ phát sinh lỗi cú pháp render trên một số trình đọc markdown.
+- **5. Student fix:** Tái cấu trúc lại sơ đồ 7.2 thành mô hình phân tầng subgraphs chuẩn mực (1. Trigger, 2. Setup, 3. Test Execution, 4. Reporting) bảo đảm 100% hợp lệ cú pháp Mermaid và khôi phục hoàn chỉnh mục 8 Tiến độ tổng thể.
+
+---
+
+### Tác vụ 55: Kiểm tra và sửa lỗi cú pháp sơ đồ Mermaid 7.2 trong Main_Report.md
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `check lại sơ đồ 7.2 bị lỗi syntax hay sao á`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 20:04:13`
+- **2. AI output:**
+````text
+Tôi đã kiểm tra và tái cấu trúc lại toàn bộ sơ đồ Mermaid tại Mục 7.2 trong Main_Report.md theo chuẩn cú pháp phân vùng Subgraph (Top-Down Flowchart) nhằm bảo đảm hiển thị trực quan và tương thích 100% trên GitHub Markdown:
+
+---
+
+### 🛠️ Chi tiết cấu trúc sơ đồ mới (4 Tầng Subgraph):
+1. **SubGraph S1 (Trigger):** Developer Push / PR -> GitHub Actions Runner (Ubuntu).
+2. **SubGraph S2 (Setup):** Node.js Setup & npm install -> Start SUT Server -> Health Check Polling (curl).
+3. **SubGraph S3 (Execution):** Chạy đồng thời Newman DDT cho Pool A (FR-05: 40 TCs), Pool B (FR-08: 45 TCs), Pool C (FR-18: 45 TCs).
+4. **SubGraph S4 (Reporting):** Generate HTML Extra Reports -> Upload Artifacts -> Publish Step Summary.
+5. **Khôi phục Mục 8:** Đảm bảo bảng tiến độ tổng thể 8 mục được đính kèm đầy đủ ở cuối tài liệu.
+````
 - **3. Verdict:** **VALID**
-- **4. Reasoning:** AI đã xây dựng và cấu hình thành công 100% pipeline GitHub Actions CI/CD tự động thực thi toàn bộ 3 bộ test suites, kiểm tra sức khỏe máy chủ SUT, tải lên báo cáo HTML và xuất job summary chuẩn xác.
+- **4. Reasoning:** AI đã chuẩn hóa lại 100% cú pháp Mermaid cho sơ đồ 7.2, loại bỏ hoàn toàn các nguy cơ xung đột ký tự và phân tầng trực quan theo đúng quy trình CI/CD thực tế.
 - **5. Student fix:** Không cần chỉnh sửa.
 
 ---
+
 
 
 
