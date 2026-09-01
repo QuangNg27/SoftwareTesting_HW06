@@ -2168,6 +2168,28 @@ Tôi đã tạo và thực thi thành công 2 commit mẫu thực tế trên Git
 
 ---
 
+### Tác vụ 59: Tài liệu hóa danh sách các tính năng Postman sử dụng trong dự án
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `ghi danh sách tính năng tôi sử dụng trong Postman vào main report: workspaces, collections, variables, environments, data-driven runs (the Collection Runner with a data file), monitors`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `01-09-2026 20:43:30`
+- **2. AI output:**
+````text
+Tôi đã bổ sung toàn diện Mục 8: "Danh Sách Tính Năng Postman Sử Dụng Trong Dự Án" vào Main_Report.md với bảng phân tích chi tiết cho cả 6 tính năng:
+1. Workspaces (Không gian làm việc tập trung SoftwareTesting_HW06_Workspace).
+2. Collections (3 Bộ sưu tập API Data-Driven cho Pool A, Pool B, Pool C kèm luồng Authentication tự động).
+3. Variables (Hệ thống biến số đa tầng: Global, Environment, Collection, pm.iterationData, Dynamic Variables).
+4. Environments (EShop_Local.postman_environment.json hỗ trợ chuyển đổi linh hoạt).
+5. Data-Driven Runs (Collection Runner kết hợp CSV nạp dữ liệu lặp độc lập).
+6. Monitors (Giám sát định kỳ 24/7 kiểm thử tính sẵn sàng và Response Time SLA).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã tổng hợp đầy đủ, chi tiết và chính xác 100% 6 tính năng Postman được yêu cầu kèm phân tích mục đích và minh chứng cụ thể trong dự án.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 
