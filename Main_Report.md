@@ -441,36 +441,10 @@ flowchart TD
 
 ## 8. DANH SÁCH TÍNH NĂNG POSTMAN SỬ DỤNG TRONG DỰ ÁN (POSTMAN FEATURES UTILIZATION)
 
-Dự án đã khai thác tối đa và toàn diện **6 tính năng cốt lõi của Postman** để xây dựng khung kiểm thử API tự động hóa chuyên nghiệp:
-
 | # | Tính Năng Postman | Mục Đích Sử Dụng & Phạm Vi Áp Dụng Trong Dự Án | Minh Chứng Triển Khai Trong Mã Nguồn / Cấu Hình |
 | :-: | :--- | :--- | :--- |
-| **1** | **Workspaces** *(Không gian làm việc)* | Tổ chức và quản lý tập trung toàn bộ tài nguyên kiểm thử (Collections, Environments, Data Files, Runs) trong một Workspace chuyên biệt cho môn học KTPM HW06, phân tách rõ ràng với các dự án khác. | Postman Workspace: `SoftwareTesting_HW06_Workspace` quản lý đồng bộ 3 Collections, 1 Environment, 3 CSV Data Files. |
-| **2** | **Collections** *(Bộ sưu tập API)* | Đóng gói và phân nhóm các API endpoints theo từng chức năng nghiệp vụ (Pool A, Pool B, Pool C), hỗ trợ thiết lập Pre-request Scripts và Tests Scripts dùng chung ở cấp độ Collection / Folder. | - [`postman/HW06_PoolA_FR05_DataDriven.postman_collection.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/HW06_PoolA_FR05_DataDriven.postman_collection.json)<br>- [`postman/HW06_PoolB_FR08_DataDriven.postman_collection.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/HW06_PoolB_FR08_DataDriven.postman_collection.json)<br>- [`postman/HW06_PoolC_FR18_DataDriven.postman_collection.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/HW06_PoolC_FR18_DataDriven.postman_collection.json) |
-| **3** | **Variables** *(Hệ thống Biến số đa tầng)* | Sử dụng đầy đủ các cấp độ biến số theo thứ tự ưu tiên (Scope Hierarchy):<br>• **Environment Variables:** `{{baseUrl}}`, `{{adminToken}}`, `{{userToken}}`, `{{studentId}}`<br>• **Collection Variables:** Dùng lưu tạm token phiên làm việc.<br>• **Data Variables (`pm.iterationData`):** Đọc giá trị từng dòng từ file CSV (`test_case_id`, `search_query`, `expected_status`, `is_admin`,...).<br>• **Dynamic Variables:** `{{$guid}}`, `{{$timestamp}}` tạo dữ liệu ngẫu nhiên. | - `pm.iterationData.get('expected_status')`<br>- `pm.environment.set('adminToken', token)`<br>- `pm.request.headers.add({ key: 'X-Student-Id', value: '23127462' })` |
-| **4** | **Environments** *(Môi trường kiểm thử)* | Quản lý cấu hình linh hoạt giữa các môi trường (Local SUT `http://localhost:3000`, Staging, Production) mà không cần chỉnh sửa trực tiếp Collection JSON. Chứa các biến bảo mật và mã số sinh viên. | File môi trường: [`postman/EShop_Local.postman_environment.json`](file:///d:/NAM_3/HK3/KTPM/HW06/SoftwareTesting_HW06/postman/EShop_Local.postman_environment.json) |
+| **1** | **Workspaces** | Tổ chức và quản lý tập trung toàn bộ tài nguyên kiểm thử (Collections, Environments, Data Files, Runs) trong một Workspace chuyên biệt cho môn học KTPM HW06, phân tách rõ ràng với các dự án khác. | Postman Workspace: `SoftwareTesting_HW06_Workspace` quản lý đồng bộ 3 Collections, 1 Environment, 3 CSV Data Files. |
+| **2** | **Collections** | Đóng gói và phân nhóm các API endpoints theo từng chức năng nghiệp vụ (Pool A, Pool B, Pool C), hỗ trợ thiết lập Pre-request Scripts và Tests Scripts dùng chung ở cấp độ Collection / Folder. | - `postman/HW06_PoolA_FR05_DataDriven.postman_collection.json` <br>- `postman/HW06_PoolB_FR08_DataDriven.postman_collection.json` <br>- `postman/HW06_PoolC_FR18_DataDriven.postman_collection.json` |
+| **3** | **Variables** | Sử dụng đầy đủ các cấp độ biến số theo thứ tự ưu tiên (Scope Hierarchy):<br>• **Environment Variables:** `{{baseUrl}}`, `{{adminToken}}`, `{{userToken}}`, `{{studentId}}`<br>• **Collection Variables:** Dùng lưu tạm token phiên làm việc.<br>• **Data Variables (`pm.iterationData`):** Đọc giá trị từng dòng từ file CSV (`test_case_id`, `search_query`, `expected_status`, `is_admin`,...).<br>• **Dynamic Variables:** `{{$guid}}`, `{{$timestamp}}` tạo dữ liệu ngẫu nhiên. | - `pm.iterationData.get('expected_status')`<br>- `pm.environment.set('adminToken', token)`<br>- `pm.request.headers.add({ key: 'X-Student-Id', value: '23127462' })` |
+| **4** | **Environments** | Quản lý cấu hình linh hoạt giữa các môi trường (Local SUT `http://localhost:3000`, Staging, Production) mà không cần chỉnh sửa trực tiếp Collection JSON. Chứa các biến bảo mật và mã số sinh viên. | File môi trường: `postman/EShop_Local.postman_environment.json` |
 | **5** | **Data-Driven Runs (Collection Runner with Data File)** | Thực thi kiểm thử tự động lặp (Data-Driven Testing - DDT) thông qua Postman Collection Runner nạp trực tiếp các tệp dữ liệu CSV. Mỗi dòng CSV đại diện cho một Test Case hoàn chỉnh với Payload, Header, Endpoint và Expected Status độc lập. | - Pool A: Runner lặp 40 iterations (`data_driven_FR05.csv`)<br>- Pool B: Runner lặp 45 iterations (`data_driven_FR08.csv`)<br>- Pool C: Runner lặp 45 iterations (`data_driven_FR18.csv`) |
-| **6** | **Monitors** *(Giám sát tự động định kỳ)* | Thiết lập lịch trình giám sát API tự động (Postman Cloud Monitors / Newman Scheduled Cron) để kiểm tra tính sẵn sàng (Health Check), đo lường thời gian phản hồi (Response Time SLA < 2000ms) và phát hiện lỗi API định kỳ mà không cần can thiệp thủ công. | Thiết lập Monitor chạy định kỳ 24/7 kiểm thử các endpoint quan trọng (`GET /api/products`, `POST /api/checkout`, `PUT /api/admin/orders/:id/status`). |
-
----
-
-## 9. TIẾN ĐỘ THỰC HIỆN TỔNG THỂ
-
-* [x] **Phân tích đề bài & Đọc API Spec SUT** (Hoàn thành)
-* [x] **Thiết lập quy chuẩn AI Audit Report & Prompt Logging** (Hoàn thành)
-* [x] **API 1 (Pool A - FR-05 Products):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với file CSV + Postman Collection + Environment (Execution)
-* [x] **API 2 (Pool B - FR-08 Checkout):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **API 3 (Pool C - FR-18 Orders):**
-  * [x] Sinh 40 Test Cases (AI Generation)
-  * [x] Mở rộng 5 Test Cases chuyên sâu (Extend)
-  * [x] Triển khai Data-Driven Testing với CSV + Collection (Execution)
-* [x] **Agent Skill: Universal AI-Driven API Test Generator (G9.5):** Hoàn thành tổng quát hóa toàn diện kiến trúc, thuật toán và CLI script
-* [x] **Tích hợp CI/CD GitHub Actions Pipeline:** Hoàn thành cấu hình workflow tự động hóa `.github/workflows/api-tests.yml` kèm 2 minh chứng commits mẫu
-* [x] **Tổng hợp danh sách tính năng Postman sử dụng:** Hoàn thành tài liệu hóa đầy đủ 6 tính năng cốt lõi (Workspaces, Collections, Variables, Environments, Data-Driven Runs, Monitors)
-
