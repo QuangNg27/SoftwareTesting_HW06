@@ -504,6 +504,14 @@ cập nhật nội dung file README đơn giản theo yêu cầu trong @2026.HW0
 
 ---
 
+### [02-09-2026 10:58:58] | Gemini
+```text
+FR-18 có 2 API mà
+```
+
+---
+
+
 
 
 

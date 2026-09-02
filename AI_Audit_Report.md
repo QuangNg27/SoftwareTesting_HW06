@@ -2349,11 +2349,29 @@ Tôi đã cập nhật tệp README.md với cấu trúc tối giản đúng the
 2. Bảng Tự đánh giá (Self-Assessment Table) theo mẫu Mục 15.
 3. Bảng Báo cáo tổng kết kiểm thử (Test Summary Report) theo yêu cầu Mục 14: số lượng API (3), test case AI sinh (120), test case thêm mới (10), đã thực thi (130), passed (104), failed (26), số lượng bug (9).
 ````
+- **3. Verdict:** **INCOMPLETE**
+- **4. Reasoning:** AI đã lập bảng tóm tắt đúng quy định nhưng ghi nhận nhầm số lượng API của Pool C (FR-18) là 1 thay vì 2 APIs (`PUT /api/admin/orders/:id/status` và `GET /api/admin/orders`).
+- **5. Student fix:** Sinh viên đã nhắc nhở AI rằng FR-18 bao gồm 2 APIs và yêu cầu chỉnh sửa lại số lượng trong `README.md`.
+
+---
+
+### Tác vụ 69: Chuẩn hóa số lượng API của Pool C (FR-18) trong README.md thành 2 APIs
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `FR-18 có 2 API mà`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:58:58`
+- **2. AI output:**
+````text
+Tôi đã hiệu chỉnh chính xác số lượng API trong tệp README.md:
+- Pool C (FR-18 Orders): Cập nhật Number of APIs = 2 (gồm PUT /api/admin/orders/:id/status và GET /api/admin/orders).
+- Cột Total: Cập nhật tổng số APIs toàn dự án = 4 (Pool A: 1, Pool B: 1, Pool C: 2).
+````
 - **3. Verdict:** **VALID**
-- **4. Reasoning:** AI đã đọc chính xác đặc tả yêu cầu trong file PDF `2026.HW06.API Testing_En.pdf` tại Mục 14 & 15 và soạn thảo tệp `README.md` ngắn gọn, súc tích, không thêm thắt thông tin dư thừa.
+- **4. Reasoning:** AI đã tiếp thu phản hồi, cập nhật đúng số lượng 2 APIs cho Pool C (FR-18) và nâng tổng số API lên 4 trong tệp `README.md`.
 - **5. Student fix:** Không cần chỉnh sửa.
 
 ---
+
 
 
 
