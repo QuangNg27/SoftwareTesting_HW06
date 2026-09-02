@@ -2225,11 +2225,30 @@ Tôi đã khởi tạo thành công tệp Excel HW06_API_Test_Cases_and_Summary.
 4. Pool C (FR-18 Orders): 45 ca kiểm thử chi tiết (40 AI + 5 Extension).
 5. Defect Reports (Bugs): 9 khiếm khuyết chuẩn 9 cột kèm liên kết GitHub Issues.
 ````
+- **3. Verdict:** **INCOMPLETE**
+- **4. Reasoning:** AI đã tạo tệp Excel đầy đủ 5 sheets nhưng nhầm lẫn số lượng test cases của Pool A (FR-05) thành 45 test cases (do tự động tạo thêm 5 dòng Extension riêng biệt thay vì giữ nguyên 40 test cases theo cấu trúc dự án).
+- **5. Student fix:** Sinh viên đã chỉ ra sai sót về số lượng test case của Pool A (chỉ có 40 test cases) và yêu cầu AI chuẩn hóa lại dữ liệu.
+
+---
+
+### Tác vụ 62: Chuẩn hóa số lượng Test Cases của Pool A (FR-05) trong Tệp Excel về 40 Test Cases
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `FR-05 có 40 test case thôi mà`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:20:00`
+- **2. AI output:**
+````text
+Tôi đã hiệu chỉnh lại chính xác 100% dữ liệu tệp Excel HW06_API_Test_Cases_and_Summary.xlsx:
+1. Sheet "Pool A (FR-05 Products)": Giữ nguyên đúng 40 test cases (đã tích hợp 5 ca kiểm thử chuyên sâu trong 40 TCs).
+2. Sheet "Test Summary": Cập nhật Pool A = 40, Pool B = 45, Pool C = 45 -> Tổng cộng toàn dự án = 130 Test Cases.
+3. Tái xuất bản thành công file Excel HW06_API_Test_Cases_and_Summary.xlsx.
+````
 - **3. Verdict:** **VALID**
-- **4. Reasoning:** AI đã tạo tệp Excel hoàn chỉnh với 5 sheets, cấu trúc dữ liệu đầy đủ, định dạng màu sắc/border chuyên nghiệp, đáp ứng chính xác 100% yêu cầu về thông tin test cases và test summary.
+- **4. Reasoning:** AI đã tiếp thu phản hồi, loại bỏ 5 dòng thừa trong Pool A, hiệu chỉnh tổng số test cases từ 135 về đúng 130 và tái xuất file Excel chuẩn xác.
 - **5. Student fix:** Không cần chỉnh sửa.
 
 ---
+
 
 
 
