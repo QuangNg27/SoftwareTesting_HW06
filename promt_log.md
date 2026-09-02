@@ -497,6 +497,14 @@ actual result chỉ cần để là PASS / FAIL thôi
 
 ---
 
+### [02-09-2026 10:54:01] | Gemini
+```text
+cập nhật nội dung file README đơn giản theo yêu cầu trong @2026.HW06.API Testing_En.pdf không thêm thông tin gì thêm
+```
+
+---
+
+
 
 
 

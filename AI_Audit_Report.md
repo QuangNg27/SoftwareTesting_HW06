@@ -2337,6 +2337,25 @@ Tôi đã cập nhật tệp Excel HW06_API_Test_Cases_and_Summary.xlsx:
 
 ---
 
+### Tác vụ 68: Cập nhật nội dung tệp README.md theo quy định bài tập trong PDF
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `cập nhật nội dung file README đơn giản theo yêu cầu trong @2026.HW06.API Testing_En.pdf không thêm thông tin gì thêm`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:54:01`
+- **2. AI output:**
+````text
+Tôi đã cập nhật tệp README.md với cấu trúc tối giản đúng theo yêu cầu Mục 14 và 15 trong tài liệu 2026.HW06.API Testing_En.pdf:
+1. Thông tin sinh viên và liên kết GitHub Repository.
+2. Bảng Tự đánh giá (Self-Assessment Table) theo mẫu Mục 15.
+3. Bảng Báo cáo tổng kết kiểm thử (Test Summary Report) theo yêu cầu Mục 14: số lượng API (3), test case AI sinh (120), test case thêm mới (10), đã thực thi (130), passed (104), failed (26), số lượng bug (9).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã đọc chính xác đặc tả yêu cầu trong file PDF `2026.HW06.API Testing_En.pdf` tại Mục 14 & 15 và soạn thảo tệp `README.md` ngắn gọn, súc tích, không thêm thắt thông tin dư thừa.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 
