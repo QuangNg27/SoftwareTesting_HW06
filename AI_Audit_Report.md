@@ -2249,6 +2249,26 @@ Tôi đã hiệu chỉnh lại chính xác 100% dữ liệu tệp Excel HW06_API
 
 ---
 
+### Tác vụ 63: Đồng bộ hóa cấu trúc cột và nội dung chi tiết các Sheet Test Cases theo Main_Report.md
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `các sheet mô tả chi tiết test case xem lại các table trong @Main_Report.md điền theo y vậy`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:24:11`
+- **2. AI output:**
+````text
+Tôi đã cập nhật script trích xuất dữ liệu trực tiếp từ Main_Report.md và bug_reports.md vào tệp Excel HW06_API_Test_Cases_and_Summary.xlsx để đảm bảo khớp 100% từng cột, từng dòng:
+1. Sheet "Pool A (FR-05 Products)": Khớp 100% bảng 3.3 (7 cột: Mã Test Case, Phân nhóm kiểm thử, Query String / Dữ liệu gửi, Expected Status, Kết quả mong đợi, Đánh giá AI, Lý giải kiểm định).
+2. Sheet "Pool B (FR-08 Checkout)": Khớp 100% bảng 4.3 & 4.4 (9 cột: Mã Test Case, Phân nhóm, Tiền điều kiện, Authorization Header, Request Body, Expected Status, Kết quả mong đợi, Đánh giá AI, Lý giải kiểm định).
+3. Sheet "Pool C (FR-18 Orders)": Khớp 100% bảng 5.3 & 5.4 (9 cột: Mã Test Case, Phân nhóm, Mã đơn hàng, Authorization Role, Request Body, Expected Status, Kết quả mong đợi, Đánh giá AI, Lý giải kiểm định).
+4. Sheet "Defect Reports (Bugs)": Khớp 100% bảng bug_reports.md (9 cột chuẩn quản lý lỗi).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã thực hiện cơ chế đồng bộ trực tiếp từ file tài liệu báo cáo `Main_Report.md` và `bug_reports.md`, bảo đảm tên cột, cấu trúc bảng và nội dung chi tiết của từng test case khớp hoàn toàn 100%.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 

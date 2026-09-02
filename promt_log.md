@@ -462,6 +462,14 @@ FR-05 có 40 test case thôi mà
 
 ---
 
+### [02-09-2026 10:24:11] | Gemini
+```text
+các sheet mô tả chi tiết test case xem lại các table trong @Main_Report.md điền theo y vậy
+```
+
+---
+
+
 
 
 
