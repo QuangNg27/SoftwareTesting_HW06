@@ -2268,6 +2268,24 @@ Tôi đã cập nhật script trích xuất dữ liệu trực tiếp từ Main_
 
 ---
 
+### Tác vụ 64: Bổ sung cột Actual Result và để trống AI Verdict cho các Test Case mở rộng bởi con người
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `thêm actual result nữa, để trống AI Verdict ở test case nào người tự thêm`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:31:20`
+- **2. AI output:**
+````text
+Tôi đã cập nhật tệp Excel HW06_API_Test_Cases_and_Summary.xlsx với hai yêu cầu chuẩn hóa:
+1. Bổ sung cột "Kết quả thực tế (Actual Result)" cho cả 3 Pool A, Pool B, Pool C ghi nhận kết quả phản hồi từ SUT (bao gồm chi tiết các lỗi B001 đến B009 theo đúng báo cáo Newman).
+2. Để trống ô "Đánh giá AI (Verdict)" ("") tại toàn bộ các ca kiểm thử do con người tự mở rộng (TC_FR08_EXT01..05 và TC_FR18_EXT01..05) vì các ca này không do AI sinh ra.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã bổ sung chính xác cột Actual Result phản ánh đúng kết quả thực thi Newman/SUT và để trống ô AI Verdict cho các ca kiểm thử mở rộng bởi con người theo đúng chỉ đạo của người dùng.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
 
 
 

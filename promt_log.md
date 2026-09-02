@@ -469,6 +469,14 @@ các sheet mô tả chi tiết test case xem lại các table trong @Main_Report
 
 ---
 
+### [02-09-2026 10:31:20] | Gemini
+```text
+thêm actual result nữa, để trống AI Verdict ở test case nào người tự thêm
+```
+
+---
+
+
 
 
 
