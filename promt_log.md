@@ -448,6 +448,14 @@ viết một đoạn văn khoảng 200 - 300 từ đánh giá AI (viết ra file
 
 ---
 
+### [02-09-2026 10:07:57] | Gemini
+```text
+tạo file excel chứa thông tin test cases và test summary
+```
+
+---
+
+
 
 
 
