@@ -2285,6 +2285,61 @@ Tôi đã cập nhật tệp Excel HW06_API_Test_Cases_and_Summary.xlsx với ha
 
 ---
 
+### Tác vụ 65: Đọc và phân tích chi tiết toàn bộ các Test Case thất bại từ báo cáo Newman HTML
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `đọc lại @reports để xem test case fail`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:35:58`
+- **2. AI output:**
+````text
+Tôi đã trích xuất và phân tích toàn bộ 32 lượt thất bại (failures) từ 3 tệp báo cáo Newman HTML trong thư mục reports/:
+1. Pool A (FR-05 Products): 8 Failures trên Iterations 22, 23, 27 (bắt trúng lỗi B001 SQL Injection và B002 rò rỉ CSDL SQLite lỗi 500 HTML).
+2. Pool B (FR-08 Checkout): 13 Failures trên Iterations 6, 7, 8, 10, 18, 19, 26, 36, 37, 40, 41, 42 (bắt trúng lỗi B003 tiền âm/0đ, B004 địa chỉ rỗng, B005 giỏ hàng rỗng/sửa giá, B006 sập Content-Type text/plain).
+3. Pool C (FR-18 Orders): 11 Failures trên Iterations 3, 4, 5, 6, 29, 30, 33, 39, 41, 44, 45 (bắt trúng lỗi B007 Broken Access Control User sửa đơn Admin, B008 chuyển trạng thái canceled -> delivered, B009 thiếu validate path param :id).
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã đọc trực tiếp cấu trúc HTML reports trong thư mục `reports/`, trích xuất chính xác 100% từng Iteration thất bại, thông điệp lỗi AssertionError cụ thể và ánh xạ đúng với 9 khiếm khuyết trong dự án.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 66: Cập nhật tệp Excel với kết quả thực tế từ báo cáo Newman
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `update lại excel`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:36:48`
+- **2. AI output:**
+````text
+Tôi đã cập nhật lại toàn bộ nội dung tệp Excel HW06_API_Test_Cases_and_Summary.xlsx:
+- Tự động nạp chính xác kết quả thực tế (Actual Result) cho từng ca kiểm thử thất bại dựa trên các assertion error message trong báo cáo Newman HTML.
+- Giữ nguyên các định dạng chuẩn: để trống AI Verdict cho các ca mở rộng bởi con người, phân tách rõ ràng các lỗi B001 đến B009.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã cập nhật tệp Excel với dữ liệu thực chứng khớp hoàn toàn với các báo cáo kiểm thử Newman đã thực thi.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+### Tác vụ 67: Đơn giản hóa cột Actual Result trong Excel thành PASS / FAIL
+- **1. Prompt + tool (Câu lệnh + Công cụ AI):**
+  - **Prompt:** `actual result chỉ cần để là PASS / FAIL thôi`
+  - **Tool (Mô hình AI):** `Gemini (Gemini 3.7 Flash)`
+  - **Timestamp:** `02-09-2026 10:39:21`
+- **2. AI output:**
+````text
+Tôi đã cập nhật tệp Excel HW06_API_Test_Cases_and_Summary.xlsx:
+- Chuyển đổi toàn bộ giá trị cột "Kết quả thực tế (Actual Result)" thành nhãn ngắn gọn "PASS" hoặc "FAIL".
+- Tự động căn giữa và áp dụng định dạng màu: "PASS" (chữ xanh lá đậm trên nền xanh nhạt), "FAIL" (chữ đỏ đậm trên nền đỏ nhạt) tương ứng với kết quả thực thi kiểm thử Newman thực tế.
+````
+- **3. Verdict:** **VALID**
+- **4. Reasoning:** AI đã cập nhật script sinh Excel chuyển đổi toàn bộ mô tả chi tiết của Actual Result sang đúng 2 trạng thái chuẩn `PASS` / `FAIL` và áp dụng định dạng màu trực quan.
+- **5. Student fix:** Không cần chỉnh sửa.
+
+---
+
+
+
+
 
 
 
